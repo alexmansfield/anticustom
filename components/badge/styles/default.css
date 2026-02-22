@@ -1,0 +1,42 @@
+/**
+ * Badge Style: Default
+ *
+ * Pill-shaped badges with semantic color variants.
+ * Uses colorway system for variant colors and design tokens for sizing.
+ *
+ * @package Anticustom
+ */
+
+/* ==========================================================================
+   Configuration
+   ========================================================================== */
+
+.anti-badge {
+    --anti-badge-padding-s: var(--space-xs, 0.25rem) var(--space-s, 0.5rem);
+    --anti-badge-padding-m: var(--space-xs, 0.25rem) var(--space-s, 0.5rem);
+    --anti-badge-font-s: var(--text-xs, 0.75rem);
+    --anti-badge-font-m: var(--text-s, 0.875rem);
+
+    border-radius: var(--radius-full, 9999px);
+}
+
+/* ==========================================================================
+   Variant: Neutral
+   ========================================================================== */
+
+.anti-badge--neutral {
+    background-color: var(--neutral-light, #e2e8f0);
+    color: var(--neutral-dark, #334155);
+}
+
+/* ==========================================================================
+   Colorway Variants
+   ========================================================================== */
+
+.anti-badge--success,
+.anti-badge--warning,
+.anti-badge--danger,
+.anti-badge--info {
+    background-color: var(--colorway-background);
+    color: var(--colorway-foreground);
+}

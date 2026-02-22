@@ -1,0 +1,108 @@
+/**
+ * Table Component - Base Styles
+ *
+ * Structure for data tables with optional selection and actions.
+ *
+ * @package Anticustom
+ */
+
+/* ==========================================================================
+   Wrapper (responsive scroll)
+   ========================================================================== */
+
+.anti-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* ==========================================================================
+   Table Structure
+   ========================================================================== */
+
+.anti-table {
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+.anti-table__th,
+.anti-table__td {
+    text-align: left;
+    vertical-align: middle;
+}
+
+/* ==========================================================================
+   Alignment
+   ========================================================================== */
+
+.anti-table__th--center,
+.anti-table__td--center {
+    text-align: center;
+}
+
+.anti-table__th--right,
+.anti-table__td--right {
+    text-align: right;
+}
+
+/* ==========================================================================
+   Sortable Headers
+   ========================================================================== */
+
+.anti-table__th--sortable {
+    cursor: pointer;
+    user-select: none;
+}
+
+.anti-table__sort-icon {
+    display: inline-block;
+    margin-left: 0.25rem;
+    font-size: 0.625em;
+    vertical-align: middle;
+}
+
+/* ==========================================================================
+   Selection
+   ========================================================================== */
+
+.anti-table__th--select,
+.anti-table__td--select {
+    width: 40px;
+    text-align: center;
+}
+
+/* ==========================================================================
+   Actions
+   ========================================================================== */
+
+.anti-table__td--actions .anti-table__actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+/* ==========================================================================
+   Empty State
+   ========================================================================== */
+
+.anti-table__empty {
+    text-align: center;
+}
+
+.anti-table__empty-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.anti-table__empty-title,
+.anti-table__empty-text {
+    margin: 0;
+}
+
+.anti-table__empty-icon svg {
+    width: 48px;
+    height: 48px;
+}

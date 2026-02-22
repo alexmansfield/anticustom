@@ -1,0 +1,30 @@
+/**
+ * Badge Component - Base Styles
+ *
+ * Structure for inline status labels.
+ *
+ * @package Anticustom
+ */
+
+.anti-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+    white-space: nowrap;
+    line-height: 1;
+}
+
+/* ==========================================================================
+   Sizes
+   ========================================================================== */
+
+.anti-badge--s {
+    padding: var(--anti-badge-padding-s, 0.125rem 0.5rem);
+    font-size: var(--anti-badge-font-s, 0.75rem);
+}
+
+.anti-badge--m {
+    padding: var(--anti-badge-padding-m, 0.25rem 0.625rem);
+    font-size: var(--anti-badge-font-m, 0.875rem);
+}

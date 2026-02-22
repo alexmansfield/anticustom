@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "name": "code-block",
+  "label": "Code Block",
+  "version": "1.0.0",
+  "category": "content",
+  "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polyline points=\"16 18 22 12 16 6\"></polyline><polyline points=\"8 6 2 12 8 18\"></polyline></svg>",
+  "tabs": [
+    {
+      "id": "content",
+      "label": "Content"
+    },
+    {
+      "id": "settings",
+      "label": "Settings"
+    }
+  ],
+  "fields": [
+    {
+      "name": "code",
+      "type": "textarea",
+      "label": "Code",
+      "description": "The code content to display",
+      "required": true,
+      "tab": "content"
+    },
+    {
+      "name": "language",
+      "type": "text",
+      "label": "Language",
+      "description": "Language label (e.g., json, css, php, html). Used for display and syntax highlighting hooks.",
+      "default": "",
+      "tab": "content"
+    },
+    {
+      "name": "title",
+      "type": "text",
+      "label": "Title",
+      "description": "Optional title displayed above the code block",
+      "default": "",
+      "tab": "content"
+    },
+    {
+      "name": "line_numbers",
+      "type": "boolean",
+      "label": "Line Numbers",
+      "description": "Show line numbers alongside the code",
+      "default": false,
+      "tab": "settings"
+    },
+    {
+      "name": "max_height",
+      "type": "text",
+      "label": "Max Height",
+      "description": "Maximum height with scroll (e.g., '400px', '50vh'). Leave empty for no limit.",
+      "default": "",
+      "tab": "settings"
+    }
+  ],
+  "tokens_used": [
+    "text-s",
+    "text-xs",
+    "space-xs",
+    "space-s",
+    "space-m",
+    "radius-m",
+    "neutral-dark",
+    "neutral-ultra-dark",
+    "neutral-ultra-light",
+    "neutral-light"
+  ]
+}

@@ -174,18 +174,52 @@ if (!function_exists('get_default_props')) {
     }
 }
 
-// === Stub Functions (Phase 3) ===
+// === Component Registry ===
 
-if (!function_exists('render_components')) {
+if (!function_exists('anti_components_dir')) {
     /**
-     * Render an array of child components.
+     * Get or set the components base directory.
      *
-     * @param array $components Array of child component definitions
-     * @return void
+     * @param string|null $dir Set the base directory (null to just get)
+     * @return string Current base directory
      */
-    function render_components(array $components): void
+    function anti_components_dir(?string $dir = null): string
     {
-        // TODO: Phase 3
+        static $base = null;
+        if ($dir !== null) $base = rtrim($dir, '/');
+        return $base ?? __DIR__;
+    }
+}
+
+// === Schema & Rendering ===
+
+if (!function_exists('anti_get_schema')) {
+    /**
+     * Load a component schema by name.
+     * Results are cached to avoid re-reading files.
+     *
+     * @param string $name Component name
+     * @return array Schema data
+     */
+    function anti_get_schema(string $name): array
+    {
+        static $cache = [];
+
+        if (isset($cache[$name])) {
+            return $cache[$name];
+        }
+
+        $path = anti_components_dir() . "/{$name}/{$name}.schema.json";
+
+        if (!file_exists($path)) {
+            $cache[$name] = [];
+            return [];
+        }
+
+        $schema = json_decode(file_get_contents($path), true);
+        $cache[$name] = is_array($schema) ? $schema : [];
+
+        return $cache[$name];
     }
 }
 
@@ -197,38 +231,118 @@ if (!function_exists('anti_component')) {
      * @param array $props Component props
      * @return void
      */
-    function anti_component(string $type, array $props): void
+    function anti_component(string $type, array $props = []): void
     {
-        // TODO: Phase 3
-    }
-}
+        $schema = anti_get_schema($type);
+        $defaults = get_default_props($schema);
+        $merged = array_merge($defaults, $props);
 
-if (!function_exists('anti_get_schema')) {
-    /**
-     * Load a component schema by name.
-     *
-     * @param string $name Component name
-     * @return array Schema data
-     */
-    function anti_get_schema(string $name): array
-    {
-        // TODO: Phase 3
-        return [];
+        $componentDir = anti_components_dir() . '/' . $type;
+        echo render_component($componentDir, $merged);
     }
 }
 
 if (!function_exists('resolve_child_props')) {
     /**
      * Resolve child component props from parent schema defaults.
+     * Merges slot defaults with the provided props (props win).
      *
      * @param array $schema Parent component schema
-     * @param int $index Child index
+     * @param int $index Child slot index
      * @param array $props Raw child props
-     * @return array Resolved props
+     * @return array Resolved props with slot defaults applied
      */
     function resolve_child_props(array $schema, int $index, array $props): array
     {
-        // TODO: Phase 3
-        return $props;
+        $slots = $schema['children']['slots'] ?? [];
+
+        if (!isset($slots[$index])) {
+            return $props;
+        }
+
+        $defaults = $slots[$index]['defaults'] ?? [];
+        return array_merge($defaults, $props);
+    }
+}
+
+if (!function_exists('render_components')) {
+    /**
+     * Render an array of component definitions.
+     * Each entry should have 'type' and optionally 'props'.
+     *
+     * @param array $components Array of ['type' => string, 'props' => array]
+     * @return void
+     */
+    function render_components(array $components): void
+    {
+        foreach ($components as $component) {
+            $type = $component['type'] ?? '';
+            $props = $component['props'] ?? [];
+
+            if (!empty($type)) {
+                anti_component($type, $props);
+            }
+        }
+    }
+}
+
+// === Interpolation ===
+
+if (!function_exists('anti_interpolate')) {
+    /**
+     * Replace {field} and {nested.field} placeholders with data values.
+     * Used by table and other components to resolve row data in child props.
+     *
+     * @param string $template String with {field} placeholders
+     * @param array $data Data to interpolate from
+     * @return string Resolved string
+     */
+    function anti_interpolate(string $template, array $data): string
+    {
+        return preg_replace_callback('/\{([a-zA-Z0-9_.]+)\}/', function ($matches) use ($data) {
+            $key = $matches[1];
+
+            // Handle nested keys like {user.name}
+            if (str_contains($key, '.')) {
+                $value = $data;
+                foreach (explode('.', $key) as $segment) {
+                    if (!is_array($value) || !array_key_exists($segment, $value)) {
+                        return $matches[0]; // Return placeholder unchanged
+                    }
+                    $value = $value[$segment];
+                }
+                return is_scalar($value) ? (string) $value : $matches[0];
+            }
+
+            if (array_key_exists($key, $data) && is_scalar($data[$key])) {
+                return (string) $data[$key];
+            }
+
+            return $matches[0];
+        }, $template);
+    }
+}
+
+if (!function_exists('anti_interpolate_props')) {
+    /**
+     * Recursively interpolate all string values in a props array.
+     *
+     * @param array $props Props with potential {field} placeholders
+     * @param array $data Data to interpolate from
+     * @return array Props with placeholders resolved
+     */
+    function anti_interpolate_props(array $props, array $data): array
+    {
+        $result = [];
+        foreach ($props as $key => $value) {
+            if (is_string($value)) {
+                $result[$key] = anti_interpolate($value, $data);
+            } elseif (is_array($value)) {
+                $result[$key] = anti_interpolate_props($value, $data);
+            } else {
+                $result[$key] = $value;
+            }
+        }
+        return $result;
     }
 }
