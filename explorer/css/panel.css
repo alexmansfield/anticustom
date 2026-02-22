@@ -1,0 +1,848 @@
+/**
+ * Anticustom Style Editor Panel
+ *
+ * Two-panel collapsible sidebar design:
+ * - Navigation panel (collapses to icons when settings open)
+ * - Settings panel (slides in when category selected)
+ *
+ * Adapted for explorer (no WordPress admin bar, lower z-index).
+ */
+
+/* ==========================================================================
+   CSS Variables
+   ========================================================================== */
+
+/* Alpine.js cloak - hide until initialized */
+[x-cloak] {
+    display: none !important;
+}
+
+:root {
+    /* Panel dimensions */
+    --anti-nav-width: 200px;
+    --anti-nav-collapsed: 56px;
+    --anti-settings-width: 320px;
+
+    /* Colors */
+    --anti-bg: #ffffff;
+    --anti-bg-alt: #f9fafb;
+    --anti-border: #e5e7eb;
+    --anti-text: #1f2937;
+    --anti-text-secondary: #6b7280;
+    --anti-text-muted: #9ca3af;
+    --anti-accent: #555555;
+    --anti-accent-hover: #333333;
+    --anti-control-bg: #f3f4f6;
+    --anti-control-border: #d1d5db;
+
+    /* Transitions */
+    --anti-transition: 0.25s ease;
+}
+
+/* ==========================================================================
+   Panel Container
+   ========================================================================== */
+
+.anti-panel-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    z-index: 100;
+    display: flex;
+    font-family: system-ui, -apple-system, sans-serif;
+    font-size: 14px;
+    color: var(--anti-text);
+}
+
+/* ==========================================================================
+   Navigation Panel (Left)
+   ========================================================================== */
+
+.anti-panel .anti-nav {
+    width: var(--anti-nav-width);
+    height: 100%;
+    background: var(--anti-bg);
+    border-right: 1px solid var(--anti-border);
+    display: flex;
+    flex-direction: column;
+    transition: width var(--anti-transition);
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+/* Collapsed state when settings panel is open */
+.anti-panel.settings-open .anti-nav {
+    width: var(--anti-nav-collapsed);
+}
+
+/* Nav Header */
+.anti-panel .anti-nav__header {
+    padding: 16px;
+    border-bottom: 1px solid var(--anti-border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 56px;
+}
+
+.anti-panel .anti-nav__logo {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    color: var(--anti-accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.anti-panel .anti-nav__logo svg {
+    width: 100%;
+    height: 100%;
+}
+
+.anti-panel .anti-nav__title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--anti-text);
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    opacity: 1;
+    transition: opacity var(--anti-transition);
+    flex: 1;
+}
+
+.anti-panel.settings-open .anti-nav__title {
+    opacity: 0;
+}
+
+.anti-panel .anti-nav__close {
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    color: var(--anti-text-secondary);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+    flex-shrink: 0;
+}
+
+.anti-panel .anti-nav__close:hover {
+    background: var(--anti-control-bg);
+    color: var(--anti-text);
+}
+
+.anti-panel .anti-nav__close svg {
+    width: 18px;
+    height: 18px;
+}
+
+.anti-panel.settings-open .anti-nav__close {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Nav Menu */
+.anti-panel .anti-nav__menu {
+    flex: 1;
+    padding: 12px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    overflow-y: auto;
+}
+
+.anti-panel .anti-nav__item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border: none;
+    background: transparent;
+    color: var(--anti-text-secondary);
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-align: left;
+    width: 100%;
+    white-space: nowrap;
+}
+
+.anti-panel .anti-nav__item:hover {
+    background: var(--anti-control-bg);
+    color: var(--anti-text);
+}
+
+.anti-panel .anti-nav__item.is-active {
+    background: var(--anti-accent);
+    color: #ffffff;
+}
+
+.anti-panel .anti-nav__item-icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.anti-panel .anti-nav__item-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+.anti-panel .anti-nav__item-label {
+    overflow: hidden;
+    opacity: 1;
+    width: auto;
+    transition: opacity var(--anti-transition), width var(--anti-transition);
+}
+
+.anti-panel.settings-open .anti-nav__item-label {
+    opacity: 0;
+    width: 0;
+    position: absolute;
+}
+
+/* Collapsed nav item padding adjustment */
+.anti-panel.settings-open .anti-nav__item {
+    padding: 12px;
+    justify-content: center;
+    gap: 0;
+}
+
+/* Nav Footer */
+.anti-panel .anti-nav__footer {
+    padding: 12px 8px;
+    border-top: 1px solid var(--anti-border);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.anti-panel.settings-open .anti-nav__footer {
+    padding: 12px 4px;
+}
+
+/* ==========================================================================
+   Settings Panel (Right of Nav)
+   ========================================================================== */
+
+.anti-panel .anti-settings {
+    width: 0;
+    height: 100%;
+    background: var(--anti-bg);
+    border-right: 1px solid var(--anti-border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: width var(--anti-transition);
+    flex-shrink: 0;
+}
+
+.anti-panel.settings-open .anti-settings {
+    width: var(--anti-settings-width);
+}
+
+/* Settings Header */
+.anti-panel .anti-settings__header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--anti-border);
+    background: var(--anti-bg-alt);
+    min-height: 56px;
+    flex-shrink: 0;
+}
+
+.anti-panel .anti-settings__back {
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    color: var(--anti-text-secondary);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+    flex-shrink: 0;
+}
+
+.anti-panel .anti-settings__back:hover {
+    background: var(--anti-control-bg);
+    color: var(--anti-text);
+}
+
+.anti-panel .anti-settings__back svg {
+    width: 18px;
+    height: 18px;
+}
+
+.anti-panel .anti-settings__title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--anti-text);
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    flex: 1;
+}
+
+.anti-panel .anti-settings__close {
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    color: var(--anti-text-secondary);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+    flex-shrink: 0;
+}
+
+.anti-panel .anti-settings__close:hover {
+    background: var(--anti-control-bg);
+    color: var(--anti-text);
+}
+
+.anti-panel .anti-settings__close svg {
+    width: 18px;
+    height: 18px;
+}
+
+/* Settings Tabs */
+.anti-panel .anti-settings__tabs {
+    display: flex;
+    border-bottom: 1px solid var(--anti-border);
+    flex-shrink: 0;
+}
+
+.anti-panel .anti-settings__tab {
+    flex: 1;
+    padding: 12px 8px;
+    background: transparent;
+    border: none;
+    color: var(--anti-text-secondary);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.15s ease;
+}
+
+.anti-panel .anti-settings__tab:hover {
+    color: var(--anti-text);
+    background: rgba(0, 0, 0, 0.02);
+}
+
+.anti-panel .anti-settings__tab.is-active {
+    color: var(--anti-accent);
+}
+
+.anti-panel .anti-settings__tab.is-active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--anti-accent);
+}
+
+/* Settings Content */
+.anti-panel .anti-settings__content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+}
+
+/* Settings panels - Alpine x-show handles visibility */
+.anti-panel .anti-settings__panel {
+    display: block;
+}
+
+/* Settings Footer */
+.anti-panel .anti-settings__footer {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+    border-top: 1px solid var(--anti-border);
+    background: var(--anti-bg);
+}
+
+.anti-panel .anti-settings__actions {
+    display: flex;
+    gap: 12px;
+}
+
+/* ==========================================================================
+   Control Components
+   ========================================================================== */
+
+.anti-panel .anti-control-group {
+    margin-bottom: 16px;
+}
+
+.anti-panel .anti-control-label {
+    display: block;
+    font-size: 13px;
+    color: var(--anti-text-secondary);
+    margin-bottom: 6px;
+    font-weight: 500;
+}
+
+.anti-panel .anti-control-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.anti-panel .anti-control-row .anti-range {
+    flex: 1;
+}
+
+/* Range Slider */
+.anti-panel .anti-range {
+    width: 100%;
+    height: 6px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: var(--anti-control-bg);
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.anti-panel .anti-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    background: var(--anti-accent);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.1s ease;
+}
+
+.anti-panel .anti-range::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+}
+
+.anti-panel .anti-range::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background: var(--anti-accent);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+/* Value Display */
+.anti-panel .anti-control-value {
+    display: inline-flex;
+    align-items: center;
+    font-family: ui-monospace, monospace;
+    font-size: 12px;
+    color: var(--anti-text);
+    background: var(--anti-bg);
+    border: 1px solid var(--anti-control-border);
+    padding: 6px 10px;
+    border-radius: 6px;
+    gap: 2px;
+    min-width: 60px;
+    transition: border-color 0.15s ease;
+}
+
+.anti-panel .anti-control-value:focus-within {
+    border-color: var(--anti-accent);
+}
+
+.anti-panel .anti-control-value input {
+    font-family: inherit;
+    font-size: inherit;
+    color: inherit;
+    background: transparent;
+    border: none;
+    outline: none;
+    width: 40px;
+    text-align: right;
+    -moz-appearance: textfield;
+}
+
+.anti-panel .anti-control-value input::-webkit-outer-spin-button,
+.anti-panel .anti-control-value input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Select */
+.anti-panel .anti-select {
+    width: 100%;
+    padding: 8px 12px;
+    background: var(--anti-bg);
+    border: 1px solid var(--anti-control-border);
+    border-radius: 6px;
+    color: var(--anti-text);
+    font-size: 13px;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.15s ease;
+}
+
+.anti-panel .anti-select:hover,
+.anti-panel .anti-select:focus {
+    border-color: var(--anti-accent);
+}
+
+/* Text Input */
+.anti-panel .anti-input {
+    width: 100%;
+    padding: 8px 12px;
+    background: var(--anti-bg);
+    border: 1px solid var(--anti-control-border);
+    border-radius: 6px;
+    color: var(--anti-text);
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.15s ease;
+}
+
+.anti-panel .anti-input:focus {
+    border-color: var(--anti-accent);
+    box-shadow: 0 0 0 3px rgba(85, 85, 85, 0.1);
+}
+
+/* Color Input */
+.anti-panel .anti-color-input {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.anti-panel .anti-color-input.clr-field {
+    width: 100%;
+}
+
+.anti-panel .anti-color-input.clr-field button {
+    width: 36px;
+    height: 36px;
+    border-radius: 6px;
+    border: 1px solid var(--anti-control-border);
+}
+
+.anti-panel .anti-color-input input[type="text"] {
+    flex: 1;
+    height: 36px;
+    border: 1px solid var(--anti-control-border);
+    border-radius: 6px;
+    padding: 0 10px;
+    font-family: ui-monospace, monospace;
+    font-size: 12px;
+    text-transform: uppercase;
+    background: var(--anti-bg);
+    color: var(--anti-text);
+}
+
+.anti-panel .anti-color-input input[type="text"]:focus {
+    outline: none;
+    border-color: var(--anti-accent);
+}
+
+/* ==========================================================================
+   Size Section (Toggle + Controls)
+   ========================================================================== */
+
+.anti-panel .anti-size-section {
+    margin-bottom: 12px;
+    padding: 12px;
+    border: 1px solid var(--anti-border);
+    border-radius: 8px;
+    background: var(--anti-bg-alt);
+}
+
+.anti-panel .anti-size-section:last-child {
+    margin-bottom: 0;
+}
+
+.anti-panel .anti-size-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.anti-panel .anti-size-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--anti-text);
+    flex: 1;
+}
+
+/* Toggle Switch */
+.anti-panel .anti-toggle {
+    position: relative;
+    width: 36px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+.anti-panel .anti-toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.anti-panel .anti-toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--anti-control-border);
+    border-radius: 20px;
+    transition: 0.2s;
+}
+
+.anti-panel .anti-toggle-slider::before {
+    position: absolute;
+    content: "";
+    height: 14px;
+    width: 14px;
+    left: 3px;
+    bottom: 3px;
+    background: #ffffff;
+    border-radius: 50%;
+    transition: 0.2s;
+}
+
+.anti-panel .anti-toggle input:checked + .anti-toggle-slider {
+    background: var(--anti-accent);
+}
+
+.anti-panel .anti-toggle input:checked + .anti-toggle-slider::before {
+    transform: translateX(16px);
+}
+
+/* Size Controls (shown when enabled) */
+.anti-panel .anti-size-controls {
+    margin-top: 12px;
+    display: none;
+}
+
+.anti-panel .anti-size-section.is-enabled .anti-size-controls {
+    display: block;
+}
+
+/* Disabled state */
+.anti-panel .anti-size-section:not(.is-enabled) .anti-size-name {
+    color: var(--anti-text-muted);
+}
+
+/* ==========================================================================
+   Section Divider
+   ========================================================================== */
+
+.anti-panel .anti-divider {
+    height: 1px;
+    background: var(--anti-border);
+    margin: 20px 0;
+}
+
+.anti-panel .anti-section-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--anti-text-muted);
+    margin-bottom: 12px;
+    font-weight: 600;
+}
+
+/* ==========================================================================
+   Buttons (scoped to panel)
+   ========================================================================== */
+
+.anti-panel .anti-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.anti-panel .anti-btn--primary {
+    background: var(--anti-accent);
+    color: #ffffff;
+    flex: 1;
+}
+
+.anti-panel .anti-btn--primary:hover {
+    background: var(--anti-accent-hover);
+}
+
+.anti-panel .anti-btn--primary:disabled {
+    background: var(--anti-control-border);
+    cursor: not-allowed;
+}
+
+.anti-panel .anti-btn--secondary {
+    background: var(--anti-control-bg);
+    color: var(--anti-text);
+    border: 1px solid var(--anti-control-border);
+}
+
+.anti-panel .anti-btn--secondary:hover {
+    border-color: var(--anti-accent);
+}
+
+.anti-panel .anti-btn--reset {
+    width: 100%;
+    padding: 8px;
+    background: transparent;
+    color: var(--anti-text-muted);
+    border: 1px solid var(--anti-control-border);
+    font-size: 12px;
+    margin-top: 16px;
+}
+
+.anti-panel .anti-btn--reset:hover {
+    border-color: #dc2626;
+    color: #dc2626;
+}
+
+/* ==========================================================================
+   Recalc Notice
+   ========================================================================== */
+
+.anti-panel .anti-recalc-notice {
+    display: none;
+    padding: 10px 12px;
+    background: var(--anti-control-bg);
+    border: 1px dashed var(--anti-control-border);
+    border-radius: 6px;
+    margin-bottom: 12px;
+    font-size: 12px;
+    color: var(--anti-text-secondary);
+}
+
+.anti-panel .anti-recalc-notice.is-visible {
+    display: block;
+}
+
+.anti-panel .anti-recalc-notice button {
+    background: none;
+    border: none;
+    color: var(--anti-accent);
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 0;
+    font-size: 12px;
+}
+
+.anti-panel .anti-recalc-notice button:hover {
+    color: var(--anti-accent-hover);
+}
+
+/* ==========================================================================
+   Loading & Notifications
+   ========================================================================== */
+
+.anti-panel .anti-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    color: var(--anti-text-secondary);
+}
+
+.anti-panel .anti-spinner {
+    width: 24px;
+    height: 24px;
+    border: 2px solid var(--anti-border);
+    border-top-color: var(--anti-accent);
+    border-radius: 50%;
+    animation: anti-spin 0.8s linear infinite;
+    margin-right: 12px;
+}
+
+@keyframes anti-spin {
+    to { transform: rotate(360deg); }
+}
+
+.anti-panel .anti-notification {
+    position: fixed;
+    bottom: 24px;
+    left: calc(var(--anti-nav-collapsed) + var(--anti-settings-width) + 24px);
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    z-index: 101;
+    animation: anti-slideIn 0.3s ease;
+}
+
+.anti-panel .anti-notification--success {
+    background: #10b981;
+    color: #ffffff;
+}
+
+.anti-panel .anti-notification--error {
+    background: #ef4444;
+    color: #ffffff;
+}
+
+@keyframes anti-slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ==========================================================================
+   Scrollbar
+   ========================================================================== */
+
+.anti-panel .anti-nav__menu::-webkit-scrollbar,
+.anti-panel .anti-settings__content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.anti-panel .anti-nav__menu::-webkit-scrollbar-track,
+.anti-panel .anti-settings__content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.anti-panel .anti-nav__menu::-webkit-scrollbar-thumb,
+.anti-panel .anti-settings__content::-webkit-scrollbar-thumb {
+    background: var(--anti-control-border);
+    border-radius: 3px;
+}
+
+.anti-panel .anti-nav__menu::-webkit-scrollbar-thumb:hover,
+.anti-panel .anti-settings__content::-webkit-scrollbar-thumb:hover {
+    background: var(--anti-text-muted);
+}
+
+/* ==========================================================================
+   Panel hidden state
+   ========================================================================== */
+
+.anti-panel-container.is-hidden {
+    transform: translateX(-100%);
+}

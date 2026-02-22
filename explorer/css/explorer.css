@@ -1,0 +1,85 @@
+/**
+ * Explorer Layout
+ *
+ * Main content area that adjusts alongside the panel sidebar.
+ * Uses the same CSS variables as panel.css for consistent dimensions.
+ */
+
+/* ==========================================================================
+   Base Reset
+   ========================================================================== */
+
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: system-ui, -apple-system, sans-serif;
+    background: var(--colorway-background, #f5f5f5);
+    color: var(--colorway-foreground, #1f2937);
+}
+
+/* ==========================================================================
+   Explorer Main
+   ========================================================================== */
+
+.anti-explorer {
+    margin-left: var(--anti-nav-width);
+    min-height: 100vh;
+    transition: margin-left var(--anti-transition);
+}
+
+/* When panel settings are open, offset by collapsed nav + settings width */
+.anti-panel-container.settings-open ~ .anti-explorer {
+    margin-left: calc(var(--anti-nav-collapsed) + var(--anti-settings-width));
+}
+
+/* When panel is hidden, no offset */
+.anti-panel-container.is-hidden ~ .anti-explorer {
+    margin-left: 0;
+}
+
+/* ==========================================================================
+   Explorer Navigation Bar
+   ========================================================================== */
+
+.anti-explorer__nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--anti-bg, #ffffff);
+    border-bottom: 1px solid var(--anti-border, #e5e7eb);
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    min-height: 48px;
+    gap: 4px;
+}
+
+.anti-explorer__nav-link {
+    padding: 12px 16px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--anti-text-secondary, #6b7280);
+    border-bottom: 2px solid transparent;
+    transition: all 0.15s ease;
+}
+
+.anti-explorer__nav-link:hover {
+    color: var(--anti-text, #1f2937);
+}
+
+.anti-explorer__nav-link.is-active {
+    color: var(--anti-accent, #555555);
+    border-bottom-color: var(--anti-accent, #555555);
+}
+
+/* ==========================================================================
+   Explorer Content
+   ========================================================================== */
+
+.anti-explorer__content {
+    /* Sections handle their own padding/spacing */
+}
