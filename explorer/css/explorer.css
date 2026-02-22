@@ -27,7 +27,7 @@ body {
 .anti-explorer {
     margin-left: var(--anti-nav-width);
     min-height: 100vh;
-    transition: margin-left var(--anti-transition);
+    transition: margin-left var(--anti-transition), margin-right var(--anti-transition);
 }
 
 /* When panel settings are open, offset by collapsed nav + settings width */
@@ -110,4 +110,48 @@ body {
 .anti-panel-toggle:hover {
     color: var(--anti-text, #1f2937);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* ==========================================================================
+   Component Panel Toggle Button (visible when panel is hidden)
+   ========================================================================== */
+
+.anti-component-panel-toggle {
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    z-index: 200;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--anti-bg, #ffffff);
+    border: 1px solid var(--anti-border, #e5e7eb);
+    border-radius: 8px;
+    cursor: pointer;
+    color: var(--anti-text-secondary, #6b7280);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.15s ease;
+}
+
+.anti-component-panel-toggle:hover {
+    color: var(--anti-text, #1f2937);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* ==========================================================================
+   Component Panel — Content Margin Adjustments
+   ========================================================================== */
+
+.anti-component-panel-container ~ .anti-explorer {
+    margin-right: var(--anti-comp-nav-width);
+}
+
+.anti-component-panel-container.settings-open ~ .anti-explorer {
+    margin-right: calc(var(--anti-comp-nav-collapsed) + var(--anti-comp-settings-width));
+}
+
+.anti-component-panel-container.is-hidden ~ .anti-explorer {
+    margin-right: 0;
 }

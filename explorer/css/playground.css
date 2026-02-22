@@ -1,43 +1,144 @@
 /**
- * Component Playground Layout
+ * Component Panel — Right-side Sidebar
  *
- * Two-column layout: sidebar (component list + prop editor) | preview area.
- * Reuses panel CSS variables for visual consistency.
+ * Two-panel collapsible sidebar positioned at the right edge.
+ * Mirrors panel.css structure: settings (content) + nav (icon strip).
+ * Nav strip is always at the right screen edge.
+ * Reuses --anti-* color variables for visual consistency.
  */
 
 /* ==========================================================================
-   Playground Container
+   CSS Variables
    ========================================================================== */
 
-.anti-playground {
-    display: flex;
-    gap: 0;
-    min-height: calc(100vh - 48px); /* minus nav bar */
+:root {
+    --anti-comp-nav-width: 200px;
+    --anti-comp-nav-collapsed: 56px;
+    --anti-comp-settings-width: 320px;
 }
 
 /* ==========================================================================
-   Sidebar (Component List + Prop Editor)
+   Panel Container (right-side fixed)
    ========================================================================== */
 
-.anti-playground__sidebar {
-    width: 320px;
-    flex-shrink: 0;
-    border-right: 1px solid var(--anti-border, #e5e7eb);
+.anti-component-panel-container {
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    z-index: 100;
+    display: flex;
+    font-family: system-ui, -apple-system, sans-serif;
+    font-size: 14px;
+    color: var(--anti-text, #1f2937);
+    transition: transform var(--anti-transition, 0.25s ease);
+}
+
+.anti-component-panel-container.is-hidden {
+    transform: translateX(100%);
+}
+
+/* ==========================================================================
+   Settings Panel (Content — left of icon strip)
+   ========================================================================== */
+
+.anti-comp-settings {
+    width: 0;
+    height: 100%;
     background: var(--anti-bg, #ffffff);
+    border-left: 1px solid var(--anti-border, #e5e7eb);
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    max-height: calc(100vh - 48px);
+    transition: width var(--anti-transition, 0.25s ease);
+    flex-shrink: 0;
 }
 
-/* Search field */
-.anti-playground__search {
+.anti-component-panel-container.settings-open .anti-comp-settings {
+    width: var(--anti-comp-settings-width);
+}
+
+/* Settings Header */
+.anti-comp-settings__header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--anti-border, #e5e7eb);
+    background: var(--anti-bg-alt, #f9fafb);
+    min-height: 56px;
+    flex-shrink: 0;
+}
+
+.anti-comp-settings__back {
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    color: var(--anti-text-secondary, #6b7280);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+    flex-shrink: 0;
+}
+
+.anti-comp-settings__back:hover {
+    background: var(--anti-control-bg, #f3f4f6);
+    color: var(--anti-text, #1f2937);
+}
+
+.anti-comp-settings__back svg {
+    width: 18px;
+    height: 18px;
+}
+
+.anti-comp-settings__title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--anti-text, #1f2937);
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.anti-comp-settings__close {
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    color: var(--anti-text-secondary, #6b7280);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+    flex-shrink: 0;
+}
+
+.anti-comp-settings__close:hover {
+    background: var(--anti-control-bg, #f3f4f6);
+    color: var(--anti-text, #1f2937);
+}
+
+.anti-comp-settings__close svg {
+    width: 18px;
+    height: 18px;
+}
+
+/* Search (inside settings, visible in list view) */
+.anti-comp-settings__search {
     padding: 12px;
     border-bottom: 1px solid var(--anti-border, #e5e7eb);
     flex-shrink: 0;
 }
 
-.anti-playground__search input {
+.anti-comp-settings__search input {
     width: 100%;
     padding: 8px 12px;
     border: 1px solid var(--anti-control-border, #d1d5db);
@@ -49,30 +150,216 @@
     transition: border-color 0.15s ease;
 }
 
-.anti-playground__search input:focus {
+.anti-comp-settings__search input:focus {
     border-color: var(--anti-accent, #555555);
     box-shadow: 0 0 0 3px rgba(85, 85, 85, 0.1);
 }
 
-.anti-playground__search input::placeholder {
+.anti-comp-settings__search input::placeholder {
     color: var(--anti-text-muted, #9ca3af);
 }
 
-/* Scrollable area for list + editor */
-.anti-playground__sidebar-scroll {
+/* Settings Content (scrollable) */
+.anti-comp-settings__content {
     flex: 1;
     overflow-y: auto;
+    padding: 16px;
+}
+
+.anti-comp-settings__panel {
+    display: block;
 }
 
 /* ==========================================================================
-   Component List
+   Navigation Strip (Icon strip — right edge)
    ========================================================================== */
 
-.anti-playground__list {
-    padding: 8px;
+.anti-comp-nav {
+    width: var(--anti-comp-nav-width);
+    height: 100%;
+    background: var(--anti-bg, #ffffff);
+    border-left: 1px solid var(--anti-border, #e5e7eb);
+    display: flex;
+    flex-direction: column;
+    transition: width var(--anti-transition, 0.25s ease);
+    overflow: hidden;
+    flex-shrink: 0;
 }
 
-.anti-playground__category {
+/* Collapsed state when settings panel is open */
+.anti-component-panel-container.settings-open .anti-comp-nav {
+    width: var(--anti-comp-nav-collapsed);
+}
+
+/* Nav Header */
+.anti-comp-nav__header {
+    padding: 16px;
+    border-bottom: 1px solid var(--anti-border, #e5e7eb);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 56px;
+}
+
+.anti-comp-nav__logo {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    color: var(--anti-accent, #555555);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.anti-comp-nav__logo svg {
+    width: 100%;
+    height: 100%;
+}
+
+.anti-comp-nav__title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--anti-text, #1f2937);
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    opacity: 1;
+    transition: opacity var(--anti-transition, 0.25s ease);
+    flex: 1;
+}
+
+.anti-component-panel-container.settings-open .anti-comp-nav__title {
+    opacity: 0;
+}
+
+.anti-comp-nav__close {
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    color: var(--anti-text-secondary, #6b7280);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+    flex-shrink: 0;
+}
+
+.anti-comp-nav__close:hover {
+    background: var(--anti-control-bg, #f3f4f6);
+    color: var(--anti-text, #1f2937);
+}
+
+.anti-comp-nav__close svg {
+    width: 18px;
+    height: 18px;
+}
+
+.anti-component-panel-container.settings-open .anti-comp-nav__close {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Nav Menu */
+.anti-comp-nav__menu {
+    flex: 1;
+    padding: 12px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    overflow-y: auto;
+}
+
+/* Nav Item */
+.anti-comp-nav__item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border: none;
+    background: transparent;
+    color: var(--anti-text-secondary, #6b7280);
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-align: left;
+    width: 100%;
+    white-space: nowrap;
+}
+
+.anti-comp-nav__item:hover {
+    background: var(--anti-control-bg, #f3f4f6);
+    color: var(--anti-text, #1f2937);
+}
+
+.anti-comp-nav__item.is-active {
+    background: var(--anti-accent, #555555);
+    color: #ffffff;
+}
+
+.anti-comp-nav__item.is-disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.anti-comp-nav__item.is-disabled:hover {
+    background: transparent;
+    color: var(--anti-text-secondary, #6b7280);
+}
+
+/* Nav Item Icon */
+.anti-comp-nav__item-icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.anti-comp-nav__item-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+/* Nav Item Label (hidden when collapsed) */
+.anti-comp-nav__item-label {
+    overflow: hidden;
+    opacity: 1;
+    width: auto;
+    transition: opacity var(--anti-transition, 0.25s ease),
+                width var(--anti-transition, 0.25s ease);
+}
+
+.anti-component-panel-container.settings-open .anti-comp-nav__item-label {
+    opacity: 0;
+    width: 0;
+    position: absolute;
+}
+
+/* Collapsed nav item padding adjustment */
+.anti-component-panel-container.settings-open .anti-comp-nav__item {
+    padding: 12px;
+    justify-content: center;
+    gap: 0;
+}
+
+/* ==========================================================================
+   Component List (inside settings content)
+   ========================================================================== */
+
+.anti-comp-list__group {
+    margin-bottom: 8px;
+}
+
+.anti-comp-list__group:last-child {
+    margin-bottom: 0;
+}
+
+.anti-comp-list__category {
     font-size: 11px;
     text-transform: uppercase;
     letter-spacing: 0.8px;
@@ -81,59 +368,53 @@
     font-weight: 600;
 }
 
-.anti-playground__item {
-    display: block;
-    width: 100%;
-    padding: 8px 12px;
+.anti-comp-list__item {
+    display: flex;
+    align-items: center;
+    padding: 8px 10px;
     border: none;
     background: transparent;
-    text-align: left;
+    color: var(--anti-text-secondary, #6b7280);
     font-size: 13px;
     font-weight: 500;
-    color: var(--anti-text-secondary, #6b7280);
     border-radius: 6px;
     cursor: pointer;
-    transition: all 0.12s ease;
+    transition: all 0.15s ease;
+    text-align: left;
+    width: 100%;
 }
 
-.anti-playground__item:hover {
+.anti-comp-list__item:hover {
     background: var(--anti-control-bg, #f3f4f6);
     color: var(--anti-text, #1f2937);
 }
 
-.anti-playground__item.is-active {
+.anti-comp-list__item.is-active {
     background: var(--anti-accent, #555555);
     color: #ffffff;
 }
 
+/* Empty state */
+.anti-comp-empty {
+    padding: 24px 16px;
+    text-align: center;
+    color: var(--anti-text-muted, #9ca3af);
+    font-size: 13px;
+}
+
 /* ==========================================================================
-   Prop Editor
+   Form Controls (inside settings content)
    ========================================================================== */
 
-.anti-playground__editor {
-    padding: 12px;
-    border-top: 1px solid var(--anti-border, #e5e7eb);
-}
-
-.anti-playground__editor-title {
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    color: var(--anti-text-muted, #9ca3af);
-    font-weight: 600;
+.anti-comp-field {
     margin-bottom: 12px;
 }
 
-/* Control group */
-.anti-playground__field {
-    margin-bottom: 12px;
-}
-
-.anti-playground__field:last-child {
+.anti-comp-field:last-child {
     margin-bottom: 0;
 }
 
-.anti-playground__label {
+.anti-comp-field__label {
     display: block;
     font-size: 12px;
     font-weight: 500;
@@ -141,10 +422,9 @@
     margin-bottom: 4px;
 }
 
-/* Inputs */
-.anti-playground__input,
-.anti-playground__select,
-.anti-playground__textarea {
+.anti-comp-field__input,
+.anti-comp-field__select,
+.anti-comp-field__textarea {
     width: 100%;
     padding: 6px 10px;
     border: 1px solid var(--anti-control-border, #d1d5db);
@@ -157,14 +437,14 @@
     font-family: inherit;
 }
 
-.anti-playground__input:focus,
-.anti-playground__select:focus,
-.anti-playground__textarea:focus {
+.anti-comp-field__input:focus,
+.anti-comp-field__select:focus,
+.anti-comp-field__textarea:focus {
     border-color: var(--anti-accent, #555555);
     box-shadow: 0 0 0 2px rgba(85, 85, 85, 0.08);
 }
 
-.anti-playground__textarea {
+.anti-comp-field__textarea {
     resize: vertical;
     min-height: 60px;
     font-family: ui-monospace, 'SF Mono', monospace;
@@ -172,39 +452,37 @@
     line-height: 1.5;
 }
 
-.anti-playground__textarea--json {
+.anti-comp-field__textarea--json {
     min-height: 120px;
 }
 
-/* Checkbox row */
-.anti-playground__checkbox {
+.anti-comp-field__checkbox {
     display: flex;
     align-items: center;
     gap: 8px;
     cursor: pointer;
 }
 
-.anti-playground__checkbox input[type="checkbox"] {
+.anti-comp-field__checkbox input[type="checkbox"] {
     width: 16px;
     height: 16px;
     accent-color: var(--anti-accent, #555555);
     cursor: pointer;
 }
 
-.anti-playground__checkbox span {
+.anti-comp-field__checkbox span {
     font-size: 13px;
     color: var(--anti-text, #1f2937);
 }
 
 /* ==========================================================================
-   Preview Area
+   Preview Area (in main content)
    ========================================================================== */
 
 .anti-playground__preview {
-    flex: 1;
     display: flex;
     flex-direction: column;
-    min-width: 0;
+    min-height: calc(100vh - 48px);
     background: var(--colorway-background, #f5f5f5);
 }
 
@@ -254,7 +532,7 @@
     overflow: auto;
 }
 
-/* Loading overlay */
+/* Loading spinner */
 .anti-playground__loading {
     position: absolute;
     top: 8px;
@@ -264,10 +542,10 @@
     border: 2px solid var(--anti-border, #e5e7eb);
     border-top-color: var(--anti-accent, #555555);
     border-radius: 50%;
-    animation: anti-playground-spin 0.7s linear infinite;
+    animation: anti-comp-spin 0.7s linear infinite;
 }
 
-@keyframes anti-playground-spin {
+@keyframes anti-comp-spin {
     to { transform: rotate(360deg); }
 }
 
@@ -292,49 +570,32 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 100%;
+    height: calc(100vh - 48px);
     color: var(--anti-text-muted, #9ca3af);
     font-size: 14px;
 }
 
 /* ==========================================================================
-   Responsive
+   Scrollbar
    ========================================================================== */
 
-@media (max-width: 768px) {
-    .anti-playground {
-        flex-direction: column;
-    }
-
-    .anti-playground__sidebar {
-        width: 100%;
-        max-height: none;
-        border-right: none;
-        border-bottom: 1px solid var(--anti-border, #e5e7eb);
-    }
-
-    .anti-playground__sidebar-scroll {
-        max-height: 50vh;
-    }
-}
-
-/* ==========================================================================
-   Scrollbar (matches panel)
-   ========================================================================== */
-
-.anti-playground__sidebar-scroll::-webkit-scrollbar {
+.anti-comp-nav__menu::-webkit-scrollbar,
+.anti-comp-settings__content::-webkit-scrollbar {
     width: 6px;
 }
 
-.anti-playground__sidebar-scroll::-webkit-scrollbar-track {
+.anti-comp-nav__menu::-webkit-scrollbar-track,
+.anti-comp-settings__content::-webkit-scrollbar-track {
     background: transparent;
 }
 
-.anti-playground__sidebar-scroll::-webkit-scrollbar-thumb {
+.anti-comp-nav__menu::-webkit-scrollbar-thumb,
+.anti-comp-settings__content::-webkit-scrollbar-thumb {
     background: var(--anti-control-border, #d1d5db);
     border-radius: 3px;
 }
 
-.anti-playground__sidebar-scroll::-webkit-scrollbar-thumb:hover {
+.anti-comp-nav__menu::-webkit-scrollbar-thumb:hover,
+.anti-comp-settings__content::-webkit-scrollbar-thumb:hover {
     background: var(--anti-text-muted, #9ca3af);
 }
