@@ -43,6 +43,12 @@ $navItems = [
     <style id="anti-components"><?php echo $componentCSS; ?></style>
     <link rel="stylesheet" href="css/panel.css">
     <link rel="stylesheet" href="css/explorer.css">
+    <?php if ($tool === 'components') : ?>
+        <link rel="stylesheet" href="css/playground.css">
+    <?php endif; ?>
+    <?php if ($tool === 'components') : ?>
+        <script defer src="js/playground.js"></script>
+    <?php endif; ?>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3/dist/cdn.min.js"></script>
 </head>
 <body>

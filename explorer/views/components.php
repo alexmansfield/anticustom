@@ -1,14 +1,14 @@
 <?php
 /**
- * Components View — Component Gallery
+ * Components View — Interactive Playground
  *
- * Loops through all discovered components and renders each
- * with sensible sample props.
+ * Schema-driven prop editor with live AJAX preview.
+ * Replaces the static gallery with an interactive component workbench.
  */
 
 $components = scan_components(anti_components_dir());
 
-// Sample props for each component
+// Sample props for each component (initial values when selected)
 $samples = [
     'badge' => [
         'text' => 'Active',
@@ -137,34 +137,205 @@ $samples = [
     ],
 ];
 
-// Render order: layout components first, then content, then data-display
-$order = ['section', 'container', 'hero', 'intro', 'card', 'button', 'badge', 'stats', 'testimonial', 'faq', 'code-block', 'table'];
+// Build component registry for JS
+$componentData = [];
+foreach ($components as $name => $comp) {
+    $schema = $comp['schema'];
+    $hasChildren = isset($schema['children']);
 
-foreach ($order as $name) {
-    if (!isset($components[$name])) continue;
-    $comp = $components[$name];
-    $label = $comp['label'];
-    $props = $samples[$name] ?? [];
-
-    anti_component('section', [
-        'colorway' => 'default',
-        'padding_top' => 'l',
-        'padding_bottom' => 'l',
-        'gap' => 'm',
-        'children' => [
-            [
-                'type' => 'intro',
-                'props' => [
-                    'eyebrow' => $comp['schema']['category'] ?? 'component',
-                    'title' => $label,
-                    'align' => 'left',
-                    'size' => 's',
-                ],
-            ],
-            [
-                'type' => $name,
-                'props' => $props,
-            ],
-        ],
-    ]);
+    $componentData[$name] = [
+        'label'       => $comp['label'],
+        'category'    => $schema['category'] ?? 'other',
+        'fields'      => $schema['fields'] ?? [],
+        'hasChildren' => $hasChildren,
+        'sampleProps' => $samples[$name] ?? [],
+    ];
 }
+
+// Sort by display order: layout → content → interactive → data-display
+$categoryOrder = ['layout' => 0, 'content' => 1, 'interactive' => 2, 'data-display' => 3, 'other' => 4];
+uksort($componentData, function ($a, $b) use ($componentData, $categoryOrder) {
+    $catA = $categoryOrder[$componentData[$a]['category']] ?? 99;
+    $catB = $categoryOrder[$componentData[$b]['category']] ?? 99;
+    return $catA - $catB ?: strcmp($a, $b);
+});
+?>
+
+<script>
+window.__antiComponents = <?php echo json_encode($componentData, JSON_UNESCAPED_UNICODE); ?>;
+</script>
+
+<div class="anti-playground" x-data="antiPlayground()">
+    <!-- Sidebar: search, list, editor -->
+    <div class="anti-playground__sidebar">
+        <div class="anti-playground__search">
+            <input type="text"
+                   x-model="search"
+                   placeholder="Search components...">
+        </div>
+
+        <div class="anti-playground__sidebar-scroll">
+            <!-- Component list -->
+            <div class="anti-playground__list">
+                <template x-for="(comps, category) in filteredComponents()" :key="category">
+                    <div>
+                        <div class="anti-playground__category" x-text="category"></div>
+                        <template x-for="comp in comps" :key="comp.name">
+                            <button class="anti-playground__item"
+                                    :class="{ 'is-active': selected === comp.name }"
+                                    @click="selectComponent(comp.name)"
+                                    x-text="comp.label">
+                            </button>
+                        </template>
+                    </div>
+                </template>
+            </div>
+
+            <!-- Prop editor -->
+            <div class="anti-playground__editor" x-show="selected" x-cloak>
+                <div class="anti-playground__editor-title">Properties</div>
+
+                <template x-for="field in currentFields()" :key="field.name">
+                    <div class="anti-playground__field">
+
+                        <!-- Text input -->
+                        <template x-if="field.type === 'text' || field.type === 'url'">
+                            <div>
+                                <label class="anti-playground__label" x-text="field.label"></label>
+                                <input class="anti-playground__input"
+                                       :type="field.type === 'url' ? 'url' : 'text'"
+                                       x-model="props[field.name]"
+                                       @input="scheduleRender()"
+                                       :placeholder="field.description || ''">
+                            </div>
+                        </template>
+
+                        <!-- Image URL -->
+                        <template x-if="field.type === 'image'">
+                            <div>
+                                <label class="anti-playground__label" x-text="field.label + ' (URL)'"></label>
+                                <input class="anti-playground__input"
+                                       type="url"
+                                       x-model="props[field.name]"
+                                       @input="scheduleRender()"
+                                       placeholder="Image URL">
+                            </div>
+                        </template>
+
+                        <!-- Textarea -->
+                        <template x-if="field.type === 'textarea'">
+                            <div>
+                                <label class="anti-playground__label" x-text="field.label"></label>
+                                <textarea class="anti-playground__textarea"
+                                          x-model="props[field.name]"
+                                          @input="scheduleRender()"
+                                          :placeholder="field.description || ''"></textarea>
+                            </div>
+                        </template>
+
+                        <!-- Number -->
+                        <template x-if="field.type === 'number'">
+                            <div>
+                                <label class="anti-playground__label" x-text="field.label"></label>
+                                <input class="anti-playground__input"
+                                       type="number"
+                                       x-model="props[field.name]"
+                                       @input="scheduleRender()">
+                            </div>
+                        </template>
+
+                        <!-- Select -->
+                        <template x-if="field.type === 'select'">
+                            <div>
+                                <label class="anti-playground__label" x-text="field.label"></label>
+                                <select class="anti-playground__select"
+                                        x-model="props[field.name]"
+                                        @change="scheduleRender()">
+                                    <template x-for="opt in field.options" :key="opt.value">
+                                        <option :value="opt.value" x-text="opt.label"></option>
+                                    </template>
+                                </select>
+                            </div>
+                        </template>
+
+                        <!-- Boolean -->
+                        <template x-if="field.type === 'boolean'">
+                            <label class="anti-playground__checkbox">
+                                <input type="checkbox"
+                                       x-model="props[field.name]"
+                                       @change="scheduleRender()">
+                                <span x-text="field.label"></span>
+                            </label>
+                        </template>
+
+                        <!-- Colorway -->
+                        <template x-if="field.type === 'colorway'">
+                            <div>
+                                <label class="anti-playground__label" x-text="field.label"></label>
+                                <select class="anti-playground__select"
+                                        x-model="props[field.name]"
+                                        @change="scheduleRender()">
+                                    <template x-for="opt in colorwayOptions" :key="opt.value">
+                                        <option :value="opt.value" x-text="opt.label"></option>
+                                    </template>
+                                </select>
+                            </div>
+                        </template>
+
+                        <!-- Buttongroup (spaces) -->
+                        <template x-if="field.type === 'buttongroup'">
+                            <div>
+                                <label class="anti-playground__label" x-text="field.label"></label>
+                                <select class="anti-playground__select"
+                                        x-model="props[field.name]"
+                                        @change="scheduleRender()">
+                                    <template x-for="opt in spaceOptions" :key="opt.value">
+                                        <option :value="opt.value" x-text="opt.label"></option>
+                                    </template>
+                                </select>
+                            </div>
+                        </template>
+
+                    </div>
+                </template>
+
+                <!-- Children JSON editor -->
+                <template x-if="hasChildren()">
+                    <div class="anti-playground__field">
+                        <label class="anti-playground__label">Children (JSON)</label>
+                        <textarea class="anti-playground__textarea anti-playground__textarea--json"
+                                  x-model="childrenJson"
+                                  @input="scheduleRender()"></textarea>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </div>
+
+    <!-- Preview area -->
+    <div class="anti-playground__preview">
+        <div class="anti-playground__preview-header" x-show="selected">
+            <span class="anti-playground__preview-title" x-text="selected ? components[selected]?.label + ' Preview' : ''"></span>
+            <button class="anti-playground__source-toggle"
+                    :class="{ 'is-active': showSource }"
+                    @click="showSource = !showSource">
+                Source
+            </button>
+        </div>
+
+        <template x-if="!selected">
+            <div class="anti-playground__empty">Select a component to preview</div>
+        </template>
+
+        <template x-if="selected && !showSource">
+            <div class="anti-playground__render">
+                <div x-show="loading" class="anti-playground__loading"></div>
+                <div x-html="previewHtml"></div>
+            </div>
+        </template>
+
+        <template x-if="selected && showSource">
+            <pre class="anti-playground__source" x-text="previewHtml"></pre>
+        </template>
+    </div>
+</div>
