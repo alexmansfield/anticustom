@@ -24,6 +24,10 @@ body {
    Explorer Main
    ========================================================================== */
 
+html {
+    overflow-y: scroll;
+}
+
 .anti-explorer {
     margin-left: var(--anti-nav-width);
     min-height: 100vh;

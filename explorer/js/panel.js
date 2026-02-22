@@ -1236,10 +1236,12 @@ const getPanelHTML = () => `
                                 </div>
                                 <div class="anti-size-controls">
                                     <div class="anti-control-group">
-                                        <input type="color"
-                                            :value="color.base"
-                                            @input="updateColorBase(name, $event.target.value)"
-                                            style="width: 100%; height: 36px; border: 1px solid var(--anti-control-border); border-radius: 6px; cursor: pointer;">
+                                        <div class="anti-color-input">
+                                            <span class="anti-color-swatch" :style="'background:' + color.base"></span>
+                                            <input type="text" data-coloris
+                                                :value="color.base"
+                                                @input="updateColorBase(name, $event.target.value)">
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -1509,23 +1511,21 @@ const getPanelHTML = () => `
                                 <div class="anti-size-controls">
                                     <div class="anti-control-group">
                                         <label class="anti-control-label" style="font-size: 11px;">Background</label>
-                                        <input type="color"
-                                            :value="way.background.startsWith('#') ? way.background : '#ffffff'"
-                                            @input="updateColorway(wayName, 'background', $event.target.value)"
-                                            style="width: 100%; height: 32px; border: 1px solid var(--anti-control-border); border-radius: 6px; cursor: pointer;">
-                                        <input type="text" class="anti-input" style="margin-top: 4px; font-size: 11px;"
-                                            :value="way.background"
-                                            @change="updateColorway(wayName, 'background', $event.target.value)">
+                                        <div class="anti-color-input">
+                                            <span class="anti-color-swatch" :style="'background:' + way.background"></span>
+                                            <input type="text" data-coloris
+                                                :value="way.background"
+                                                @input="updateColorway(wayName, 'background', $event.target.value)">
+                                        </div>
                                     </div>
                                     <div class="anti-control-group" style="margin-top: 8px;">
                                         <label class="anti-control-label" style="font-size: 11px;">Foreground</label>
-                                        <input type="color"
-                                            :value="way.foreground.startsWith('#') ? way.foreground : '#000000'"
-                                            @input="updateColorway(wayName, 'foreground', $event.target.value)"
-                                            style="width: 100%; height: 32px; border: 1px solid var(--anti-control-border); border-radius: 6px; cursor: pointer;">
-                                        <input type="text" class="anti-input" style="margin-top: 4px; font-size: 11px;"
-                                            :value="way.foreground"
-                                            @change="updateColorway(wayName, 'foreground', $event.target.value)">
+                                        <div class="anti-color-input">
+                                            <span class="anti-color-swatch" :style="'background:' + way.foreground"></span>
+                                            <input type="text" data-coloris
+                                                :value="way.foreground"
+                                                @input="updateColorway(wayName, 'foreground', $event.target.value)">
+                                        </div>
                                     </div>
                                 </div>
                             </div>

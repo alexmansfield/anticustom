@@ -530,15 +530,12 @@
     align-items: center;
 }
 
-.anti-panel .anti-color-input.clr-field {
-    width: 100%;
-}
-
-.anti-panel .anti-color-input.clr-field button {
+.anti-panel .anti-color-swatch {
     width: 36px;
     height: 36px;
     border-radius: 6px;
     border: 1px solid var(--anti-control-border);
+    flex-shrink: 0;
 }
 
 .anti-panel .anti-color-input input[type="text"] {

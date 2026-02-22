@@ -171,25 +171,36 @@ window.__antiComponents = <?php echo json_encode($componentData, JSON_UNESCAPED_
          x-show="$store.componentPreview.componentName">
         <span class="anti-playground__preview-title"
               x-text="$store.componentPreview.componentName + ' Preview'"></span>
-        <button class="anti-playground__source-toggle"
-                :class="{ 'is-active': $store.componentPreview.showSource }"
-                @click="$store.componentPreview.showSource = !$store.componentPreview.showSource">
-            Source
-        </button>
+        <div class="anti-playground__source-toggles">
+            <button class="anti-playground__source-toggle"
+                    :class="{ 'is-active': $store.componentPreview.sourceView === 'html' }"
+                    @click="$store.componentPreview.toggleSource('html')">
+                HTML
+            </button>
+            <button class="anti-playground__source-toggle"
+                    :class="{ 'is-active': $store.componentPreview.sourceView === 'css' }"
+                    @click="$store.componentPreview.toggleSource('css')">
+                CSS
+            </button>
+        </div>
     </div>
 
     <template x-if="!$store.componentPreview.componentName">
         <div class="anti-playground__empty">Select a component to preview</div>
     </template>
 
-    <template x-if="$store.componentPreview.componentName && !$store.componentPreview.showSource">
+    <template x-if="$store.componentPreview.componentName && !$store.componentPreview.sourceView">
         <div class="anti-playground__render">
             <div x-show="$store.componentPreview.loading" class="anti-playground__loading"></div>
             <div x-html="$store.componentPreview.html"></div>
         </div>
     </template>
 
-    <template x-if="$store.componentPreview.componentName && $store.componentPreview.showSource">
+    <template x-if="$store.componentPreview.componentName && $store.componentPreview.sourceView === 'html'">
         <pre class="anti-playground__source" x-text="$store.componentPreview.html"></pre>
+    </template>
+
+    <template x-if="$store.componentPreview.componentName && $store.componentPreview.sourceView === 'css'">
+        <pre class="anti-playground__source" x-text="$store.componentPreview.css"></pre>
     </template>
 </div>

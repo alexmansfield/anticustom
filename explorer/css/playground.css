@@ -502,6 +502,11 @@
     color: var(--anti-text, #1f2937);
 }
 
+.anti-playground__source-toggles {
+    display: flex;
+    gap: 4px;
+}
+
 .anti-playground__source-toggle {
     padding: 4px 10px;
     border: 1px solid var(--anti-control-border, #d1d5db);
@@ -557,8 +562,7 @@
     font-family: ui-monospace, 'SF Mono', monospace;
     font-size: 12px;
     line-height: 1.6;
-    white-space: pre-wrap;
-    word-break: break-word;
+    white-space: pre;
     overflow: auto;
     flex: 1;
     margin: 0;

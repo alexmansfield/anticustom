@@ -28,9 +28,14 @@ const COMP_ICONS = {
 function registerComponentPanel() {
     Alpine.store('componentPreview', {
         html: '',
+        css: '',
         componentName: '',
-        showSource: false,
+        sourceView: null,   // null = preview, 'html' = HTML source, 'css' = CSS source
         loading: false,
+
+        toggleSource(type) {
+            this.sourceView = this.sourceView === type ? null : type;
+        },
     });
 
     Alpine.data('componentPanel', () => ({
@@ -128,6 +133,18 @@ function registerComponentPanel() {
             }
 
             this.renderPreview();
+            this.fetchComponentCSS();
+        },
+
+        async fetchComponentCSS() {
+            if (!this.selected) return;
+            const store = Alpine.store('componentPreview');
+            try {
+                const resp = await fetch(`/shared/component-css.php?name=${encodeURIComponent(this.selected)}`);
+                store.css = resp.ok ? await resp.text() : '/* Could not load CSS */';
+            } catch (err) {
+                store.css = `/* Fetch error: ${err.message} */`;
+            }
         },
 
         get settingsTitle() {
@@ -215,21 +232,21 @@ const getComponentPanelHTML = () => `
 
         <!-- Content Panel (left of icon strip) -->
         <aside class="anti-comp-settings">
-            <!-- Header -->
+            <!-- Header (mirrored: close on left, back on right) -->
             <header class="anti-comp-settings__header">
+                <button class="anti-comp-settings__close"
+                    @click="togglePanel()"
+                    aria-label="Close panel"
+                    title="Close panel">
+                    ${COMP_ICONS.close}
+                </button>
+                <h2 class="anti-comp-settings__title" x-text="settingsTitle"></h2>
                 <button class="anti-comp-settings__back"
                     x-show="activeView === 'editor'"
                     @click="closeSettings()"
                     aria-label="Back to components"
                     title="Back">
                     ${COMP_ICONS.chevronLeft}
-                </button>
-                <h2 class="anti-comp-settings__title" x-text="settingsTitle"></h2>
-                <button class="anti-comp-settings__close"
-                    @click="togglePanel()"
-                    aria-label="Close panel"
-                    title="Close panel">
-                    ${COMP_ICONS.close}
                 </button>
             </header>
 

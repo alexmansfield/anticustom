@@ -43,9 +43,12 @@ $navItems = [
     <style id="anti-components"><?php echo $componentCSS; ?></style>
     <link rel="stylesheet" href="css/panel.css">
     <link rel="stylesheet" href="css/explorer.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/mdbassit/Coloris@v0.24.0/dist/coloris.min.css">
     <?php if ($tool === 'components') : ?>
         <link rel="stylesheet" href="css/playground.css">
     <?php endif; ?>
+    <script src="https://cdn.jsdelivr.net/gh/mdbassit/Coloris@v0.24.0/dist/coloris.min.js"></script>
+    <script>Coloris({ alpha: false, format: 'hex', themeMode: 'light', margin: 8, swatches: [] });</script>
     <?php if ($tool === 'components') : ?>
         <script defer src="js/playground.js"></script>
     <?php endif; ?>
