@@ -209,7 +209,11 @@ const DEFAULT_SETTINGS = {
         primary: { enabled: true, base: '#336699' },
         secondary: { enabled: false, base: '#64748b' },
         accent: { enabled: false, base: '#8b5cf6' },
-        neutral: { enabled: true, base: '#737373' }
+        neutral: { enabled: true, base: '#737373' },
+        info: { enabled: false, base: '#0ea5e9' },
+        success: { enabled: false, base: '#22c55e' },
+        warning: { enabled: false, base: '#eab308' },
+        error: { enabled: false, base: '#ef4444' }
     },
     spacing: {
         baseSize: 16,
@@ -792,14 +796,18 @@ function registerStylePanel() {
         settingsToTokenJSON() {
             const s = this.settings;
 
-            // Build color sections from flat panel format
+            // Route flat panel colors into defaults.json section structure
+            const semanticNames = ['info', 'success', 'warning', 'error'];
             const brandColors = {};
             const neutralColors = {};
+            const semanticColors = {};
             for (const [name, data] of Object.entries(s.colors)) {
                 const entry = { enabled: data.enabled };
                 if (data.base) entry.color = data.base;
                 if (name === 'neutral') {
                     neutralColors[name] = entry;
+                } else if (semanticNames.includes(name)) {
+                    semanticColors[name] = entry;
                 } else {
                     brandColors[name] = entry;
                 }
@@ -821,16 +829,7 @@ function registerStylePanel() {
                     sections: {
                         brand: { label: 'Brand Colors', colors: brandColors },
                         neutral: { label: 'Neutral Colors', colors: neutralColors },
-                        // Preserve semantic colors (not editable in panel)
-                        semantic: {
-                            label: 'Semantic Colors',
-                            colors: {
-                                info: { enabled: false, color: '#0ea5e9' },
-                                success: { enabled: false, color: '#22c55e' },
-                                warning: { enabled: false, color: '#eab308' },
-                                error: { enabled: false, color: '#ef4444' }
-                            }
-                        }
+                        semantic: { label: 'Semantic Colors', colors: semanticColors }
                     },
                     hues: {
                         'ultra-light': { value: 90, enabled: true },
