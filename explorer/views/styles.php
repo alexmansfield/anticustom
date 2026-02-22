@@ -165,6 +165,70 @@ anti_component('section', [
     ],
 ]);
 
+// Token reference table data — built from defaults.json
+$tokenRows = [];
+$defaultsPath = dirname(__DIR__, 2) . '/styles/defaults.json';
+$tokenData = json_decode(file_get_contents($defaultsPath), true);
+
+// Spacing tokens
+$spaceBase = $tokenData['spacing']['baseSize'] ?? 16;
+$spaceScale = $tokenData['spacing']['scale'] ?? 1.5;
+$spacePositions = ['xxs' => -3, 'xs' => -2, 's' => -1, 'm' => 0, 'l' => 1, 'xl' => 2, 'xxl' => 3];
+foreach ($spacePositions as $size => $pos) {
+    $sizeData = $tokenData['spacing']['sizes'][$size] ?? [];
+    $val = (!empty($sizeData['enabled']) && isset($sizeData['value']))
+        ? $sizeData['value']
+        : round($spaceBase * pow($spaceScale, $pos));
+    $tokenRows[] = ['id' => "space-{$size}", 'variable' => "--space-{$size}", 'category' => 'Spacing', 'default_value' => "{$val}px"];
+}
+
+// Typography — text sizes
+$textBase = $tokenData['typography']['text']['baseSize'] ?? 16;
+$textScale = $tokenData['typography']['text']['scale'] ?? 1.125;
+$textPositions = ['xs' => -2, 's' => -1, 'm' => 0, 'l' => 1, 'xl' => 2];
+foreach ($textPositions as $size => $pos) {
+    $val = round($textBase * pow($textScale, $pos), 1);
+    $tokenRows[] = ['id' => "text-{$size}", 'variable' => "--text-{$size}", 'category' => 'Typography', 'default_value' => "{$val}px"];
+}
+
+// Typography — heading sizes
+$headingBase = $tokenData['typography']['headings']['baseSize'] ?? 16;
+$headingScale = $tokenData['typography']['headings']['scale'] ?? 1.618;
+$headingPositions = [6 => 0, 5 => 1, 4 => 2, 3 => 3, 2 => 4, 1 => 5];
+foreach ($headingPositions as $level => $pos) {
+    $val = round($headingBase * pow($headingScale, $pos));
+    $tokenRows[] = ['id' => "heading-{$level}", 'variable' => "--heading-{$level}", 'category' => 'Typography', 'default_value' => "{$val}px"];
+}
+
+// Colors
+foreach ($tokenData['color']['sections'] ?? [] as $section) {
+    foreach ($section['colors'] ?? [] as $name => $colorData) {
+        if (isset($colorData['color'])) {
+            $tokenRows[] = ['id' => $name, 'variable' => "--{$name}", 'category' => 'Colors', 'default_value' => $colorData['color']];
+        }
+    }
+}
+
+// Borders
+foreach ($tokenData['borders']['sizes'] ?? [] as $size => $data) {
+    if (isset($data['value'])) {
+        $tokenRows[] = ['id' => "border-{$size}", 'variable' => "--border-{$size}", 'category' => 'Borders', 'default_value' => "{$data['value']}px"];
+    }
+}
+
+// Shadows
+foreach ($tokenData['shadows'] ?? [] as $size => $s) {
+    $val = ($s['x'] ?? 0) . 'px ' . ($s['y'] ?? 0) . 'px ' . ($s['blur'] ?? 0) . 'px ' . ($s['spread'] ?? 0) . 'px rgba(0,0,0,' . ($s['opacity'] ?? 0.1) . ')';
+    $tokenRows[] = ['id' => "shadow-{$size}", 'variable' => "--shadow-{$size}", 'category' => 'Shadows', 'default_value' => $val];
+}
+
+// Radius
+foreach ($tokenData['radius']['sizes'] ?? [] as $size => $data) {
+    if (isset($data['value'])) {
+        $tokenRows[] = ['id' => "radius-{$size}", 'variable' => "--radius-{$size}", 'category' => 'Radius', 'default_value' => "{$data['value']}px"];
+    }
+}
+
 // Testimonial + Badge showcase
 anti_component('section', [
     'colorway' => 'default',
@@ -230,6 +294,38 @@ anti_component('section', [
                         ],
                     ],
                 ],
+            ],
+        ],
+    ],
+]);
+
+// Token reference table
+anti_component('section', [
+    'colorway' => 'default',
+    'padding_top' => 'xxl',
+    'padding_bottom' => 'xxl',
+    'gap' => 'l',
+    'children' => [
+        [
+            'type' => 'intro',
+            'props' => [
+                'eyebrow' => 'Reference',
+                'title' => 'Token Variables',
+                'subtitle' => 'All CSS custom properties generated from the token system. Edit values in the panel to see live changes.',
+                'align' => 'center',
+                'size' => 'm',
+            ],
+        ],
+        [
+            'type' => 'table',
+            'props' => [
+                'columns' => [
+                    ['key' => 'variable', 'label' => 'Variable'],
+                    ['key' => 'category', 'label' => 'Category'],
+                    ['key' => 'default_value', 'label' => 'Default'],
+                ],
+                'data' => $tokenRows,
+                'row_key' => 'id',
             ],
         ],
     ],

@@ -13,6 +13,65 @@
  */
 
 // ============================================
+// Color Conversion Utilities (mirrors generate.php)
+// ============================================
+
+function hexToHsl(hex) {
+    hex = hex.replace('#', '');
+    const r = parseInt(hex.substring(0, 2), 16) / 255;
+    const g = parseInt(hex.substring(2, 4), 16) / 255;
+    const b = parseInt(hex.substring(4, 6), 16) / 255;
+
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    let h, s, l = (max + min) / 2;
+
+    if (max === min) {
+        return { h: 0, s: 0, l: l * 100 };
+    }
+
+    const d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+
+    if (max === r) {
+        h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
+    } else if (max === g) {
+        h = ((b - r) / d + 2) / 6;
+    } else {
+        h = ((r - g) / d + 4) / 6;
+    }
+
+    return { h: h * 360, s: s * 100, l: l * 100 };
+}
+
+function hueToRgb(p, q, t) {
+    if (t < 0) t += 1;
+    if (t > 1) t -= 1;
+    if (t < 1/6) return p + (q - p) * 6 * t;
+    if (t < 1/2) return q;
+    if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+    return p;
+}
+
+function hslToHex(h, s, l) {
+    h /= 360; s /= 100; l /= 100;
+    let r, g, b;
+
+    if (s === 0) {
+        r = g = b = l;
+    } else {
+        const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+        const p = 2 * l - q;
+        r = hueToRgb(p, q, h + 1/3);
+        g = hueToRgb(p, q, h);
+        b = hueToRgb(p, q, h - 1/3);
+    }
+
+    const toHex = v => Math.round(v * 255).toString(16).padStart(2, '0');
+    return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+}
+
+// ============================================
 // SVG Icons
 // ============================================
 
@@ -105,6 +164,12 @@ const CATEGORIES = [
             { id: 'shadows', label: 'Shadows' },
             { id: 'radius', label: 'Radius' }
         ]
+    },
+    {
+        id: 'colorways',
+        label: 'Colorways',
+        icon: 'palette',
+        tabs: null
     }
 ];
 
@@ -116,15 +181,15 @@ const DEFAULT_SETTINGS = {
     typography: {
         headings: {
             baseSize: 16,
-            scale: 1.25,
+            scale: 1.618,
             customized: false,
             sizes: {
-                h1: { value: 48, enabled: true, lineHeight: 1.2, letterSpacing: -0.02, weight: 700 },
-                h2: { value: 38, enabled: true, lineHeight: 1.25, letterSpacing: -0.02, weight: 700 },
-                h3: { value: 31, enabled: true, lineHeight: 1.3, letterSpacing: -0.01, weight: 600 },
-                h4: { value: 25, enabled: true, lineHeight: 1.35, letterSpacing: -0.01, weight: 600 },
-                h5: { value: 20, enabled: true, lineHeight: 1.4, letterSpacing: 0, weight: 600 },
-                h6: { value: 16, enabled: true, lineHeight: 1.4, letterSpacing: 0, weight: 600 }
+                h1: { value: 178, enabled: false, lineHeight: 1.2, letterSpacing: -0.02, weight: 700 },
+                h2: { value: 110, enabled: false, lineHeight: 1.25, letterSpacing: -0.02, weight: 700 },
+                h3: { value: 68, enabled: false, lineHeight: 1.3, letterSpacing: -0.01, weight: 600 },
+                h4: { value: 42, enabled: false, lineHeight: 1.35, letterSpacing: -0.01, weight: 600 },
+                h5: { value: 26, enabled: false, lineHeight: 1.4, letterSpacing: 0, weight: 600 },
+                h6: { value: 16, enabled: false, lineHeight: 1.4, letterSpacing: 0, weight: 600 }
             }
         },
         text: {
@@ -151,23 +216,21 @@ const DEFAULT_SETTINGS = {
         scale: 1.5,
         customized: false,
         sizes: {
-            xs: { value: 4, enabled: false },
-            s: { value: 8, enabled: false },
+            xxs: { value: 4, enabled: false },
+            xs: { value: 7, enabled: false },
+            s: { value: 11, enabled: false },
             m: { value: 16, enabled: false },
             l: { value: 24, enabled: false },
-            xl: { value: 48, enabled: false }
+            xl: { value: 36, enabled: false },
+            xxl: { value: 54, enabled: false }
         }
     },
     borders: {
         defaultSize: 'm',
-        scale: 2,
-        customized: false,
         sizes: {
-            xs: { value: 1, enabled: false },
             s: { value: 1, enabled: false },
-            m: { value: 1, enabled: false },
-            l: { value: 2, enabled: false },
-            xl: { value: 4, enabled: false }
+            m: { value: 2, enabled: false },
+            l: { value: 4, enabled: false }
         }
     },
     shadows: {
@@ -186,6 +249,10 @@ const DEFAULT_SETTINGS = {
             xl: { value: 24, enabled: false },
             full: { value: 9999, enabled: false }
         }
+    },
+    colorways: {
+        default: { background: 'var(--neutral-ultra-light)', foreground: 'var(--neutral-dark)' },
+        primary: { background: 'var(--primary)', foreground: '#ffffff' }
     }
 };
 
@@ -349,12 +416,22 @@ function registerStylePanel() {
         updateHeadingSize(level, value) {
             this.settings.typography.headings.sizes[level].value = parseInt(value);
             this.settings.typography.headings.customized = true;
-            this.applyCSSVariable(`--heading-${level}`, `${value}px`);
+            const num = level.replace('h', '');
+            this.applyCSSVariable(`--heading-${num}`, `${value}px`);
             this.markChanged();
         },
 
         updateHeadingProperty(level, prop, value) {
             this.settings.typography.headings.sizes[level][prop] = parseFloat(value);
+            const num = level.replace('h', '');
+            const data = this.settings.typography.headings.sizes[level];
+            if (prop === 'lineHeight') {
+                this.applyCSSVariable(`--heading-${num}-line-height`, data.lineHeight);
+            } else if (prop === 'letterSpacing') {
+                this.applyCSSVariable(`--heading-${num}-letter-spacing`, `${data.letterSpacing}em`);
+            } else if (prop === 'weight') {
+                this.applyCSSVariable(`--heading-${num}-weight`, data.weight);
+            }
             this.markChanged();
         },
 
@@ -431,13 +508,26 @@ function registerStylePanel() {
 
         updateColorBase(colorName, value) {
             this.settings.colors[colorName].base = value;
-            this.applyCSSVariable(`--color-${colorName}`, value);
+            this.applyCSSVariable(`--${colorName}`, value);
+            this.applyColorHues(colorName, value);
             this.markChanged();
         },
 
         toggleColor(colorName, enabled) {
             this.settings.colors[colorName].enabled = enabled;
             this.markChanged();
+        },
+
+        applyColorHues(name, hex) {
+            const hsl = hexToHsl(hex);
+            const hues = {
+                'ultra-light': 90, 'light': 80, 'semi-light': 65,
+                'semi-dark': 35, 'dark': 20, 'ultra-dark': 10
+            };
+            for (const [hueName, lightness] of Object.entries(hues)) {
+                const shade = hslToHex(hsl.h, hsl.s, lightness);
+                this.applyCSSVariable(`--${name}-${hueName}`, shade);
+            }
         },
 
         // ============================================
@@ -476,11 +566,13 @@ function registerStylePanel() {
             const { baseSize, scale } = this.settings.spacing;
             const sizes = this.settings.spacing.sizes;
 
+            sizes.xxs.value = Math.round(baseSize / Math.pow(scale, 3));
             sizes.xs.value = Math.round(baseSize / Math.pow(scale, 2));
             sizes.s.value = Math.round(baseSize / scale);
             sizes.m.value = Math.round(baseSize);
             sizes.l.value = Math.round(baseSize * scale);
             sizes.xl.value = Math.round(baseSize * Math.pow(scale, 2));
+            sizes.xxl.value = Math.round(baseSize * Math.pow(scale, 3));
 
             this.settings.spacing.customized = false;
             this.applySpacingSettings();
@@ -492,7 +584,6 @@ function registerStylePanel() {
 
         updateBorderSize(size, value) {
             this.settings.borders.sizes[size].value = parseInt(value);
-            this.settings.borders.customized = true;
             this.applyCSSVariable(`--border-${size}`, `${value}px`);
             this.markChanged();
         },
@@ -539,6 +630,37 @@ function registerStylePanel() {
         },
 
         // ============================================
+        // Colorway Methods
+        // ============================================
+
+        updateColorway(wayName, prop, value) {
+            this.settings.colorways[wayName][prop] = value;
+            this.applyColorwaySettings();
+            this.markChanged();
+        },
+
+        applyColorwaySettings() {
+            let styleEl = document.getElementById('anti-colorway-overrides');
+            if (!styleEl) {
+                styleEl = document.createElement('style');
+                styleEl.id = 'anti-colorway-overrides';
+                document.head.appendChild(styleEl);
+            }
+
+            let css = '';
+            for (const [wayName, data] of Object.entries(this.settings.colorways)) {
+                const selector = wayName === 'default' ? ':root' : `[data-colorway="${wayName}"]`;
+                const lines = [];
+                if (data.background) lines.push(`    --colorway-background: ${data.background};`);
+                if (data.foreground) lines.push(`    --colorway-foreground: ${data.foreground};`);
+                if (lines.length) {
+                    css += `${selector} {\n${lines.join('\n')}\n}\n`;
+                }
+            }
+            styleEl.textContent = css;
+        },
+
+        // ============================================
         // Change Tracking
         // ============================================
 
@@ -562,11 +684,16 @@ function registerStylePanel() {
             this.applyBorderSettings();
             this.applyShadowSettings();
             this.applyRadiusSettings();
+            this.applyColorwaySettings();
         },
 
         applyTypographySettings() {
             Object.entries(this.settings.typography.headings.sizes).forEach(([level, data]) => {
-                this.applyCSSVariable(`--heading-${level}`, `${data.value}px`);
+                const num = level.replace('h', '');
+                this.applyCSSVariable(`--heading-${num}`, `${data.value}px`);
+                this.applyCSSVariable(`--heading-${num}-line-height`, data.lineHeight);
+                this.applyCSSVariable(`--heading-${num}-letter-spacing`, `${data.letterSpacing}em`);
+                this.applyCSSVariable(`--heading-${num}-weight`, data.weight);
             });
             Object.entries(this.settings.typography.text.sizes).forEach(([size, data]) => {
                 this.applyCSSVariable(`--text-${size}`, `${data.value}px`);
@@ -575,7 +702,8 @@ function registerStylePanel() {
 
         applyColorSettings() {
             Object.entries(this.settings.colors).forEach(([name, data]) => {
-                this.applyCSSVariable(`--color-${name}`, data.base);
+                this.applyCSSVariable(`--${name}`, data.base);
+                this.applyColorHues(name, data.base);
             });
         },
 
@@ -649,6 +777,9 @@ function registerStylePanel() {
                 this.applyBorderSettings();
                 this.applyShadowSettings();
                 this.applyRadiusSettings();
+            } else if (category === 'colorways') {
+                this.settings.colorways = JSON.parse(JSON.stringify(DEFAULT_SETTINGS.colorways));
+                this.applyColorwaySettings();
             }
             this.markChanged();
             this.showNotification(`${category} reset`, 'success');
@@ -658,18 +789,104 @@ function registerStylePanel() {
         // Export Methods
         // ============================================
 
-        exportSettings() {
-            const json = JSON.stringify(this.settings, null, 2);
+        settingsToTokenJSON() {
+            const s = this.settings;
+
+            // Build color sections from flat panel format
+            const brandColors = {};
+            const neutralColors = {};
+            for (const [name, data] of Object.entries(s.colors)) {
+                const entry = { enabled: data.enabled };
+                if (data.base) entry.color = data.base;
+                if (name === 'neutral') {
+                    neutralColors[name] = entry;
+                } else {
+                    brandColors[name] = entry;
+                }
+            }
+
+            // Strip customized flags (panel-only UI state)
+            const stripCustomized = (obj) => {
+                const copy = JSON.parse(JSON.stringify(obj));
+                delete copy.customized;
+                return copy;
+            };
+
+            return {
+                typography: {
+                    headings: stripCustomized(s.typography.headings),
+                    text: stripCustomized(s.typography.text)
+                },
+                color: {
+                    sections: {
+                        brand: { label: 'Brand Colors', colors: brandColors },
+                        neutral: { label: 'Neutral Colors', colors: neutralColors },
+                        // Preserve semantic colors (not editable in panel)
+                        semantic: {
+                            label: 'Semantic Colors',
+                            colors: {
+                                info: { enabled: false, color: '#0ea5e9' },
+                                success: { enabled: false, color: '#22c55e' },
+                                warning: { enabled: false, color: '#eab308' },
+                                error: { enabled: false, color: '#ef4444' }
+                            }
+                        }
+                    },
+                    hues: {
+                        'ultra-light': { value: 90, enabled: true },
+                        'light': { value: 80, enabled: true },
+                        'semi-light': { value: 65, enabled: true },
+                        'semi-dark': { value: 35, enabled: true },
+                        'dark': { value: 20, enabled: true },
+                        'ultra-dark': { value: 10, enabled: true }
+                    },
+                    colorways: s.colorways
+                },
+                spacing: stripCustomized(s.spacing),
+                borders: s.borders,
+                shadows: s.shadows,
+                radius: s.radius
+            };
+        },
+
+        async exportCSS() {
+            const tokenJSON = this.settingsToTokenJSON();
+            try {
+                const res = await fetch('shared/export.php?format=css', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(tokenJSON)
+                });
+                if (!res.ok) throw new Error('Export failed');
+                const css = await res.text();
+                const blob = new Blob([css], { type: 'text/css' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'tokens.css';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                this.showNotification('CSS exported', 'success');
+            } catch (e) {
+                this.showNotification('Export failed', 'error');
+            }
+        },
+
+        exportJSON() {
+            const tokenJSON = this.settingsToTokenJSON();
+            const json = JSON.stringify(tokenJSON, null, 2);
             const blob = new Blob([json], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'style-settings.json';
+            a.download = 'tokens.json';
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
-            this.showNotification('Settings exported', 'success');
+            this.showNotification('JSON exported', 'success');
         },
 
         // ============================================
@@ -733,11 +950,19 @@ const getPanelHTML = () => `
                 <div class="anti-nav__footer">
                     <button
                         class="anti-nav__item"
-                        @click="exportSettings"
-                        title="Export"
+                        @click="exportCSS"
+                        title="Export CSS"
                     >
                         <span class="anti-nav__item-icon">${ICONS.export}</span>
-                        <span class="anti-nav__item-label">Export</span>
+                        <span class="anti-nav__item-label">Export CSS</span>
+                    </button>
+                    <button
+                        class="anti-nav__item"
+                        @click="exportJSON"
+                        title="Export JSON"
+                    >
+                        <span class="anti-nav__item-icon">${ICONS.export}</span>
+                        <span class="anti-nav__item-label">Export JSON</span>
                     </button>
                 </div>
             </nav>
@@ -1068,7 +1293,7 @@ const getPanelHTML = () => `
                             <button @click="recalculateSpacing()">Recalculate from scale</button>
                         </div>
 
-                        <template x-for="size in ['xs', 's', 'm', 'l', 'xl']" :key="size">
+                        <template x-for="size in ['xxs', 'xs', 's', 'm', 'l', 'xl', 'xxl']" :key="size">
                             <div class="anti-size-section" :class="{ 'is-enabled': settings.spacing.sizes[size].enabled }">
                                 <div class="anti-size-header">
                                     <span class="anti-size-name" x-text="size.toUpperCase()"></span>
@@ -1105,7 +1330,7 @@ const getPanelHTML = () => `
                     <div x-show="activeCategory === 'borders' && activeTab === 'borders'" class="anti-settings__panel">
                         <div class="anti-section-title">Border Widths</div>
 
-                        <template x-for="size in ['xs', 's', 'm', 'l', 'xl']" :key="size">
+                        <template x-for="size in ['s', 'm', 'l']" :key="size">
                             <div class="anti-size-section" :class="{ 'is-enabled': settings.borders.sizes[size].enabled }">
                                 <div class="anti-size-header">
                                     <span class="anti-size-name" x-text="size.toUpperCase()"></span>
@@ -1258,6 +1483,43 @@ const getPanelHTML = () => `
                                 </div>
                             </div>
                         </template>
+                    </div>
+
+                    <!-- ==================== COLORWAYS ==================== -->
+                    <div x-show="activeCategory === 'colorways'" class="anti-settings__panel">
+                        <template x-for="(way, wayName) in settings.colorways" :key="wayName">
+                            <div class="anti-size-section is-enabled">
+                                <div class="anti-size-header">
+                                    <span class="anti-size-name" x-text="wayName.charAt(0).toUpperCase() + wayName.slice(1)"></span>
+                                </div>
+                                <div class="anti-size-controls">
+                                    <div class="anti-control-group">
+                                        <label class="anti-control-label" style="font-size: 11px;">Background</label>
+                                        <input type="color"
+                                            :value="way.background.startsWith('#') ? way.background : '#ffffff'"
+                                            @input="updateColorway(wayName, 'background', $event.target.value)"
+                                            style="width: 100%; height: 32px; border: 1px solid var(--anti-control-border); border-radius: 6px; cursor: pointer;">
+                                        <input type="text" class="anti-input" style="margin-top: 4px; font-size: 11px;"
+                                            :value="way.background"
+                                            @change="updateColorway(wayName, 'background', $event.target.value)">
+                                    </div>
+                                    <div class="anti-control-group" style="margin-top: 8px;">
+                                        <label class="anti-control-label" style="font-size: 11px;">Foreground</label>
+                                        <input type="color"
+                                            :value="way.foreground.startsWith('#') ? way.foreground : '#000000'"
+                                            @input="updateColorway(wayName, 'foreground', $event.target.value)"
+                                            style="width: 100%; height: 32px; border: 1px solid var(--anti-control-border); border-radius: 6px; cursor: pointer;">
+                                        <input type="text" class="anti-input" style="margin-top: 4px; font-size: 11px;"
+                                            :value="way.foreground"
+                                            @change="updateColorway(wayName, 'foreground', $event.target.value)">
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+
+                        <button class="anti-btn anti-btn--reset" @click="resetCategory('colorways')">
+                            Reset Colorways
+                        </button>
                     </div>
 
                 </main>
