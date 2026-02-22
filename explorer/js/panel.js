@@ -322,12 +322,28 @@ function registerStylePanel() {
                 try {
                     const saved = JSON.parse(savedSettings);
                     this.settings = this.deepMerge(this.settings, saved);
+                    // Prune stale keys that no longer exist in defaults
+                    for (const section of ['borders.sizes', 'spacing.sizes']) {
+                        const [a, b] = section.split('.');
+                        const defaults = DEFAULT_SETTINGS[a][b];
+                        const current = this.settings[a]?.[b];
+                        if (current && defaults) {
+                            for (const key of Object.keys(current)) {
+                                if (!(key in defaults)) delete current[key];
+                            }
+                        }
+                    }
                 } catch (e) {
                     console.error('Failed to parse saved settings');
                 }
             }
 
             this.originalSettings = JSON.parse(JSON.stringify(this.settings));
+
+            // Listen for external open request
+            window.addEventListener('antiOpenPanel', () => {
+                if (!this.isOpen) this.togglePanel();
+            });
 
             // Restore panel state
             const savedIsOpen = localStorage.getItem('antiExplorer_isOpen');
@@ -358,8 +374,7 @@ function registerStylePanel() {
         togglePanel() {
             this.isOpen = !this.isOpen;
             localStorage.setItem('antiExplorer_isOpen', this.isOpen.toString());
-            // Dispatch event for explorer layout to respond
-            window.dispatchEvent(new CustomEvent('antiPanelToggled', { detail: { isOpen: this.isOpen, settingsOpen: this.settingsOpen } }));
+            window.dispatchEvent(new CustomEvent('anti-panel-toggled', { detail: { isOpen: this.isOpen, settingsOpen: this.settingsOpen } }));
         },
 
         openCategory(categoryId) {

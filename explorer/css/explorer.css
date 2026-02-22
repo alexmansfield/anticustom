@@ -83,3 +83,31 @@ body {
 .anti-explorer__content {
     /* Sections handle their own padding/spacing */
 }
+
+/* ==========================================================================
+   Panel Toggle Button (visible when panel is hidden)
+   ========================================================================== */
+
+.anti-panel-toggle {
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    z-index: 200;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--anti-bg, #ffffff);
+    border: 1px solid var(--anti-border, #e5e7eb);
+    border-radius: 8px;
+    cursor: pointer;
+    color: var(--anti-text-secondary, #6b7280);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.15s ease;
+}
+
+.anti-panel-toggle:hover {
+    color: var(--anti-text, #1f2937);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}

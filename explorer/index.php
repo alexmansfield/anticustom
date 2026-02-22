@@ -49,6 +49,23 @@ $navItems = [
     <!-- Panel JS injects sidebar into body -->
     <script src="js/panel.js"></script>
 
+    <!-- Panel toggle (visible when panel is hidden) -->
+    <button
+        x-data="{ hidden: localStorage.getItem('antiExplorer_isOpen') === 'false' }"
+        x-show="hidden"
+        x-transition
+        @anti-panel-toggled.window="hidden = !$event.detail.isOpen"
+        @click="window.dispatchEvent(new CustomEvent('antiOpenPanel')); hidden = false"
+        class="anti-panel-toggle"
+        aria-label="Open style panel"
+        title="Open style panel"
+    >
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+            <path d="M9 3v18"></path>
+        </svg>
+    </button>
+
     <!-- Main content area -->
     <main class="anti-explorer" id="explorer-main">
         <nav class="anti-explorer__nav">
