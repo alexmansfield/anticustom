@@ -1,0 +1,93 @@
+/**
+ * Stats Component - Base Styles
+ *
+ * Structure for displaying numerical metrics.
+ *
+ * @package Anticustom
+ */
+
+.anti-stats {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: var(--anti-stats-padding, 1.5rem);
+}
+
+/* ==========================================================================
+   Value Display
+   ========================================================================== */
+
+.anti-stats__value {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    margin-bottom: var(--space-s, 0.5rem);
+    line-height: 1;
+}
+
+.anti-stats__prefix,
+.anti-stats__suffix {
+    font-size: var(--heading-2, 2.25rem);
+    font-weight: 700;
+}
+
+.anti-stats__number {
+    font-size: var(--heading-1, 3rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+/* ==========================================================================
+   Label & Description
+   ========================================================================== */
+
+.anti-stats__label {
+    font-size: var(--text-m, 1rem);
+    font-weight: 600;
+    margin-bottom: var(--space-xs, 0.25rem);
+}
+
+.anti-stats__description {
+    margin: var(--space-s, 0.5rem) 0 0 0;
+    font-size: var(--text-s, 0.875rem);
+    line-height: 1.5;
+}
+
+/* ==========================================================================
+   Stats Grid Container
+   ========================================================================== */
+
+.anti-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--space-l, 1.5rem);
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+@media (min-width: 900px) {
+    .anti-stats-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+
+@media (max-width: 768px) {
+    .anti-stats {
+        padding: var(--space-m, 1rem);
+    }
+
+    .anti-stats__number {
+        font-size: var(--heading-2, 2.25rem);
+    }
+
+    .anti-stats__prefix,
+    .anti-stats__suffix {
+        font-size: var(--heading-3, 1.75rem);
+    }
+}

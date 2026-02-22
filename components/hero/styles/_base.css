@@ -1,0 +1,125 @@
+/**
+ * Hero Component - Base Styles
+ *
+ * Structure for prominent header sections.
+ *
+ * @package Anticustom
+ */
+
+.anti-hero {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    overflow: hidden;
+}
+
+.anti-hero__container {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--space-l, 1.5rem);
+}
+
+.anti-hero__content {
+    max-width: 800px;
+}
+
+/* ==========================================================================
+   Child Intro Spacing
+   ========================================================================== */
+
+.anti-hero__content .anti-intro {
+    margin-bottom: var(--space-l, 1.5rem);
+}
+
+/* ==========================================================================
+   Actions (Buttons)
+   ========================================================================== */
+
+.anti-hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-m, 1rem);
+}
+
+/* ==========================================================================
+   Alignment
+   ========================================================================== */
+
+.anti-hero--left .anti-hero__content {
+    margin-left: 0;
+    margin-right: auto;
+    text-align: left;
+}
+
+.anti-hero--left .anti-hero__actions {
+    justify-content: flex-start;
+}
+
+.anti-hero--center .anti-hero__content {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+.anti-hero--center .anti-hero__actions {
+    justify-content: center;
+}
+
+.anti-hero--right .anti-hero__content {
+    margin-left: auto;
+    margin-right: 0;
+    text-align: right;
+}
+
+.anti-hero--right .anti-hero__actions {
+    justify-content: flex-end;
+}
+
+/* ==========================================================================
+   Sizes
+   ========================================================================== */
+
+.anti-hero--s {
+    min-height: 300px;
+    padding: var(--space-xl, 3rem) 0;
+}
+
+.anti-hero--m {
+    min-height: 450px;
+    padding: var(--space-xl, 3rem) 0;
+}
+
+.anti-hero--l {
+    min-height: 600px;
+    padding: calc(var(--space-xl, 3rem) * 2) 0;
+}
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+
+@media (max-width: 768px) {
+    .anti-hero--l {
+        min-height: 450px;
+        padding: var(--space-xl, 3rem) 0;
+    }
+
+    .anti-hero__actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .anti-hero--center .anti-hero__actions,
+    .anti-hero--left .anti-hero__actions,
+    .anti-hero--right .anti-hero__actions {
+        align-items: center;
+    }
+}

@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "name": "faq",
+  "label": "FAQ",
+  "version": "1.0.0",
+  "category": "content",
+  "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"12\" r=\"10\"></circle><path d=\"M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3\"></path><line x1=\"12\" y1=\"17\" x2=\"12.01\" y2=\"17\"></line></svg>",
+  "fields": [
+    {
+      "name": "question",
+      "type": "text",
+      "label": "Question",
+      "description": "The FAQ question",
+      "default": "What is your return policy?",
+      "required": true,
+      "validation": {
+        "minLength": 5,
+        "maxLength": 200
+      }
+    },
+    {
+      "name": "answer",
+      "type": "textarea",
+      "label": "Answer",
+      "description": "The answer to the question",
+      "default": "We offer a 30-day money-back guarantee on all purchases. If you're not satisfied, contact our support team for a full refund.",
+      "required": true,
+      "validation": {
+        "minLength": 10,
+        "maxLength": 2000
+      }
+    },
+    {
+      "name": "initially_open",
+      "type": "select",
+      "label": "Initially Open",
+      "description": "Whether the answer is visible by default",
+      "options": [
+        {
+          "value": "false",
+          "label": "Collapsed"
+        },
+        {
+          "value": "true",
+          "label": "Expanded"
+        }
+      ],
+      "default": "false"
+    },
+    {
+      "name": "variant",
+      "type": "select",
+      "label": "Variant",
+      "description": "Visual style of the FAQ item",
+      "options": [
+        {
+          "value": "default",
+          "label": "Default",
+          "description": "Clean with subtle separator"
+        },
+        {
+          "value": "bordered",
+          "label": "Bordered",
+          "description": "With visible border"
+        },
+        {
+          "value": "filled",
+          "label": "Filled",
+          "description": "With background color"
+        }
+      ],
+      "default": "default"
+    }
+  ],
+  "tokens_used": [
+    "color-primary",
+    "color-neutral-100",
+    "color-neutral-200",
+    "color-neutral-500",
+    "color-neutral-700",
+    "color-neutral-900",
+    "space-s",
+    "space-m",
+    "space-l",
+    "text-m",
+    "text-l",
+    "radius-m"
+  ]
+}

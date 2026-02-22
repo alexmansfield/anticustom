@@ -1,0 +1,117 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "name": "intro",
+  "label": "Intro",
+  "version": "1.0.0",
+  "category": "content",
+  "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polyline points=\"4 7 4 4 20 4 20 7\"></polyline><line x1=\"9\" y1=\"20\" x2=\"15\" y2=\"20\"></line><line x1=\"12\" y1=\"4\" x2=\"12\" y2=\"20\"></line></svg>",
+  "tabs": [
+    {
+      "id": "content",
+      "label": "Content"
+    },
+    {
+      "id": "settings",
+      "label": "Settings"
+    }
+  ],
+  "fields": [
+    {
+      "name": "eyebrow",
+      "type": "text",
+      "label": "Eyebrow",
+      "description": "Short introductory label above the title",
+      "default": "",
+      "required": false,
+      "tab": "content",
+      "validation": {
+        "maxLength": 100
+      }
+    },
+    {
+      "name": "title",
+      "type": "text",
+      "label": "Title",
+      "description": "Main title text",
+      "default": "",
+      "required": false,
+      "tab": "content",
+      "validation": {
+        "maxLength": 200
+      }
+    },
+    {
+      "name": "subtitle",
+      "type": "textarea",
+      "label": "Subtitle",
+      "description": "Supporting text below the title",
+      "default": "",
+      "required": false,
+      "tab": "content",
+      "validation": {
+        "maxLength": 500
+      }
+    },
+    {
+      "name": "align",
+      "type": "select",
+      "label": "Alignment",
+      "description": "Text alignment",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Inherit"
+        },
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "center",
+      "tab": "settings"
+    },
+    {
+      "name": "size",
+      "type": "select",
+      "label": "Size",
+      "description": "Controls spacing and font sizes",
+      "options": [
+        {
+          "value": "s",
+          "label": "Small"
+        },
+        {
+          "value": "m",
+          "label": "Medium"
+        },
+        {
+          "value": "l",
+          "label": "Large"
+        }
+      ],
+      "default": "m",
+      "tab": "settings"
+    }
+  ],
+  "tokens_used": [
+    "heading-2",
+    "heading-3",
+    "text-m",
+    "text-l",
+    "text-xl",
+    "text-s",
+    "space-xs",
+    "space-s",
+    "space-m",
+    "space-l",
+    "space-xl"
+  ]
+}

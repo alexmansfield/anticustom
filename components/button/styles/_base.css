@@ -1,0 +1,76 @@
+/**
+ * Button Component - Base Styles
+ *
+ * Structure and behavior only. Requires a style file (e.g., default.css).
+ *
+ * @package Anticustom
+ */
+
+/* ==========================================================================
+   Structure
+   ========================================================================== */
+
+.anti-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--anti-button-gap, 0.5rem);
+    cursor: pointer;
+    font-family: inherit;
+    text-decoration: none;
+    text-align: center;
+    white-space: nowrap;
+    border: none;
+    background: none;
+    transition:
+        background-color 150ms ease,
+        border-color 150ms ease,
+        color 150ms ease,
+        box-shadow 150ms ease,
+        filter 150ms ease,
+        transform 100ms ease;
+}
+
+/* ==========================================================================
+   States
+   ========================================================================== */
+
+.anti-button:focus-visible {
+    outline: 2px solid var(--colorway-background);
+    outline-offset: 2px;
+}
+
+.anti-button:disabled,
+.anti-button[aria-disabled="true"] {
+    cursor: not-allowed;
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+/* ==========================================================================
+   Size Structure
+   ========================================================================== */
+
+.anti-button--s {
+    padding: var(--anti-button-padding-s, 0.25rem 0.75rem);
+    font-size: var(--anti-button-font-s, 0.875rem);
+}
+
+.anti-button--m {
+    padding: var(--anti-button-padding-m, 0.5rem 1rem);
+    font-size: var(--anti-button-font-m, 1rem);
+}
+
+.anti-button--l {
+    padding: var(--anti-button-padding-l, 0.75rem 1.5rem);
+    font-size: var(--anti-button-font-l, 1.125rem);
+}
+
+/* ==========================================================================
+   Modifiers
+   ========================================================================== */
+
+.anti-button--full-width {
+    display: flex;
+    width: 100%;
+}

@@ -1,0 +1,180 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "name": "container",
+  "label": "Container",
+  "version": "1.0.0",
+  "category": "layout",
+  "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"3\" width=\"7\" height=\"7\"></rect><rect x=\"14\" y=\"3\" width=\"7\" height=\"7\"></rect><rect x=\"14\" y=\"14\" width=\"7\" height=\"7\"></rect><rect x=\"3\" y=\"14\" width=\"7\" height=\"7\"></rect></svg>",
+  "children": {
+    "allowed": []
+  },
+  "fields": [
+    {
+      "name": "layout",
+      "type": "select",
+      "label": "Layout Mode",
+      "description": "Grid for column-based layouts, Flex for flow-based layouts",
+      "options": [
+        {
+          "value": "grid",
+          "label": "Grid"
+        },
+        {
+          "value": "flex",
+          "label": "Flex"
+        }
+      ],
+      "default": "grid"
+    },
+    {
+      "name": "columns",
+      "type": "select",
+      "label": "Columns",
+      "description": "Number of equal columns (grid mode only)",
+      "options": [
+        {
+          "value": "1",
+          "label": "1 Column"
+        },
+        {
+          "value": "2",
+          "label": "2 Columns"
+        },
+        {
+          "value": "3",
+          "label": "3 Columns"
+        },
+        {
+          "value": "4",
+          "label": "4 Columns"
+        },
+        {
+          "value": "5",
+          "label": "5 Columns"
+        },
+        {
+          "value": "6",
+          "label": "6 Columns"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ],
+      "default": "3"
+    },
+    {
+      "name": "custom_columns",
+      "type": "text",
+      "label": "Custom Columns",
+      "description": "CSS grid-template-columns value (grid mode, custom only). Example: 1fr 2fr, auto 300px",
+      "default": "",
+      "required": false
+    },
+    {
+      "name": "direction",
+      "type": "select",
+      "label": "Direction",
+      "description": "Flow direction (flex mode only)",
+      "options": [
+        {
+          "value": "row",
+          "label": "Row"
+        },
+        {
+          "value": "column",
+          "label": "Column"
+        }
+      ],
+      "default": "row"
+    },
+    {
+      "name": "wrap",
+      "type": "select",
+      "label": "Wrap",
+      "description": "Whether items wrap to new lines (flex mode only)",
+      "options": [
+        {
+          "value": "wrap",
+          "label": "Wrap"
+        },
+        {
+          "value": "nowrap",
+          "label": "No Wrap"
+        }
+      ],
+      "default": "wrap"
+    },
+    {
+      "name": "gap",
+      "type": "select",
+      "label": "Gap",
+      "description": "Space between child items",
+      "optionsFrom": "spaces",
+      "default": "m"
+    },
+    {
+      "name": "align_items",
+      "type": "select",
+      "label": "Align Items",
+      "description": "Cross-axis alignment of child items",
+      "options": [
+        {
+          "value": "start",
+          "label": "Start"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "stretch",
+          "label": "Stretch"
+        },
+        {
+          "value": "end",
+          "label": "End"
+        }
+      ],
+      "default": "stretch"
+    },
+    {
+      "name": "justify",
+      "type": "select",
+      "label": "Justify Content",
+      "description": "Main-axis distribution (flex mode only)",
+      "options": [
+        {
+          "value": "start",
+          "label": "Start"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "end",
+          "label": "End"
+        },
+        {
+          "value": "between",
+          "label": "Space Between"
+        },
+        {
+          "value": "around",
+          "label": "Space Around"
+        }
+      ],
+      "default": "start"
+    }
+  ],
+  "tokens_used": [
+    "space-xxs",
+    "space-xs",
+    "space-s",
+    "space-m",
+    "space-l",
+    "space-xl",
+    "space-xxl"
+  ]
+}

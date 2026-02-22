@@ -1,0 +1,123 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "name": "testimonial",
+  "label": "Testimonial",
+  "version": "1.0.0",
+  "category": "content",
+  "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z\"></path></svg>",
+  "fields": [
+    {
+      "name": "quote",
+      "type": "textarea",
+      "label": "Quote",
+      "description": "The testimonial text",
+      "default": "This product has completely transformed how we work. Highly recommended!",
+      "required": true,
+      "validation": {
+        "minLength": 10,
+        "maxLength": 500
+      }
+    },
+    {
+      "name": "author_name",
+      "type": "text",
+      "label": "Author Name",
+      "description": "Name of the person giving the testimonial",
+      "default": "Jane Smith",
+      "required": true,
+      "validation": {
+        "minLength": 2,
+        "maxLength": 100
+      }
+    },
+    {
+      "name": "author_role",
+      "type": "text",
+      "label": "Author Role",
+      "description": "Job title, company, or context",
+      "default": "CEO at Company",
+      "required": false,
+      "validation": {
+        "maxLength": 100
+      }
+    },
+    {
+      "name": "avatar",
+      "type": "image",
+      "label": "Avatar",
+      "description": "Photo or logo of the testimonial author",
+      "default": "",
+      "required": false
+    },
+    {
+      "name": "rating",
+      "type": "number",
+      "label": "Rating",
+      "description": "Star rating from 1-5",
+      "default": 5,
+      "required": false,
+      "validation": {
+        "min": 1,
+        "max": 5
+      }
+    },
+    {
+      "name": "show_rating",
+      "type": "select",
+      "label": "Show Rating",
+      "description": "Whether to display star rating",
+      "options": [
+        {
+          "value": "true",
+          "label": "Yes"
+        },
+        {
+          "value": "false",
+          "label": "No"
+        }
+      ],
+      "default": "true"
+    },
+    {
+      "name": "variant",
+      "type": "select",
+      "label": "Variant",
+      "description": "Visual style of the testimonial",
+      "options": [
+        {
+          "value": "default",
+          "label": "Default",
+          "description": "Standard card style"
+        },
+        {
+          "value": "featured",
+          "label": "Featured",
+          "description": "Larger, more prominent"
+        },
+        {
+          "value": "compact",
+          "label": "Compact",
+          "description": "Smaller, inline style"
+        }
+      ],
+      "default": "default"
+    }
+  ],
+  "tokens_used": [
+    "color-primary",
+    "color-neutral-100",
+    "color-neutral-200",
+    "color-neutral-600",
+    "color-neutral-900",
+    "space-s",
+    "space-m",
+    "space-l",
+    "space-xl",
+    "text-s",
+    "text-m",
+    "text-l",
+    "radius-m",
+    "radius-l",
+    "shadow-m"
+  ]
+}

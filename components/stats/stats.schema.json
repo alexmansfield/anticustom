@@ -1,0 +1,130 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "name": "stats",
+  "label": "Stats",
+  "version": "1.0.0",
+  "category": "content",
+  "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><line x1=\"18\" y1=\"20\" x2=\"18\" y2=\"10\"></line><line x1=\"12\" y1=\"20\" x2=\"12\" y2=\"4\"></line><line x1=\"6\" y1=\"20\" x2=\"6\" y2=\"14\"></line></svg>",
+  "tabs": [
+    {
+      "id": "content",
+      "label": "Content"
+    },
+    {
+      "id": "settings",
+      "label": "Settings"
+    }
+  ],
+  "fields": [
+    {
+      "name": "value",
+      "type": "text",
+      "label": "Value",
+      "description": "The main number or metric to display",
+      "default": "500",
+      "required": true,
+      "tab": "content",
+      "validation": {
+        "minLength": 1,
+        "maxLength": 20
+      }
+    },
+    {
+      "name": "label",
+      "type": "text",
+      "label": "Label",
+      "description": "Description of what the number represents",
+      "default": "Happy Customers",
+      "required": true,
+      "tab": "content",
+      "validation": {
+        "minLength": 1,
+        "maxLength": 50
+      }
+    },
+    {
+      "name": "prefix",
+      "type": "text",
+      "label": "Prefix",
+      "description": "Text displayed before the value (e.g., $, #)",
+      "default": "",
+      "required": false,
+      "tab": "content",
+      "validation": {
+        "maxLength": 5
+      }
+    },
+    {
+      "name": "suffix",
+      "type": "text",
+      "label": "Suffix",
+      "description": "Text displayed after the value (e.g., +, %, K, M)",
+      "default": "+",
+      "required": false,
+      "tab": "content",
+      "validation": {
+        "maxLength": 5
+      }
+    },
+    {
+      "name": "description",
+      "type": "text",
+      "label": "Description",
+      "description": "Optional additional context or explanation",
+      "default": "",
+      "required": false,
+      "tab": "content",
+      "validation": {
+        "maxLength": 100
+      }
+    },
+    {
+      "name": "variant",
+      "type": "select",
+      "label": "Variant",
+      "description": "Visual style of the stat",
+      "options": [
+        {
+          "value": "solid",
+          "label": "Solid",
+          "description": "Filled colorway background"
+        },
+        {
+          "value": "outline",
+          "label": "Outline",
+          "description": "White background with colored border"
+        },
+        {
+          "value": "ghost",
+          "label": "Ghost",
+          "description": "Transparent, no border or shadow"
+        }
+      ],
+      "default": "solid",
+      "tab": "settings"
+    },
+    {
+      "name": "colorway",
+      "type": "colorway",
+      "label": "Colorway",
+      "description": "Color scheme for this component",
+      "default": "inherit",
+      "tab": "settings"
+    }
+  ],
+  "tokens_used": [
+    "color-primary",
+    "color-neutral-100",
+    "color-neutral-500",
+    "color-neutral-900",
+    "space-s",
+    "space-m",
+    "space-l",
+    "space-xl",
+    "text-s",
+    "text-m",
+    "heading-1",
+    "radius-l",
+    "shadow-m"
+  ]
+}

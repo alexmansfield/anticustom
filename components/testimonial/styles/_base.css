@@ -1,0 +1,168 @@
+/**
+ * Testimonial Component - Base Styles
+ *
+ * Structure for customer feedback display.
+ *
+ * @package Anticustom
+ */
+
+.anti-testimonial {
+    display: flex;
+    flex-direction: column;
+    padding: var(--anti-testimonial-padding, 1.5rem);
+}
+
+/* ==========================================================================
+   Rating Stars
+   ========================================================================== */
+
+.anti-testimonial__rating {
+    display: flex;
+    gap: var(--space-xs, 0.25rem);
+    margin-bottom: var(--space-m, 1rem);
+}
+
+.anti-testimonial__star {
+    transition: color 200ms ease;
+}
+
+/* ==========================================================================
+   Quote
+   ========================================================================== */
+
+.anti-testimonial__quote {
+    margin: 0 0 var(--space-l, 1.5rem) 0;
+    padding: 0;
+    border: none;
+    flex: 1;
+}
+
+.anti-testimonial__quote p {
+    margin: 0;
+    line-height: 1.6;
+}
+
+.anti-testimonial__quote::before {
+    content: none;
+}
+
+/* ==========================================================================
+   Author Attribution
+   ========================================================================== */
+
+.anti-testimonial__author {
+    display: flex;
+    align-items: center;
+    gap: var(--space-m, 1rem);
+}
+
+.anti-testimonial__avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.anti-testimonial__avatar--placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.anti-testimonial__author-info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs, 0.25rem);
+}
+
+.anti-testimonial__name {
+    font-style: normal;
+}
+
+/* ==========================================================================
+   Variant: Featured
+   ========================================================================== */
+
+.anti-testimonial--featured {
+    padding: var(--space-xl, 3rem);
+    text-align: center;
+}
+
+.anti-testimonial--featured .anti-testimonial__rating {
+    justify-content: center;
+}
+
+.anti-testimonial--featured .anti-testimonial__author {
+    flex-direction: column;
+    text-align: center;
+}
+
+.anti-testimonial--featured .anti-testimonial__avatar {
+    width: 64px;
+    height: 64px;
+}
+
+.anti-testimonial--featured .anti-testimonial__author-info {
+    align-items: center;
+}
+
+/* ==========================================================================
+   Variant: Compact
+   ========================================================================== */
+
+.anti-testimonial--compact {
+    padding: var(--space-m, 1rem);
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: var(--space-m, 1rem);
+}
+
+.anti-testimonial--compact .anti-testimonial__rating {
+    margin-bottom: 0;
+    order: 1;
+}
+
+.anti-testimonial--compact .anti-testimonial__quote {
+    margin-bottom: 0;
+    flex-basis: 100%;
+    order: 2;
+}
+
+.anti-testimonial--compact .anti-testimonial__author {
+    order: 3;
+}
+
+.anti-testimonial--compact .anti-testimonial__avatar {
+    width: 40px;
+    height: 40px;
+}
+
+/* ==========================================================================
+   Testimonial Grid Container
+   ========================================================================== */
+
+.anti-testimonial-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: var(--space-l, 1.5rem);
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+
+@media (max-width: 768px) {
+    .anti-testimonial {
+        padding: var(--space-m, 1rem);
+    }
+
+    .anti-testimonial--featured {
+        padding: var(--space-l, 1.5rem);
+    }
+}

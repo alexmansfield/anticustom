@@ -1,0 +1,55 @@
+/**
+ * Section Component - Base Styles
+ *
+ * Root-level wrapper with configurable padding and gap.
+ *
+ * @package Anticustom
+ */
+
+.anti-section {
+    position: relative;
+    width: 100%;
+    padding-left: var(--space-l, 24px);
+    padding-right: var(--space-l, 24px);
+}
+
+.anti-section__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* ==========================================================================
+   Padding Top
+   ========================================================================== */
+
+.anti-section[data-padding-top="xxs"] { padding-top: var(--space-xxs, 5px); }
+.anti-section[data-padding-top="xs"]  { padding-top: var(--space-xs, 7px); }
+.anti-section[data-padding-top="s"]   { padding-top: var(--space-s, 11px); }
+.anti-section[data-padding-top="m"]   { padding-top: var(--space-m, 16px); }
+.anti-section[data-padding-top="l"]   { padding-top: var(--space-l, 24px); }
+.anti-section[data-padding-top="xl"]  { padding-top: var(--space-xl, 36px); }
+.anti-section[data-padding-top="xxl"] { padding-top: var(--space-xxl, 54px); }
+
+/* ==========================================================================
+   Padding Bottom
+   ========================================================================== */
+
+.anti-section[data-padding-bottom="xxs"] { padding-bottom: var(--space-xxs, 5px); }
+.anti-section[data-padding-bottom="xs"]  { padding-bottom: var(--space-xs, 7px); }
+.anti-section[data-padding-bottom="s"]   { padding-bottom: var(--space-s, 11px); }
+.anti-section[data-padding-bottom="m"]   { padding-bottom: var(--space-m, 16px); }
+.anti-section[data-padding-bottom="l"]   { padding-bottom: var(--space-l, 24px); }
+.anti-section[data-padding-bottom="xl"]  { padding-bottom: var(--space-xl, 36px); }
+.anti-section[data-padding-bottom="xxl"] { padding-bottom: var(--space-xxl, 54px); }
+
+/* ==========================================================================
+   Gap (between children)
+   ========================================================================== */
+
+.anti-section[data-gap="xxs"] .anti-section__inner { display: flex; flex-direction: column; gap: var(--space-xxs, 5px); }
+.anti-section[data-gap="xs"]  .anti-section__inner { display: flex; flex-direction: column; gap: var(--space-xs, 7px); }
+.anti-section[data-gap="s"]   .anti-section__inner { display: flex; flex-direction: column; gap: var(--space-s, 11px); }
+.anti-section[data-gap="m"]   .anti-section__inner { display: flex; flex-direction: column; gap: var(--space-m, 16px); }
+.anti-section[data-gap="l"]   .anti-section__inner { display: flex; flex-direction: column; gap: var(--space-l, 24px); }
+.anti-section[data-gap="xl"]  .anti-section__inner { display: flex; flex-direction: column; gap: var(--space-xl, 36px); }
+.anti-section[data-gap="xxl"] .anti-section__inner { display: flex; flex-direction: column; gap: var(--space-xxl, 54px); }

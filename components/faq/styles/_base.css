@@ -1,0 +1,79 @@
+/**
+ * FAQ Component - Base Styles
+ *
+ * Structure for expandable question/answer accordion.
+ * Uses native HTML details/summary.
+ *
+ * @package Anticustom
+ */
+
+/* ==========================================================================
+   Structure
+   ========================================================================== */
+
+.anti-faq__question {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--anti-faq-gap, 1rem);
+    padding: var(--anti-faq-padding, 1rem 0.5rem);
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+}
+
+.anti-faq__question::-webkit-details-marker {
+    display: none;
+}
+
+.anti-faq__question::marker {
+    display: none;
+    content: '';
+}
+
+.anti-faq__question-text {
+    flex: 1;
+    line-height: 1.4;
+}
+
+.anti-faq__icon {
+    flex-shrink: 0;
+    transition: transform 300ms ease;
+}
+
+.anti-faq[open] .anti-faq__icon {
+    transform: rotate(180deg);
+}
+
+.anti-faq__answer {
+    padding: var(--anti-faq-answer-padding, 0 0.5rem 1.5rem);
+}
+
+.anti-faq__answer p {
+    margin: 0;
+    line-height: 1.7;
+}
+
+/* ==========================================================================
+   FAQ Group Container
+   ========================================================================== */
+
+.anti-faq-group {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+
+@media (max-width: 768px) {
+    .anti-faq__question {
+        padding: var(--anti-faq-padding-mobile, 0.5rem 0);
+    }
+
+    .anti-faq__answer {
+        padding: var(--anti-faq-answer-padding-mobile, 0 0 1rem);
+    }
+}

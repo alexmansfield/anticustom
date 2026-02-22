@@ -1,0 +1,22 @@
+/**
+ * Intro Style: Default
+ *
+ * Clean typography with colorway-aware colors.
+ *
+ * @package Anticustom
+ */
+
+.anti-intro__eyebrow {
+    font-weight: 600;
+    color: var(--colorway-primary-accent, var(--colorway-background));
+}
+
+.anti-intro__title {
+    font-weight: 700;
+    color: var(--colorway-foreground);
+}
+
+.anti-intro__subtitle {
+    color: var(--colorway-foreground);
+    opacity: 0.8;
+}

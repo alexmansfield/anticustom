@@ -1,0 +1,137 @@
+/**
+ * Card Style: Default
+ *
+ * Clean, professional card appearance with subtle shadows and hover effects.
+ *
+ * @package Anticustom
+ */
+
+/* ==========================================================================
+   Configuration
+   ========================================================================== */
+
+.anti-card {
+    --anti-card-padding: var(--space-l, 1.5rem);
+    --anti-card-title-gap: var(--space-s, 0.5rem);
+    --anti-card-title-size: var(--heading-4, 1.25rem);
+    --anti-card-desc-size: var(--text-m, 1rem);
+    --anti-card-icon-size: 48px;
+    --anti-card-icon-gap: var(--space-m, 1rem);
+    --anti-card-link-gap: var(--space-xs, 0.25rem);
+    --anti-card-link-margin: var(--space-m, 1rem);
+    --anti-card-link-size: var(--text-s, 0.875rem);
+    --anti-card-grid-gap: var(--space-l, 1.5rem);
+
+    background-color: #ffffff;
+    border-radius: var(--radius-m, 0.5rem);
+}
+
+/* ==========================================================================
+   Variant: Elevated
+   ========================================================================== */
+
+.anti-card--elevated {
+    box-shadow: var(--shadow-m, 0 4px 6px rgba(0, 0, 0, 0.1));
+}
+
+.anti-card--elevated.anti-card--clickable:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-l, 0 10px 15px rgba(0, 0, 0, 0.1));
+}
+
+/* ==========================================================================
+   Variant: Bordered
+   ========================================================================== */
+
+.anti-card--bordered {
+    border: 1px solid var(--neutral-light, #e2e8f0);
+    box-shadow: none;
+}
+
+.anti-card--bordered.anti-card--clickable:hover {
+    border-color: var(--neutral-medium, #cbd5e1);
+    box-shadow: var(--shadow-m, 0 4px 6px rgba(0, 0, 0, 0.1));
+}
+
+/* ==========================================================================
+   Variant: Flat
+   ========================================================================== */
+
+.anti-card--flat {
+    background-color: var(--neutral-ultra-light, #f8fafc);
+    box-shadow: none;
+}
+
+.anti-card--flat.anti-card--clickable:hover {
+    background-color: var(--neutral-light, #f1f5f9);
+}
+
+/* ==========================================================================
+   Image Aesthetics
+   ========================================================================== */
+
+.anti-card__image {
+    background-color: var(--neutral-ultra-light, #f8fafc);
+}
+
+.anti-card__image img {
+    transition: transform 300ms ease;
+}
+
+.anti-card--clickable:hover .anti-card__image img {
+    transform: scale(1.05);
+}
+
+/* ==========================================================================
+   Typography
+   ========================================================================== */
+
+.anti-card__title {
+    font-weight: 600;
+    color: var(--neutral-dark, #0f172a);
+}
+
+.anti-card__description {
+    color: var(--neutral-semi-dark, #475569);
+}
+
+/* ==========================================================================
+   Icon Aesthetics
+   ========================================================================== */
+
+.anti-card__icon {
+    background-color: var(--colorway-background, #2563eb);
+    color: var(--colorway-foreground, #ffffff);
+    border-radius: var(--radius-m, 0.5rem);
+}
+
+/* ==========================================================================
+   Link Aesthetics
+   ========================================================================== */
+
+.anti-card__link {
+    color: var(--colorway-background, #2563eb);
+    transition: gap 200ms ease;
+}
+
+.anti-card--clickable:hover .anti-card__link {
+    gap: var(--space-s, 0.5rem);
+}
+
+.anti-card__arrow {
+    transition: transform 200ms ease;
+}
+
+.anti-card--clickable:hover .anti-card__arrow {
+    transform: translateX(2px);
+}
+
+/* ==========================================================================
+   Responsive Aesthetics
+   ========================================================================== */
+
+@media (max-width: 768px) {
+    .anti-card__content {
+        padding: var(--space-m, 1rem);
+    }
+}

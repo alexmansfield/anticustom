@@ -1,0 +1,100 @@
+/**
+ * Intro Component - Base Styles
+ *
+ * Structure for introductory text blocks with eyebrow, title, subtitle.
+ *
+ * @package Anticustom
+ */
+
+.anti-intro {
+    display: flex;
+    flex-direction: column;
+}
+
+/* ==========================================================================
+   Alignment
+   ========================================================================== */
+
+.anti-intro[data-align="left"]   { text-align: left; }
+.anti-intro[data-align="center"] { text-align: center; }
+.anti-intro[data-align="right"]  { text-align: right; }
+
+/* ==========================================================================
+   Elements
+   ========================================================================== */
+
+.anti-intro__eyebrow {
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.anti-intro__title {
+    margin: 0;
+    line-height: 1.2;
+}
+
+.anti-intro__subtitle {
+    margin: 0;
+    line-height: 1.6;
+}
+
+/* ==========================================================================
+   Size: Small
+   ========================================================================== */
+
+.anti-intro[data-size="s"] {
+    gap: var(--space-xs, 0.25rem);
+}
+
+.anti-intro[data-size="s"] .anti-intro__eyebrow {
+    font-size: var(--text-xs, 0.75rem);
+}
+
+.anti-intro[data-size="s"] .anti-intro__title {
+    font-size: var(--heading-3, 1.5rem);
+}
+
+.anti-intro[data-size="s"] .anti-intro__subtitle {
+    font-size: var(--text-s, 0.875rem);
+}
+
+/* ==========================================================================
+   Size: Medium
+   ========================================================================== */
+
+.anti-intro[data-size="m"] {
+    gap: var(--space-s, 0.5rem);
+}
+
+.anti-intro[data-size="m"] .anti-intro__eyebrow {
+    font-size: var(--text-s, 0.875rem);
+}
+
+.anti-intro[data-size="m"] .anti-intro__title {
+    font-size: var(--heading-2, 2rem);
+}
+
+.anti-intro[data-size="m"] .anti-intro__subtitle {
+    font-size: var(--text-l, 1.125rem);
+}
+
+/* ==========================================================================
+   Size: Large
+   ========================================================================== */
+
+.anti-intro[data-size="l"] {
+    gap: var(--space-m, 1rem);
+}
+
+.anti-intro[data-size="l"] .anti-intro__eyebrow {
+    font-size: var(--text-m, 1rem);
+}
+
+.anti-intro[data-size="l"] .anti-intro__title {
+    font-size: var(--heading-1, 3rem);
+}
+
+.anti-intro[data-size="l"] .anti-intro__subtitle {
+    font-size: var(--text-xl, 1.25rem);
+}

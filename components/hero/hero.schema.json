@@ -1,0 +1,148 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "name": "hero",
+  "label": "Hero",
+  "version": "2.0.0",
+  "category": "layout",
+  "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"2\" y=\"4\" width=\"20\" height=\"16\" rx=\"2\"></rect><line x1=\"6\" y1=\"10\" x2=\"18\" y2=\"10\"></line><line x1=\"8\" y1=\"14\" x2=\"16\" y2=\"14\"></line></svg>",
+  "tabs": [
+    {
+      "id": "content",
+      "label": "Content"
+    },
+    {
+      "id": "settings",
+      "label": "Settings"
+    }
+  ],
+  "children": {
+    "allowed": [
+      "intro",
+      "button"
+    ],
+    "slots": [
+      {
+        "name": "intro",
+        "label": "Intro",
+        "type": "intro",
+        "fixed": true,
+        "defaults": {
+          "title": "Welcome to Our Site",
+          "eyebrow": "",
+          "subtitle": "",
+          "align": "inherit",
+          "size": "l"
+        }
+      },
+      {
+        "name": "primary_cta",
+        "label": "Primary Button",
+        "type": "button",
+        "fixed": true,
+        "defaults": {
+          "text": "Get Started",
+          "url": "#",
+          "variant": "solid",
+          "colorway": "primary"
+        }
+      },
+      {
+        "name": "secondary_cta",
+        "label": "Secondary Button",
+        "type": "button",
+        "fixed": true,
+        "defaults": {
+          "text": "",
+          "url": "",
+          "variant": "outline",
+          "colorway": "primary"
+        }
+      }
+    ]
+  },
+  "fields": [
+    {
+      "name": "alignment",
+      "type": "select",
+      "label": "Text Alignment",
+      "description": "How content is aligned within the hero",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "center",
+      "tab": "settings"
+    },
+    {
+      "name": "size",
+      "type": "select",
+      "label": "Hero Size",
+      "description": "Vertical size of the hero section",
+      "options": [
+        {
+          "value": "sm",
+          "label": "Small",
+          "description": "Compact hero"
+        },
+        {
+          "value": "md",
+          "label": "Medium",
+          "description": "Standard size"
+        },
+        {
+          "value": "lg",
+          "label": "Large",
+          "description": "Full-impact hero"
+        }
+      ],
+      "default": "lg",
+      "tab": "settings"
+    },
+    {
+      "name": "background_image",
+      "type": "image",
+      "label": "Background Image",
+      "description": "Optional background image URL",
+      "default": "",
+      "required": false,
+      "tab": "settings"
+    },
+    {
+      "name": "colorway",
+      "type": "colorway",
+      "label": "Colorway",
+      "description": "Color scheme for this section",
+      "default": "inherit",
+      "tab": "settings"
+    }
+  ],
+  "tokens_used": [
+    "color-primary",
+    "color-secondary",
+    "color-neutral-900",
+    "color-neutral-600",
+    "space-xs",
+    "space-s",
+    "space-m",
+    "space-l",
+    "space-xl",
+    "text-s",
+    "text-m",
+    "text-l",
+    "text-xl",
+    "heading-1",
+    "heading-2",
+    "radius-m",
+    "shadow-l"
+  ]
+}

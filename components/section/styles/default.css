@@ -1,0 +1,12 @@
+/**
+ * Section Style: Default
+ *
+ * Applies colorway background and foreground colors.
+ *
+ * @package Anticustom
+ */
+
+.anti-section {
+    background-color: var(--colorway-background);
+    color: var(--colorway-foreground);
+}

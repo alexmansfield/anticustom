@@ -1,0 +1,70 @@
+/**
+ * Stats Style: Default
+ *
+ * Stats with colorway-aware styling and variants.
+ *
+ * @package Anticustom
+ */
+
+.anti-stats {
+    --anti-stats-padding: var(--space-l, 1.5rem);
+    border: 2px solid transparent;
+    border-radius: var(--radius-m, 0.25rem);
+}
+
+/* ==========================================================================
+   Colors
+   ========================================================================== */
+
+.anti-stats__prefix,
+.anti-stats__suffix {
+    color: var(--colorway-background, var(--primary, #2563eb));
+}
+
+.anti-stats__number {
+    color: var(--neutral-dark, #0f172a);
+}
+
+.anti-stats__label {
+    color: var(--neutral-semi-dark, #374151);
+}
+
+.anti-stats__description {
+    color: var(--neutral-semi-light, #6b7280);
+}
+
+/* ==========================================================================
+   Variant: Solid
+   ========================================================================== */
+
+.anti-stats--solid {
+    background-color: var(--colorway-background, var(--primary, #2563eb));
+    box-shadow: var(--shadow-m, 0 4px 6px rgba(0,0,0,0.1));
+}
+
+.anti-stats--solid .anti-stats__number,
+.anti-stats--solid .anti-stats__prefix,
+.anti-stats--solid .anti-stats__suffix,
+.anti-stats--solid .anti-stats__label,
+.anti-stats--solid .anti-stats__description {
+    color: var(--colorway-foreground, #ffffff);
+}
+
+/* ==========================================================================
+   Variant: Outline
+   ========================================================================== */
+
+.anti-stats--outline {
+    background-color: #ffffff;
+    border-color: var(--colorway-background, var(--primary, #2563eb));
+    box-shadow: var(--shadow-m, 0 4px 6px rgba(0,0,0,0.1));
+}
+
+/* ==========================================================================
+   Variant: Ghost
+   ========================================================================== */
+
+.anti-stats--ghost {
+    background-color: transparent;
+    padding: var(--space-m, 1rem);
+}

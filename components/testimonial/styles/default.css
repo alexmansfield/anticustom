@@ -1,0 +1,79 @@
+/**
+ * Testimonial Style: Default
+ *
+ * Clean testimonial cards with subtle shadows.
+ *
+ * @package Anticustom
+ */
+
+.anti-testimonial {
+    --anti-testimonial-padding: var(--space-l, 1.5rem);
+    background-color: #ffffff;
+    border-radius: var(--radius-l, 0.5rem);
+    box-shadow: var(--shadow-m, 0 4px 6px rgba(0,0,0,0.1));
+}
+
+/* ==========================================================================
+   Rating Stars
+   ========================================================================== */
+
+.anti-testimonial__star {
+    color: var(--neutral-light, #d1d5db);
+}
+
+.anti-testimonial__star--filled {
+    color: #fbbf24;
+}
+
+/* ==========================================================================
+   Quote
+   ========================================================================== */
+
+.anti-testimonial__quote p {
+    font-size: var(--text-l, 1.125rem);
+    color: var(--neutral-semi-dark, #374151);
+    font-style: italic;
+}
+
+.anti-testimonial--featured .anti-testimonial__quote p {
+    font-size: var(--text-xl, 1.5rem);
+}
+
+.anti-testimonial--compact .anti-testimonial__quote p {
+    font-size: var(--text-m, 1rem);
+}
+
+/* ==========================================================================
+   Author
+   ========================================================================== */
+
+.anti-testimonial__avatar--placeholder {
+    background-color: var(--colorway-background, #2563eb);
+    color: #ffffff;
+    font-size: var(--text-l, 1.125rem);
+}
+
+.anti-testimonial__name {
+    font-size: var(--text-m, 1rem);
+    font-weight: 600;
+    color: var(--neutral-dark, #0f172a);
+}
+
+.anti-testimonial__role {
+    font-size: var(--text-s, 0.875rem);
+    color: var(--neutral-semi-light, #6b7280);
+}
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+
+@media (max-width: 768px) {
+    .anti-testimonial--featured .anti-testimonial__quote p {
+        font-size: var(--text-l, 1.125rem);
+    }
+
+    .anti-testimonial__quote p {
+        font-size: var(--text-m, 1rem);
+    }
+}

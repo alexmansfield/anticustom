@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "name": "section",
+  "label": "Section",
+  "version": "1.0.0",
+  "category": "layout",
+  "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"2\"></rect><line x1=\"3\" y1=\"9\" x2=\"21\" y2=\"9\"></line><line x1=\"3\" y1=\"15\" x2=\"21\" y2=\"15\"></line></svg>",
+  "children": {
+    "allowed": []
+  },
+  "fields": [
+    {
+      "name": "colorway",
+      "type": "colorway",
+      "label": "Colorway",
+      "description": "Color scheme for this section and its children",
+      "default": "default"
+    },
+    {
+      "name": "padding_top",
+      "type": "buttongroup",
+      "label": "Padding Top",
+      "description": "Space above section content",
+      "optionsFrom": "spaces",
+      "default": "xxl"
+    },
+    {
+      "name": "padding_bottom",
+      "type": "buttongroup",
+      "label": "Padding Bottom",
+      "description": "Space below section content",
+      "optionsFrom": "spaces",
+      "default": "xxl"
+    },
+    {
+      "name": "gap",
+      "type": "buttongroup",
+      "label": "Gap",
+      "description": "Space between child components",
+      "optionsFrom": "spaces",
+      "default": "l"
+    }
+  ],
+  "tokens_used": [
+    "space-xxs",
+    "space-xs",
+    "space-s",
+    "space-m",
+    "space-l",
+    "space-xl",
+    "space-xxl"
+  ]
+}

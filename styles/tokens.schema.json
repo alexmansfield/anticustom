@@ -1,0 +1,394 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "name": "style-panel",
+  "label": "Style Editor Panel",
+  "version": "1.0.0",
+  "description": "Design token editor for typography, colors, spacing, borders, and effects",
+  "icons": {
+    "typography": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polyline points=\"4 7 4 4 20 4 20 7\"></polyline><line x1=\"9\" y1=\"20\" x2=\"15\" y2=\"20\"></line><line x1=\"12\" y1=\"4\" x2=\"12\" y2=\"20\"></line></svg>",
+    "colors": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"13.5\" cy=\"6.5\" r=\"2.5\"></circle><circle cx=\"17.5\" cy=\"10.5\" r=\"2.5\"></circle><circle cx=\"8.5\" cy=\"7.5\" r=\"2.5\"></circle><circle cx=\"6.5\" cy=\"12.5\" r=\"2.5\"></circle><path d=\"M12 22C6.5 22 2 17.5 2 12S6.5 2 12 2s10 4.5 10 10c0 2.5-2 4.5-4.5 4.5h-2c-.8 0-1.5.7-1.5 1.5 0 .4.2.8.4 1.1.3.3.4.6.4 1 0 .8-.7 1.4-1.5 1.4-.4-.1-.7-.1-.8-.1z\"></path></svg>",
+    "spacing": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z\"></path><polyline points=\"3.29 7 12 12 20.71 7\"></polyline><line x1=\"12\" y1=\"22\" x2=\"12\" y2=\"12\"></line></svg>",
+    "borders": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"2\" ry=\"2\"></rect><line x1=\"3\" y1=\"9\" x2=\"21\" y2=\"9\"></line><line x1=\"9\" y1=\"21\" x2=\"9\" y2=\"9\"></line></svg>",
+    "effects": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 3l1.912 5.813a2 2 0 0 0 1.275 1.275L21 12l-5.813 1.912a2 2 0 0 0-1.275 1.275L12 21l-1.912-5.813a2 2 0 0 0-1.275-1.275L3 12l5.813-1.912a2 2 0 0 0 1.275-1.275L12 3z\"></path></svg>"
+  },
+  "panels": [
+    {
+      "id": "typography",
+      "label": "Typography",
+      "icon": "typography",
+      "tabs": [
+        {
+          "id": "headings",
+          "label": "Headings",
+          "settingsKey": "typography.headings",
+          "sections": [
+            {
+              "id": "defaults",
+              "label": "Default Styles",
+              "fields": [
+                {
+                  "id": "baseSize",
+                  "label": "Font Size",
+                  "type": "range",
+                  "settingsKey": "typography.headings.baseSize",
+                  "min": 12,
+                  "max": 24,
+                  "step": 1,
+                  "unit": "px"
+                },
+                {
+                  "id": "scale",
+                  "label": "Type Scale",
+                  "type": "range",
+                  "settingsKey": "typography.headings.scale",
+                  "min": 1,
+                  "max": 2,
+                  "step": 0.001,
+                  "presets": "typeScales"
+                }
+              ]
+            },
+            {
+              "id": "overrides",
+              "label": "Overrides",
+              "settingsKey": "typography.headings.sizes",
+              "sizesArray": "headingLevels",
+              "cssPrefix": "heading",
+              "unit": "px",
+              "fields": [
+                "value",
+                "enabled",
+                "lineHeight",
+                "letterSpacing",
+                "weight"
+              ],
+              "range": {
+                "min": 12,
+                "max": 128,
+                "step": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "text",
+          "label": "Text",
+          "settingsKey": "typography.text",
+          "sections": [
+            {
+              "id": "defaults",
+              "label": "Default Styles",
+              "fields": [
+                {
+                  "id": "baseSize",
+                  "label": "Font Size",
+                  "type": "range",
+                  "settingsKey": "typography.text.baseSize",
+                  "min": 12,
+                  "max": 24,
+                  "step": 1,
+                  "unit": "px"
+                },
+                {
+                  "id": "scale",
+                  "label": "Type Scale",
+                  "type": "range",
+                  "settingsKey": "typography.text.scale",
+                  "min": 1,
+                  "max": 2,
+                  "step": 0.001,
+                  "presets": "typeScales"
+                }
+              ]
+            },
+            {
+              "id": "overrides",
+              "label": "Overrides",
+              "settingsKey": "typography.text.sizes",
+              "sizesArray": "textSizes",
+              "cssPrefix": "text",
+              "unit": "px",
+              "fields": [
+                "value",
+                "enabled"
+              ],
+              "range": {
+                "min": 10,
+                "max": 48,
+                "step": 1
+              }
+            }
+          ]
+        }
+      ],
+      "resetButton": {
+        "label": "Reset Typography",
+        "sections": [
+          "typography"
+        ]
+      }
+    },
+    {
+      "id": "colors",
+      "label": "Colors",
+      "icon": "colors",
+      "tabs": [
+        {
+          "id": "palette",
+          "label": "Palette",
+          "settingsKey": "color.sections",
+          "dataStructure": "nested",
+          "sections": [
+            {
+              "id": "brand",
+              "label": "Brand Colors",
+              "settingsKey": "color.sections.brand.colors",
+              "colors": [
+                "primary",
+                "secondary",
+                "tertiary",
+                "base"
+              ]
+            },
+            {
+              "id": "neutral",
+              "label": "Neutral Colors",
+              "settingsKey": "color.sections.neutral.colors",
+              "colors": [
+                "neutral"
+              ]
+            },
+            {
+              "id": "semantic",
+              "label": "Semantic Colors",
+              "settingsKey": "color.sections.semantic.colors",
+              "colors": [
+                "info",
+                "success",
+                "warning",
+                "error"
+              ]
+            }
+          ],
+          "hues": {
+            "settingsKey": "color.hues",
+            "shades": [
+              "ultra-light",
+              "light",
+              "semi-light",
+              "semi-dark",
+              "dark",
+              "ultra-dark"
+            ]
+          }
+        },
+        {
+          "id": "colorways",
+          "label": "Colorways",
+          "settingsKey": "color.colorways",
+          "description": "Define color schemes that can be applied to sections",
+          "properties": [
+            {
+              "id": "background",
+              "label": "Background"
+            },
+            {
+              "id": "foreground",
+              "label": "Foreground"
+            }
+          ],
+          "dynamicProperties": {
+            "source": "color.sections",
+            "filter": "enabled",
+            "colors": [
+              "base",
+              "primary",
+              "secondary",
+              "tertiary"
+            ],
+            "suffix": "-accent"
+          }
+        }
+      ],
+      "resetButton": {
+        "label": "Reset Colors",
+        "sections": [
+          "colors"
+        ]
+      }
+    },
+    {
+      "id": "spacing",
+      "label": "Spacing",
+      "icon": "spacing",
+      "sections": [
+        {
+          "id": "defaults",
+          "label": "Default Styles",
+          "fields": [
+            {
+              "id": "baseSize",
+              "label": "Base Size",
+              "type": "range",
+              "settingsKey": "spacing.baseSize",
+              "min": 4,
+              "max": 32,
+              "step": 1,
+              "unit": "px"
+            },
+            {
+              "id": "scale",
+              "label": "Scale",
+              "type": "range",
+              "settingsKey": "spacing.scale",
+              "min": 1,
+              "max": 3,
+              "step": 0.01,
+              "presets": "spacingScales"
+            }
+          ]
+        },
+        {
+          "id": "overrides",
+          "label": "Overrides",
+          "settingsKey": "spacing.sizes",
+          "cssPrefix": "space",
+          "unit": "px",
+          "fields": [
+            "value",
+            "enabled"
+          ],
+          "range": {
+            "min": 0,
+            "max": 128,
+            "step": 1
+          }
+        }
+      ],
+      "resetButton": {
+        "label": "Reset Spacing",
+        "sections": [
+          "spacing"
+        ]
+      }
+    },
+    {
+      "id": "borders",
+      "label": "Borders",
+      "icon": "borders",
+      "tabs": [
+        {
+          "id": "borders",
+          "label": "Borders",
+          "settingsKey": "borders.sizes",
+          "cssPrefix": "border",
+          "unit": "px",
+          "fields": [
+            "value",
+            "enabled"
+          ]
+        },
+        {
+          "id": "shadows",
+          "label": "Shadows",
+          "settingsKey": "shadows",
+          "cssPrefix": "shadow",
+          "unit": null,
+          "fields": [
+            "x",
+            "y",
+            "blur",
+            "spread",
+            "opacity",
+            "enabled"
+          ],
+          "composite": true
+        },
+        {
+          "id": "radius",
+          "label": "Radius",
+          "settingsKey": "radius.sizes",
+          "cssPrefix": "radius",
+          "unit": "px",
+          "fields": [
+            "value",
+            "enabled"
+          ]
+        }
+      ],
+      "resetButton": {
+        "label": "Reset Borders",
+        "sections": [
+          "borders",
+          "shadows",
+          "radius"
+        ]
+      }
+    }
+  ],
+  "presets": {
+    "typeScales": [
+      {
+        "value": 1.067,
+        "label": "Minor Second (1.067)"
+      },
+      {
+        "value": 1.125,
+        "label": "Major Second (1.125)"
+      },
+      {
+        "value": 1.2,
+        "label": "Minor Third (1.2)"
+      },
+      {
+        "value": 1.25,
+        "label": "Major Third (1.25)"
+      },
+      {
+        "value": 1.333,
+        "label": "Perfect Fourth (1.333)"
+      },
+      {
+        "value": 1.414,
+        "label": "Augmented Fourth (1.414)"
+      },
+      {
+        "value": 1.5,
+        "label": "Perfect Fifth (1.5)"
+      },
+      {
+        "value": 1.618,
+        "label": "Golden Ratio (1.618)"
+      }
+    ],
+    "spacingScales": [
+      {
+        "value": 1.25,
+        "label": "Minor (1.25)"
+      },
+      {
+        "value": 1.5,
+        "label": "Standard (1.5)"
+      },
+      {
+        "value": 1.618,
+        "label": "Golden Ratio (1.618)"
+      },
+      {
+        "value": 2,
+        "label": "Double (2)"
+      }
+    ],
+    "fontWeights": [
+      100,
+      200,
+      300,
+      400,
+      500,
+      600,
+      700,
+      800,
+      900
+    ]
+  }
+}

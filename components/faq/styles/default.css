@@ -1,0 +1,137 @@
+/**
+ * FAQ Style: Default
+ *
+ * Clean accordion with subtle borders and hover effects.
+ *
+ * @package Anticustom
+ */
+
+/* ==========================================================================
+   Configuration
+   ========================================================================== */
+
+.anti-faq {
+    --anti-faq-gap: var(--space-m, 1rem);
+    --anti-faq-padding: var(--space-m, 1rem) var(--space-s, 0.5rem);
+    --anti-faq-answer-padding: 0 var(--space-s, 0.5rem) var(--space-l, 1.5rem);
+    --anti-faq-padding-mobile: var(--space-s, 0.5rem) 0;
+    --anti-faq-answer-padding-mobile: 0 0 var(--space-m, 1rem);
+
+    border-bottom: 1px solid var(--neutral-light, #e2e8f0);
+}
+
+.anti-faq:first-child {
+    border-top: 1px solid var(--neutral-light, #e2e8f0);
+}
+
+/* ==========================================================================
+   Question Styling
+   ========================================================================== */
+
+.anti-faq__question {
+    transition: color 200ms ease;
+}
+
+.anti-faq__question:hover {
+    color: var(--colorway-background, #2563eb);
+}
+
+.anti-faq__question:focus {
+    outline: none;
+}
+
+.anti-faq__question:focus-visible {
+    outline: 2px solid var(--colorway-background, #2563eb);
+    outline-offset: 2px;
+    border-radius: var(--radius-s, 0.125rem);
+}
+
+.anti-faq__question-text {
+    font-size: var(--text-l, 1.125rem);
+    font-weight: 600;
+    color: var(--neutral-dark, #0f172a);
+}
+
+.anti-faq__question:hover .anti-faq__question-text {
+    color: var(--colorway-background, #2563eb);
+}
+
+/* ==========================================================================
+   Icon Styling
+   ========================================================================== */
+
+.anti-faq__icon {
+    color: var(--neutral-semi-light, #6b7280);
+    transition: transform 300ms ease, color 200ms ease;
+}
+
+.anti-faq__question:hover .anti-faq__icon {
+    color: var(--colorway-background, #2563eb);
+}
+
+/* ==========================================================================
+   Answer Styling
+   ========================================================================== */
+
+.anti-faq__answer {
+    animation: anti-faq-expand 300ms ease;
+}
+
+@keyframes anti-faq-expand {
+    from { transform: translateY(-8px); }
+    to { transform: translateY(0); }
+}
+
+.anti-faq__answer p {
+    font-size: var(--text-m, 1rem);
+    color: var(--neutral-semi-dark, #475569);
+}
+
+/* ==========================================================================
+   Variant: Bordered
+   ========================================================================== */
+
+.anti-faq--bordered {
+    border: 1px solid var(--neutral-light, #e2e8f0);
+    border-radius: var(--radius-m, 0.25rem);
+    margin-bottom: var(--space-m, 1rem);
+}
+
+.anti-faq--bordered:first-child {
+    border-top: 1px solid var(--neutral-light, #e2e8f0);
+}
+
+.anti-faq--bordered .anti-faq__question {
+    padding: var(--space-m, 1rem);
+}
+
+.anti-faq--bordered .anti-faq__answer {
+    padding: 0 var(--space-m, 1rem) var(--space-m, 1rem);
+}
+
+/* ==========================================================================
+   Variant: Filled
+   ========================================================================== */
+
+.anti-faq--filled {
+    background-color: var(--neutral-ultra-light, #f8fafc);
+    border: none;
+    border-radius: var(--radius-m, 0.25rem);
+    margin-bottom: var(--space-m, 1rem);
+}
+
+.anti-faq--filled:first-child {
+    border-top: none;
+}
+
+.anti-faq--filled .anti-faq__question {
+    padding: var(--space-m, 1rem);
+}
+
+.anti-faq--filled .anti-faq__answer {
+    padding: 0 var(--space-m, 1rem) var(--space-m, 1rem);
+}
+
+.anti-faq--filled[open] {
+    background-color: var(--neutral-light, #f1f5f9);
+}

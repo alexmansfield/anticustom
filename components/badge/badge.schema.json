@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "name": "badge",
+  "label": "Badge",
+  "version": "1.0.0",
+  "category": "data-display",
+  "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"7\" width=\"18\" height=\"10\" rx=\"5\"></rect></svg>",
+  "tabs": [
+    {
+      "id": "content",
+      "label": "Content"
+    },
+    {
+      "id": "settings",
+      "label": "Settings"
+    }
+  ],
+  "fields": [
+    {
+      "name": "text",
+      "type": "text",
+      "label": "Text",
+      "description": "The text displayed in the badge",
+      "required": true,
+      "tab": "content",
+      "validation": {
+        "maxLength": 30
+      }
+    },
+    {
+      "name": "variant",
+      "type": "select",
+      "label": "Variant",
+      "description": "Semantic color variant",
+      "tab": "settings",
+      "options": [
+        {
+          "value": "neutral",
+          "label": "Neutral",
+          "description": "Gray, for default/inactive states"
+        },
+        {
+          "value": "success",
+          "label": "Success",
+          "description": "Green, for positive/active states"
+        },
+        {
+          "value": "warning",
+          "label": "Warning",
+          "description": "Yellow/amber, for caution states"
+        },
+        {
+          "value": "danger",
+          "label": "Danger",
+          "description": "Red, for error/destructive states"
+        },
+        {
+          "value": "info",
+          "label": "Info",
+          "description": "Blue, for informational states"
+        }
+      ],
+      "default": "neutral"
+    },
+    {
+      "name": "size",
+      "type": "select",
+      "label": "Size",
+      "description": "Badge size",
+      "options": [
+        {
+          "value": "s",
+          "label": "Small"
+        },
+        {
+          "value": "m",
+          "label": "Medium"
+        }
+      ],
+      "default": "m",
+      "tab": "settings"
+    },
+    {
+      "name": "class",
+      "type": "text",
+      "label": "Custom Class",
+      "description": "Additional CSS class(es) to apply. Use for custom styling beyond variants.",
+      "default": "",
+      "tab": "settings"
+    }
+  ],
+  "tokens_used": [
+    "colorway-background",
+    "colorway-foreground",
+    "spacing-1",
+    "spacing-2",
+    "typography-font-size-xs",
+    "typography-font-size-sm",
+    "typography-font-weight-medium",
+    "radius-full"
+  ]
+}

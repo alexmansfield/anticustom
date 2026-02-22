@@ -1,0 +1,153 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "name": "button",
+  "label": "Button",
+  "version": "1.0.0",
+  "category": "interactive",
+  "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"8\" width=\"18\" height=\"8\" rx=\"4\"></rect><line x1=\"8\" y1=\"12\" x2=\"16\" y2=\"12\"></line></svg>",
+  "tabs": [
+    {
+      "id": "content",
+      "label": "Content"
+    },
+    {
+      "id": "settings",
+      "label": "Settings"
+    }
+  ],
+  "fields": [
+    {
+      "name": "text",
+      "type": "text",
+      "label": "Button Text",
+      "description": "The text displayed on the button",
+      "default": "Click me",
+      "required": true,
+      "tab": "content",
+      "validation": {
+        "minLength": 1,
+        "maxLength": 50
+      }
+    },
+    {
+      "name": "url",
+      "type": "url",
+      "label": "Link URL",
+      "description": "Optional destination URL. Leave empty for a non-link button.",
+      "default": "",
+      "required": false,
+      "tab": "content"
+    },
+    {
+      "name": "type",
+      "type": "select",
+      "label": "Button Type",
+      "description": "HTML button type attribute. Only applies when no URL is set.",
+      "options": [
+        {
+          "value": "button",
+          "label": "Button"
+        },
+        {
+          "value": "submit",
+          "label": "Submit"
+        },
+        {
+          "value": "reset",
+          "label": "Reset"
+        }
+      ],
+      "default": "button",
+      "required": false,
+      "tab": "settings"
+    },
+    {
+      "name": "variant",
+      "type": "select",
+      "label": "Variant",
+      "description": "Visual style of the button",
+      "tab": "settings",
+      "options": [
+        {
+          "value": "solid",
+          "label": "Solid",
+          "description": "Filled button style"
+        },
+        {
+          "value": "outline",
+          "label": "Outline",
+          "description": "Subtle, bordered style"
+        },
+        {
+          "value": "ghost",
+          "label": "Ghost",
+          "description": "Minimal, no border style"
+        }
+      ],
+      "default": "solid"
+    },
+    {
+      "name": "size",
+      "type": "select",
+      "label": "Size",
+      "description": "Button size",
+      "options": [
+        {
+          "value": "s",
+          "label": "Small"
+        },
+        {
+          "value": "m",
+          "label": "Medium"
+        },
+        {
+          "value": "l",
+          "label": "Large"
+        }
+      ],
+      "default": "m",
+      "tab": "settings"
+    },
+    {
+      "name": "full_width",
+      "type": "boolean",
+      "label": "Full Width",
+      "description": "Make button span full container width",
+      "default": false,
+      "tab": "settings"
+    },
+    {
+      "name": "colorway",
+      "type": "colorway",
+      "label": "Colorway",
+      "description": "Color scheme for this button",
+      "default": "inherit",
+      "tab": "settings"
+    },
+    {
+      "name": "class",
+      "type": "text",
+      "label": "Custom Class",
+      "description": "Additional CSS class(es) to apply. Use for custom styling beyond variants.",
+      "default": "",
+      "tab": "settings"
+    }
+  ],
+  "tokens_used": [
+    "colorway-background",
+    "colorway-foreground",
+    "spacing-1",
+    "spacing-2",
+    "spacing-3",
+    "spacing-4",
+    "spacing-6",
+    "typography-font-size-sm",
+    "typography-font-size-base",
+    "typography-font-size-lg",
+    "typography-font-weight-medium",
+    "radius-sm",
+    "radius-md",
+    "radius-lg",
+    "effects-transition-fast"
+  ]
+}

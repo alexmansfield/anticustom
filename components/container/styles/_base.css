@@ -1,0 +1,87 @@
+/**
+ * Container Component - Base Styles
+ *
+ * Structural layout using CSS Grid or Flexbox.
+ * Purely structural - no visual styling.
+ *
+ * @package Anticustom
+ */
+
+/* ==========================================================================
+   Grid Layout
+   ========================================================================== */
+
+.anti-container[data-layout="grid"] {
+    display: grid;
+}
+
+.anti-container[data-columns="1"] { grid-template-columns: 1fr; }
+.anti-container[data-columns="2"] { grid-template-columns: repeat(2, 1fr); }
+.anti-container[data-columns="3"] { grid-template-columns: repeat(3, 1fr); }
+.anti-container[data-columns="4"] { grid-template-columns: repeat(4, 1fr); }
+.anti-container[data-columns="5"] { grid-template-columns: repeat(5, 1fr); }
+.anti-container[data-columns="6"] { grid-template-columns: repeat(6, 1fr); }
+
+/* ==========================================================================
+   Flex Layout
+   ========================================================================== */
+
+.anti-container[data-layout="flex"] {
+    display: flex;
+}
+
+.anti-container[data-direction="row"]    { flex-direction: row; }
+.anti-container[data-direction="column"] { flex-direction: column; }
+
+.anti-container[data-wrap="wrap"]   { flex-wrap: wrap; }
+.anti-container[data-wrap="nowrap"] { flex-wrap: nowrap; }
+
+.anti-container[data-justify="start"]   { justify-content: flex-start; }
+.anti-container[data-justify="center"]  { justify-content: center; }
+.anti-container[data-justify="end"]     { justify-content: flex-end; }
+.anti-container[data-justify="between"] { justify-content: space-between; }
+.anti-container[data-justify="around"]  { justify-content: space-around; }
+
+/* ==========================================================================
+   Gap
+   ========================================================================== */
+
+.anti-container[data-gap="xxs"] { gap: var(--space-xxs, 5px); }
+.anti-container[data-gap="xs"]  { gap: var(--space-xs, 7px); }
+.anti-container[data-gap="s"]   { gap: var(--space-s, 11px); }
+.anti-container[data-gap="m"]   { gap: var(--space-m, 16px); }
+.anti-container[data-gap="l"]   { gap: var(--space-l, 24px); }
+.anti-container[data-gap="xl"]  { gap: var(--space-xl, 36px); }
+.anti-container[data-gap="xxl"] { gap: var(--space-xxl, 54px); }
+
+/* ==========================================================================
+   Align Items
+   ========================================================================== */
+
+.anti-container[data-align="start"]   { align-items: flex-start; }
+.anti-container[data-align="center"]  { align-items: center; }
+.anti-container[data-align="stretch"] { align-items: stretch; }
+.anti-container[data-align="end"]     { align-items: flex-end; }
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+
+@media (max-width: 1024px) {
+    .anti-container[data-columns="3"],
+    .anti-container[data-columns="4"],
+    .anti-container[data-columns="5"],
+    .anti-container[data-columns="6"] {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 639px) {
+    .anti-container[data-columns="2"],
+    .anti-container[data-columns="3"],
+    .anti-container[data-columns="4"],
+    .anti-container[data-columns="5"],
+    .anti-container[data-columns="6"] {
+        grid-template-columns: 1fr;
+    }
+}

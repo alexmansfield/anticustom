@@ -1,0 +1,107 @@
+/**
+ * Button Style: Default
+ *
+ * Clean, professional appearance with subtle interactions.
+ * Uses design tokens from the colorway system.
+ *
+ * @package Anticustom
+ */
+
+/* ==========================================================================
+   Configuration
+   ========================================================================== */
+
+.anti-button {
+    --anti-button-gap: var(--space-s, 0.5rem);
+    --anti-button-padding-s: var(--space-xs, 0.25rem) var(--space-m, 1rem);
+    --anti-button-padding-m: var(--space-s, 0.5rem) var(--space-l, 1.5rem);
+    --anti-button-padding-l: var(--space-m, 1rem) var(--space-xl, 3rem);
+    --anti-button-font-s: var(--text-s, 0.875rem);
+    --anti-button-font-m: var(--text-m, 1rem);
+    --anti-button-font-l: var(--text-l, 1.125rem);
+
+    font-weight: 500;
+}
+
+/* ==========================================================================
+   Sizes (aesthetic)
+   ========================================================================== */
+
+.anti-button--s {
+    border-radius: var(--radius-s, 0.125rem);
+}
+
+.anti-button--m {
+    border-radius: var(--radius-m, 0.25rem);
+}
+
+.anti-button--l {
+    border-radius: var(--radius-l, 0.375rem);
+}
+
+/* ==========================================================================
+   Variant: Solid
+   ========================================================================== */
+
+.anti-button--solid {
+    background-color: var(--colorway-background);
+    color: var(--colorway-foreground);
+    border: 2px solid var(--colorway-background);
+}
+
+.anti-button--solid:hover {
+    filter: brightness(0.9);
+}
+
+.anti-button--solid:active {
+    filter: brightness(0.85);
+}
+
+/* ==========================================================================
+   Variant: Outline
+   ========================================================================== */
+
+.anti-button--outline {
+    background-color: transparent;
+    color: var(--colorway-background);
+    border: 2px solid var(--colorway-background);
+}
+
+.anti-button--outline:hover {
+    background-color: var(--colorway-background);
+    color: var(--colorway-foreground);
+}
+
+.anti-button--outline:active {
+    filter: brightness(0.95);
+}
+
+/* ==========================================================================
+   Variant: Ghost
+   ========================================================================== */
+
+.anti-button--ghost {
+    background-color: transparent;
+    color: var(--colorway-background);
+    border: 2px solid transparent;
+}
+
+.anti-button--ghost:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.anti-button--ghost:active {
+    background-color: rgba(0, 0, 0, 0.08);
+}
+
+/* ==========================================================================
+   Modifier: Shadow
+   ========================================================================== */
+
+.anti-button--shadow {
+    box-shadow: var(--shadow-m, 0 4px 6px rgba(0, 0, 0, 0.1));
+}
+
+.anti-button--shadow:hover {
+    box-shadow: var(--shadow-l, 0 8px 15px rgba(0, 0, 0, 0.15));
+}
