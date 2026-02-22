@@ -199,13 +199,16 @@
     }
   ],
   "tokens_used": [
+    "space-s",
+    "space-m",
+    "space-l",
+    "text-s",
+    "text-m",
+    "border-s",
+    "radius-m",
+    "neutral-light",
+    "neutral-ultra-light",
     "colorway-background",
-    "colorway-foreground",
-    "spacing-3",
-    "spacing-4",
-    "typography-font-size-sm",
-    "typography-font-weight-medium",
-    "border-color-subtle",
-    "surface-hover"
+    "colorway-foreground"
   ]
 }

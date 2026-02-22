@@ -134,20 +134,20 @@
     }
   ],
   "tokens_used": [
+    "space-xs",
+    "space-s",
+    "space-m",
+    "space-l",
+    "space-xl",
+    "text-s",
+    "text-m",
+    "text-l",
+    "radius-s",
+    "radius-m",
+    "radius-l",
+    "shadow-m",
+    "shadow-l",
     "colorway-background",
-    "colorway-foreground",
-    "spacing-1",
-    "spacing-2",
-    "spacing-3",
-    "spacing-4",
-    "spacing-6",
-    "typography-font-size-sm",
-    "typography-font-size-base",
-    "typography-font-size-lg",
-    "typography-font-weight-medium",
-    "radius-sm",
-    "radius-md",
-    "radius-lg",
-    "effects-transition-fast"
+    "colorway-foreground"
   ]
 }

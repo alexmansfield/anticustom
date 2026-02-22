@@ -113,10 +113,7 @@
     }
   ],
   "tokens_used": [
-    "color-primary",
-    "color-neutral-100",
-    "color-neutral-500",
-    "color-neutral-900",
+    "space-xs",
     "space-s",
     "space-m",
     "space-l",
@@ -124,7 +121,15 @@
     "text-s",
     "text-m",
     "heading-1",
-    "radius-l",
-    "shadow-m"
+    "heading-2",
+    "heading-3",
+    "radius-m",
+    "shadow-m",
+    "primary",
+    "neutral-dark",
+    "neutral-semi-dark",
+    "neutral-semi-light",
+    "colorway-background",
+    "colorway-foreground"
   ]
 }

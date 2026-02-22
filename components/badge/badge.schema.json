@@ -90,13 +90,12 @@
     }
   ],
   "tokens_used": [
+    "space-xs",
+    "space-s",
+    "text-xs",
+    "text-s",
+    "radius-full",
     "colorway-background",
-    "colorway-foreground",
-    "spacing-1",
-    "spacing-2",
-    "typography-font-size-xs",
-    "typography-font-size-sm",
-    "typography-font-weight-medium",
-    "radius-full"
+    "colorway-foreground"
   ]
 }

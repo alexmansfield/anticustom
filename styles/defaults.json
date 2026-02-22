@@ -135,30 +135,40 @@
     "hues": {
       "ultra-light": {
         "value": 90,
-        "enabled": false
+        "enabled": true
       },
       "light": {
         "value": 80,
-        "enabled": false
+        "enabled": true
       },
       "semi-light": {
         "value": 65,
-        "enabled": false
+        "enabled": true
       },
       "semi-dark": {
         "value": 35,
-        "enabled": false
+        "enabled": true
       },
       "dark": {
         "value": 20,
-        "enabled": false
+        "enabled": true
       },
       "ultra-dark": {
         "value": 10,
-        "enabled": false
+        "enabled": true
       }
     },
-    "colorways": {}
+    "colorways": {
+      "default": {
+        "background": "var(--neutral-ultra-light)",
+        "foreground": "var(--neutral-dark)"
+      },
+      "primary": {
+        "background": "var(--primary)",
+        "foreground": "#ffffff",
+        "primary-accent": "var(--primary-dark)"
+      }
+    }
   },
   "spacing": {
     "baseSize": 16,

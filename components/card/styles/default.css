@@ -49,7 +49,7 @@
 }
 
 .anti-card--bordered.anti-card--clickable:hover {
-    border-color: var(--neutral-medium, #cbd5e1);
+    border-color: var(--neutral-semi-light, #cbd5e1);
     box-shadow: var(--shadow-m, 0 4px 6px rgba(0, 0, 0, 0.1));
 }
 

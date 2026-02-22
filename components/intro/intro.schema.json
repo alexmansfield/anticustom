@@ -102,16 +102,19 @@
     }
   ],
   "tokens_used": [
+    "heading-1",
     "heading-2",
     "heading-3",
+    "text-xs",
+    "text-s",
     "text-m",
     "text-l",
     "text-xl",
-    "text-s",
     "space-xs",
     "space-s",
     "space-m",
-    "space-l",
-    "space-xl"
+    "colorway-background",
+    "colorway-foreground",
+    "colorway-primary-accent"
   ]
 }
