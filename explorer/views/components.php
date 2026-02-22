@@ -173,6 +173,11 @@ window.__antiComponents = <?php echo json_encode($componentData, JSON_UNESCAPED_
               x-text="$store.componentPreview.componentName + ' Preview'"></span>
         <div class="anti-playground__source-toggles">
             <button class="anti-playground__source-toggle"
+                    :class="{ 'is-active': !$store.componentPreview.sourceView }"
+                    @click="$store.componentPreview.sourceView = null">
+                Preview
+            </button>
+            <button class="anti-playground__source-toggle"
                     :class="{ 'is-active': $store.componentPreview.sourceView === 'html' }"
                     @click="$store.componentPreview.toggleSource('html')">
                 HTML
