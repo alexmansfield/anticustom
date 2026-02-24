@@ -226,7 +226,7 @@ Set via `data-colorway` attribute: `<div data-colorway="primary">`.
 2. **Write schema:** `{name}/{name}.schema.json` with fields, tabs, tokens_used
 3. **Write `_base.css`:** Structure only, no colors. Use CSS custom properties for values the theme layer should control.
 4. **Write `default.css`:** Map design tokens to CSS custom properties. Add color, typography, and visual refinements.
-5. **Write `templates/php.php`:** Extract props, build classes with `anti_classes()`, escape all output.
+5. **Write `templates/{name}.php`:** Extract props, build classes with `anti_classes()`, escape all output.
 6. **Verify:** Add test case to `verify.php` and run `php components/verify.php`.
 
 ### Checklist

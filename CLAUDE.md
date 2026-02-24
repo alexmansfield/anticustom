@@ -27,7 +27,7 @@ anticustom/
 │   │   ├── {name}.schema.json
 │   │   ├── styles/_base.css
 │   │   ├── styles/default.css
-│   │   └── templates/php.php
+│   │   └── templates/{name}.php
 ├── forms/                    # Placeholder
 └── explorer/                 # Placeholder
 ```

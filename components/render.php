@@ -82,6 +82,12 @@ if (!function_exists('scan_components')) {
      */
     function scan_components(string $baseDir): array
     {
+        static $cache = [];
+
+        if (isset($cache[$baseDir])) {
+            return $cache[$baseDir];
+        }
+
         $components = [];
         $dirs = glob($baseDir . '/*', GLOB_ONLYDIR);
 
@@ -101,6 +107,7 @@ if (!function_exists('scan_components')) {
             }
         }
 
+        $cache[$baseDir] = $components;
         return $components;
     }
 }
@@ -143,7 +150,8 @@ if (!function_exists('render_component')) {
      */
     function render_component(string $componentDir, array $props): string
     {
-        $templateFile = $componentDir . '/templates/php.php';
+        $componentName = basename($componentDir);
+        $templateFile = $componentDir . '/templates/' . $componentName . '.php';
 
         if (!file_exists($templateFile)) {
             return '<!-- Template not found -->';

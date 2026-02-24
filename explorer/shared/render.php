@@ -33,9 +33,10 @@ if (!is_array($input) || empty($input['component'])) {
 $componentName = $input['component'];
 $props = $input['props'] ?? [];
 
-// Validate component exists
-$known = scan_components(anti_components_dir());
-if (!isset($known[$componentName])) {
+// Validate component exists (check directly instead of scanning all components)
+$componentDir = anti_components_dir() . '/' . $componentName;
+$templateFile = $componentDir . '/templates/' . $componentName . '.php';
+if (!is_dir($componentDir) || !file_exists($templateFile)) {
     http_response_code(404);
     echo 'Unknown component: ' . htmlspecialchars($componentName);
     exit;
