@@ -18,6 +18,19 @@ foreach ($components as $cName => $cData) {
 $allStyleNames = array_keys($allStyleNames);
 sort($allStyleNames);
 
+// Discover available colorway names from token defaults
+$tokensPath = dirname(__DIR__) . '/../styles/defaults.json';
+$tokensData = json_decode(file_get_contents($tokensPath), true);
+$colorwayNames = array_keys($tokensData['color']['colorways'] ?? []);
+
+// Include auto-generated colorways for enabled semantic colors
+$semanticColors = $tokensData['color']['sections']['semantic']['colors'] ?? [];
+foreach ($semanticColors as $semName => $semData) {
+    if (!empty($semData['enabled']) && !in_array($semName, $colorwayNames)) {
+        $colorwayNames[] = $semName;
+    }
+}
+
 // Active style (read from cookie, matches index.php)
 $activeStyle = preg_replace('/[^a-z0-9-]/', '', $_COOKIE['antiExplorer_style'] ?? 'plato') ?: 'plato';
 
@@ -207,6 +220,7 @@ window.__antiInitialPreview = {
 };
 window.__antiStyles = <?php echo json_encode($allStyleNames); ?>;
 window.__antiActiveStyle = <?php echo json_encode($activeStyle); ?>;
+window.__antiColorways = <?php echo json_encode($colorwayNames); ?>;
 </script>
 
 <!-- Preview area: reads from Alpine.store('componentPreview') set by playground.js -->
@@ -239,7 +253,8 @@ window.__antiActiveStyle = <?php echo json_encode($activeStyle); ?>;
     </template>
 
     <template x-if="$store.componentPreview.componentName && !$store.componentPreview.sourceView">
-        <div class="anti-playground__render">
+        <div class="anti-playground__render"
+             :data-colorway="$store.componentPreview.previewColorway || false">
             <div x-show="$store.componentPreview.loading" class="anti-playground__loading"></div>
             <div x-html="$store.componentPreview.html"></div>
         </div>

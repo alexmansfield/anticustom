@@ -116,12 +116,12 @@ html {
     flex-shrink: 0;
 }
 
-/* Style selector dropdown */
-.anti-explorer__style-select {
+/* Nav select dropdowns (shared style for style + colorway selects) */
+.anti-explorer__style-select,
+.anti-explorer__colorway-select {
     flex-shrink: 0;
     height: 30px;
     padding: 0 24px 0 8px;
-    margin-right: 8px;
     font-size: 13px;
     font-family: inherit;
     color: var(--anti-text-secondary, #6b7280);
@@ -135,12 +135,22 @@ html {
     background-position: right 6px center;
 }
 
-.anti-explorer__style-select:hover {
+.anti-explorer__style-select {
+    margin-right: 8px;
+}
+
+.anti-explorer__colorway-select {
+    margin-left: 8px;
+}
+
+.anti-explorer__style-select:hover,
+.anti-explorer__colorway-select:hover {
     color: var(--anti-text, #1f2937);
     border-color: var(--anti-text-secondary, #6b7280);
 }
 
-.anti-explorer__style-select:focus {
+.anti-explorer__style-select:focus,
+.anti-explorer__colorway-select:focus {
     outline: none;
     border-color: var(--anti-accent, #555555);
 }

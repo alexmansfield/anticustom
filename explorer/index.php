@@ -83,6 +83,23 @@ $navItems = [
                 </svg>
             </button>
 
+            <!-- Colorway selector (components view only) -->
+            <?php if ($tool === 'components') : ?>
+            <select
+                class="anti-explorer__colorway-select"
+                x-data="{ colorway: localStorage.getItem('antiExplorer_previewColorway') || '' }"
+                x-model="colorway"
+                @change="window.dispatchEvent(new CustomEvent('antiColorwayChange', { detail: { colorway: colorway } }))"
+                aria-label="Preview colorway"
+                title="Preview colorway"
+            >
+                <option value="">Default</option>
+                <template x-for="c in (window.__antiColorways || []).filter(n => n !== 'default')" :key="c">
+                    <option :value="c" x-text="c.charAt(0).toUpperCase() + c.slice(1)" :selected="c === colorway"></option>
+                </template>
+            </select>
+            <?php endif; ?>
+
             <!-- Center nav links -->
             <div class="anti-explorer__nav-links">
                 <?php foreach ($navItems as $key => $label) : ?>
@@ -103,6 +120,7 @@ $navItems = [
                 aria-label="Design style"
                 title="Switch design style"
             >
+                <option value="none" :selected="style === 'none'">None</option>
                 <template x-for="s in (window.__antiStyles || ['plato'])" :key="s">
                     <option :value="s" x-text="s.charAt(0).toUpperCase() + s.slice(1)" :selected="s === style"></option>
                 </template>

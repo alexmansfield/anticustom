@@ -32,6 +32,7 @@ function registerComponentPanel() {
         componentName: '',
         sourceView: null,   // null = preview, 'html' = HTML source, 'css' = CSS source
         loading: false,
+        previewColorway: localStorage.getItem('antiExplorer_previewColorway') || '',
 
         toggleSource(type) {
             this.sourceView = this.sourceView === type ? null : type;
@@ -94,6 +95,13 @@ function registerComponentPanel() {
             // Listen for style changes from the nav dropdown
             window.addEventListener('antiStyleChange', (e) => {
                 this.switchStyle(e.detail.style);
+            });
+
+            // Listen for colorway changes from the nav dropdown
+            window.addEventListener('antiColorwayChange', (e) => {
+                const store = Alpine.store('componentPreview');
+                store.previewColorway = e.detail.colorway;
+                localStorage.setItem('antiExplorer_previewColorway', e.detail.colorway);
             });
         },
 
