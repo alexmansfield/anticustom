@@ -114,6 +114,7 @@ function registerComponentPanel() {
             this.activeView = 'editor';
             this.settingsOpen = true;
             localStorage.setItem('antiExplorer_selectedComponent', name);
+            document.cookie = `antiExplorer_selectedComponent=${encodeURIComponent(name)};path=/;max-age=31536000`;
 
             const comp = this.components[name];
             if (!comp) return;
@@ -133,6 +134,18 @@ function registerComponentPanel() {
                 delete this.props.children;
             } else {
                 this.childrenJson = '';
+            }
+
+            // Use server-rendered preview if available for this component
+            const initial = window.__antiInitialPreview;
+            if (initial && initial.component === name) {
+                const store = Alpine.store('componentPreview');
+                store.html = initial.html;
+                store.css = initial.css;
+                store.componentName = initial.componentName;
+                store.loading = false;
+                delete window.__antiInitialPreview;
+                return;
             }
 
             this.renderPreview();

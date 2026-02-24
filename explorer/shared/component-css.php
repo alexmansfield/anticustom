@@ -8,8 +8,6 @@
  * Response: CSS text (Content-Type: text/css)
  */
 
-require_once __DIR__ . '/../../components/render.php';
-
 $name = $_GET['name'] ?? '';
 if (!$name) {
     http_response_code(400);
@@ -17,17 +15,15 @@ if (!$name) {
     exit;
 }
 
-$baseDir = __DIR__ . '/../../components';
-$components = scan_components($baseDir);
-
-if (!isset($components[$name])) {
+// Check component directly instead of scanning all components
+$componentDir = __DIR__ . '/../../components/' . $name;
+if (!is_dir($componentDir)) {
     http_response_code(404);
     echo 'Unknown component: ' . htmlspecialchars($name);
     exit;
 }
 
-$comp = $components[$name];
-$stylesDir = $comp['path'] . '/styles';
+$stylesDir = $componentDir . '/styles';
 $css = '';
 
 $baseFile = $stylesDir . '/_base.css';

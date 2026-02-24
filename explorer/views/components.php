@@ -24,7 +24,7 @@ $samples = [
     'card' => [
         'title' => 'Sample Card',
         'description' => 'This card demonstrates the elevated variant with icon, description text, and a call-to-action link.',
-        'icon' => '&#9733;',
+        'icon' => 'A',
         'variant' => 'elevated',
         'link_text' => 'View Details',
         'link_url' => '#',
@@ -159,10 +159,37 @@ uksort($componentData, function ($a, $b) use ($componentData, $categoryOrder) {
     $catB = $categoryOrder[$componentData[$b]['category']] ?? 99;
     return $catA - $catB ?: strcmp($a, $b);
 });
+// Pre-render the initially selected component (read from cookie, fall back to first)
+$preRenderName = $_COOKIE['antiExplorer_selectedComponent'] ?? null;
+if (!$preRenderName || !isset($componentData[$preRenderName])) {
+    $preRenderName = array_key_first($componentData);
+}
+
+$preRenderDefaults = get_default_props($components[$preRenderName]['schema']);
+$preRenderProps = array_merge($preRenderDefaults, $samples[$preRenderName] ?? []);
+
+ob_start();
+anti_component($preRenderName, $preRenderProps);
+$preRenderHtml = ob_get_clean();
+
+$preRenderStylesDir = $components[$preRenderName]['path'] . '/styles';
+$preRenderCss = '';
+if (file_exists($preRenderStylesDir . '/_base.css')) {
+    $preRenderCss .= file_get_contents($preRenderStylesDir . '/_base.css') . "\n";
+}
+if (file_exists($preRenderStylesDir . '/default.css')) {
+    $preRenderCss .= file_get_contents($preRenderStylesDir . '/default.css');
+}
 ?>
 
 <script>
 window.__antiComponents = <?php echo json_encode($componentData, JSON_UNESCAPED_UNICODE); ?>;
+window.__antiInitialPreview = {
+    component: <?php echo json_encode($preRenderName); ?>,
+    componentName: <?php echo json_encode($componentData[$preRenderName]['label']); ?>,
+    html: <?php echo json_encode($preRenderHtml); ?>,
+    css: <?php echo json_encode($preRenderCss); ?>
+};
 </script>
 
 <!-- Preview area: reads from Alpine.store('componentPreview') set by playground.js -->
