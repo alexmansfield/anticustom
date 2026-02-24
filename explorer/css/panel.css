@@ -800,14 +800,14 @@
 
 .anti-panel .anti-notification {
     position: fixed;
-    bottom: 24px;
-    left: calc(var(--anti-nav-collapsed) + var(--anti-settings-width) + 24px);
-    padding: 12px 20px;
-    border-radius: 8px;
-    font-size: 14px;
+    bottom: 16px;
+    left: calc(var(--anti-nav-collapsed) + var(--anti-settings-width) + 16px);
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    line-height: 18px;
     font-weight: 500;
     z-index: 101;
-    animation: anti-slideIn 0.3s ease;
 }
 
 .anti-panel .anti-notification--success {
@@ -820,15 +820,19 @@
     color: #ffffff;
 }
 
-@keyframes anti-slideIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+.anti-notification-enter,
+.anti-notification-leave {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.anti-notification-on {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.anti-notification-off {
+    opacity: 0;
+    transform: translateY(10px);
 }
 
 /* ==========================================================================

@@ -122,7 +122,9 @@ function registerStylePanel() {
         // Data state
         isSaving: false,
         hasChanges: false,
-        notification: null,
+        notificationVisible: false,
+        notificationText: '',
+        notificationType: 'success',
 
         // Colorway picker state
         colorwayDropdownId: null,
@@ -947,8 +949,10 @@ function registerStylePanel() {
         // ============================================
 
         showNotification(message, type = 'success') {
-            this.notification = { message, type };
-            setTimeout(() => { this.notification = null; }, 3000);
+            this.notificationText = message;
+            this.notificationType = type;
+            this.notificationVisible = true;
+            setTimeout(() => { this.notificationVisible = false; }, 3000);
         }
     }));
 }
@@ -1345,11 +1349,16 @@ const getPanelHTML = () => `
 
         <!-- Notification -->
         <div
-            x-show="notification"
-            x-transition
+            x-show="notificationVisible"
+            x-transition:enter="anti-notification-enter"
+            x-transition:enter-start="anti-notification-off"
+            x-transition:enter-end="anti-notification-on"
+            x-transition:leave="anti-notification-leave"
+            x-transition:leave-start="anti-notification-on"
+            x-transition:leave-end="anti-notification-off"
             class="anti-notification"
-            :class="'anti-notification--' + (notification?.type || 'success')"
-            x-text="notification?.message"
+            :class="'anti-notification--' + notificationType"
+            x-text="notificationText"
         ></div>
     </div>
 `;
