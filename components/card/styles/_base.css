@@ -13,10 +13,6 @@
 .anti-card {
     display: flex;
     flex-direction: column;
-    overflow: hidden;
-    transition:
-        transform 200ms ease,
-        box-shadow 200ms ease;
 }
 
 .anti-card--clickable {
