@@ -132,19 +132,29 @@ The generator takes the base color's hue and saturation, then replaces its light
 
 ### Colorways (`--colorway-*`)
 
-Colorways are named color schemes applied via `data-colorway` attributes. Each generates a scoped CSS block:
+Colorways are named color schemes applied via `data-colorway` attributes. Each colorway defines four tokens:
+
+| Token | Role |
+|---|---|
+| `--colorway-base` | Surface/background color |
+| `--colorway-hard-contrast` | Primary text, max contrast against base |
+| `--colorway-soft-contrast` | Secondary text, subheadings, metadata |
+| `--colorway-accent` | Decorative highlights: links, icons, eyebrows |
+
+Each generates a scoped CSS block:
 
 ```css
 [data-colorway="primary"] {
-    --colorway-background: var(--primary);
-    --colorway-foreground: #ffffff;
-    --colorway-primary-accent: var(--primary-dark);
+    --colorway-base: var(--primary);
+    --colorway-hard-contrast: #ffffff;
+    --colorway-soft-contrast: var(--primary-light);
+    --colorway-accent: var(--primary-dark);
 }
 ```
 
-Components use `--colorway-background`, `--colorway-foreground`, and `--colorway-{name}-accent` to adapt to their context.
+Components pick the token that matches their semantic role: surface components use `base`/`hard-contrast`, decorative elements use `accent`, and buttons invert by using `hard-contrast` as their prominent color.
 
-**JSON path:** `color.colorways.{name}.{background,foreground,*-accent}`
+**JSON path:** `color.colorways.{name}.{base,hard-contrast,soft-contrast,accent}`
 
 ### Font Weights
 
@@ -179,8 +189,8 @@ Components reference tokens through CSS custom properties with fallbacks:
     padding: var(--space-m, 1rem);
     font-size: var(--text-s, 0.875rem);
     border-radius: var(--radius-m, 0.5rem);
-    background-color: var(--colorway-background);
-    color: var(--colorway-foreground);
+    background-color: var(--colorway-base);
+    color: var(--colorway-hard-contrast);
 }
 ```
 

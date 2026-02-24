@@ -44,9 +44,9 @@
    ========================================================================== */
 
 .anti-button--solid {
-    background-color: var(--colorway-background);
-    color: var(--colorway-foreground);
-    border: 2px solid var(--colorway-background);
+    background-color: var(--colorway-hard-contrast);
+    color: var(--colorway-base);
+    border: 2px solid var(--colorway-hard-contrast);
 }
 
 .anti-button--solid:hover {
@@ -63,13 +63,13 @@
 
 .anti-button--outline {
     background-color: transparent;
-    color: var(--colorway-background);
-    border: 2px solid var(--colorway-background);
+    color: var(--colorway-hard-contrast);
+    border: 2px solid var(--colorway-hard-contrast);
 }
 
 .anti-button--outline:hover {
-    background-color: var(--colorway-background);
-    color: var(--colorway-foreground);
+    background-color: var(--colorway-hard-contrast);
+    color: var(--colorway-base);
 }
 
 .anti-button--outline:active {
@@ -82,7 +82,7 @@
 
 .anti-button--ghost {
     background-color: transparent;
-    color: var(--colorway-background);
+    color: var(--colorway-hard-contrast);
     border: 2px solid transparent;
 }
 

@@ -147,7 +147,10 @@ const CATEGORIES = [
         id: 'colors',
         label: 'Colors',
         icon: 'colors',
-        tabs: null
+        tabs: [
+            { id: 'palette', label: 'Palette' },
+            { id: 'colorways', label: 'Colorways' }
+        ]
     },
     {
         id: 'spacing',
@@ -165,12 +168,6 @@ const CATEGORIES = [
             { id: 'radius', label: 'Radius' }
         ]
     },
-    {
-        id: 'colorways',
-        label: 'Colorways',
-        icon: 'palette',
-        tabs: null
-    }
 ];
 
 // ============================================
@@ -255,8 +252,8 @@ const DEFAULT_SETTINGS = {
         }
     },
     colorways: {
-        default: { background: 'var(--neutral-ultra-light)', foreground: 'var(--neutral-dark)' },
-        primary: { background: 'var(--primary)', foreground: '#ffffff' }
+        default: { base: 'var(--neutral-ultra-light)', 'hard-contrast': 'var(--neutral-dark)', 'soft-contrast': 'var(--neutral)', accent: 'var(--primary)' },
+        primary: { base: 'var(--primary)', 'hard-contrast': '#ffffff', 'soft-contrast': 'var(--primary-light)', accent: 'var(--primary-dark)' }
     }
 };
 
@@ -673,8 +670,10 @@ function registerStylePanel() {
             for (const [wayName, data] of Object.entries(this.settings.colorways)) {
                 const selector = wayName === 'default' ? ':root' : `[data-colorway="${wayName}"]`;
                 const lines = [];
-                if (data.background) lines.push(`    --colorway-background: ${data.background};`);
-                if (data.foreground) lines.push(`    --colorway-foreground: ${data.foreground};`);
+                const tokens = ['base', 'hard-contrast', 'soft-contrast', 'accent'];
+                for (const token of tokens) {
+                    if (data[token]) lines.push(`    --colorway-${token}: ${data[token]};`);
+                }
                 if (lines.length) {
                     css += `${selector} {\n${lines.join('\n')}\n}\n`;
                 }
@@ -1224,8 +1223,8 @@ const getPanelHTML = () => `
                         </template>
                     </div>
 
-                    <!-- ==================== COLORS ==================== -->
-                    <div x-show="activeCategory === 'colors'" class="anti-settings__panel">
+                    <!-- ==================== COLORS: PALETTE ==================== -->
+                    <div x-show="activeCategory === 'colors' && activeTab === 'palette'" class="anti-settings__panel">
                         <template x-for="(color, name) in settings.colors" :key="name">
                             <div class="anti-size-section" :class="{ 'is-enabled': color.enabled }">
                                 <div class="anti-size-header">
@@ -1504,32 +1503,25 @@ const getPanelHTML = () => `
                         </template>
                     </div>
 
-                    <!-- ==================== COLORWAYS ==================== -->
-                    <div x-show="activeCategory === 'colorways'" class="anti-settings__panel">
+                    <!-- ==================== COLORS: COLORWAYS ==================== -->
+                    <div x-show="activeCategory === 'colors' && activeTab === 'colorways'" class="anti-settings__panel">
                         <template x-for="(way, wayName) in settings.colorways" :key="wayName">
                             <div class="anti-size-section is-enabled">
                                 <div class="anti-size-header">
                                     <span class="anti-size-name" x-text="wayName.charAt(0).toUpperCase() + wayName.slice(1)"></span>
                                 </div>
                                 <div class="anti-size-controls">
-                                    <div class="anti-control-group">
-                                        <label class="anti-control-label" style="font-size: 11px;">Background</label>
-                                        <div class="anti-color-input">
-                                            <span class="anti-color-swatch" :style="'background:' + way.background"></span>
-                                            <input type="text" data-coloris
-                                                :value="way.background"
-                                                @input="updateColorway(wayName, 'background', $event.target.value)">
+                                    <template x-for="token in [{id:'base',label:'Base'},{id:'hard-contrast',label:'Hard Contrast'},{id:'soft-contrast',label:'Soft Contrast'},{id:'accent',label:'Accent'}]" :key="token.id">
+                                        <div class="anti-control-group" style="margin-top: 8px;">
+                                            <label class="anti-control-label" style="font-size: 11px;" x-text="token.label"></label>
+                                            <div class="anti-color-input">
+                                                <span class="anti-color-swatch" :style="'background:' + way[token.id]"></span>
+                                                <input type="text" data-coloris
+                                                    :value="way[token.id]"
+                                                    @input="updateColorway(wayName, token.id, $event.target.value)">
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="anti-control-group" style="margin-top: 8px;">
-                                        <label class="anti-control-label" style="font-size: 11px;">Foreground</label>
-                                        <div class="anti-color-input">
-                                            <span class="anti-color-swatch" :style="'background:' + way.foreground"></span>
-                                            <input type="text" data-coloris
-                                                :value="way.foreground"
-                                                @input="updateColorway(wayName, 'foreground', $event.target.value)">
-                                        </div>
-                                    </div>
+                                    </template>
                                 </div>
                             </div>
                         </template>

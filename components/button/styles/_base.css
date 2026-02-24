@@ -36,7 +36,7 @@
    ========================================================================== */
 
 .anti-button:focus-visible {
-    outline: 2px solid var(--colorway-background);
+    outline: 2px solid var(--colorway-hard-contrast);
     outline-offset: 2px;
 }
 

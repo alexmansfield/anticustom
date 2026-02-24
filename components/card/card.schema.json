@@ -156,7 +156,7 @@
     "neutral-semi-light",
     "neutral-dark",
     "neutral-semi-dark",
-    "colorway-background",
-    "colorway-foreground"
+    "colorway-accent",
+    "colorway-hard-contrast"
   ]
 }

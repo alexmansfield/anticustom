@@ -147,7 +147,7 @@
     "radius-l",
     "shadow-m",
     "shadow-l",
-    "colorway-background",
-    "colorway-foreground"
+    "colorway-base",
+    "colorway-hard-contrast"
   ]
 }

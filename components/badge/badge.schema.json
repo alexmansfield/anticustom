@@ -60,7 +60,7 @@
     "text-xs",
     "text-s",
     "radius-full",
-    "colorway-background",
-    "colorway-foreground"
+    "colorway-base",
+    "colorway-hard-contrast"
   ]
 }

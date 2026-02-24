@@ -8,15 +8,15 @@
 
 .anti-intro__eyebrow {
     font-weight: 600;
-    color: var(--colorway-primary-accent, var(--colorway-background));
+    color: var(--colorway-accent);
 }
 
 .anti-intro__title {
     font-weight: 700;
-    color: var(--colorway-foreground);
+    color: var(--colorway-hard-contrast);
 }
 
 .anti-intro__subtitle {
-    color: var(--colorway-foreground);
+    color: var(--colorway-hard-contrast);
     opacity: 0.8;
 }

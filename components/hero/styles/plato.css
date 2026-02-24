@@ -7,7 +7,7 @@
  */
 
 .anti-hero {
-    background-color: var(--colorway-background, var(--neutral-ultra-light, #f8fafc));
+    background-color: var(--colorway-base, var(--neutral-ultra-light, #f8fafc));
 }
 
 .anti-hero--has-bg {

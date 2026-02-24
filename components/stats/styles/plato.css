@@ -18,7 +18,7 @@
 
 .anti-stats__prefix,
 .anti-stats__suffix {
-    color: var(--colorway-background, var(--primary, #2563eb));
+    color: var(--colorway-accent, var(--primary, #2563eb));
 }
 
 .anti-stats__number {
@@ -38,7 +38,7 @@
    ========================================================================== */
 
 .anti-stats--solid {
-    background-color: var(--colorway-background, var(--primary, #2563eb));
+    background-color: var(--colorway-base, var(--primary, #2563eb));
     box-shadow: var(--shadow-m, 0 4px 6px rgba(0,0,0,0.1));
 }
 
@@ -47,7 +47,7 @@
 .anti-stats--solid .anti-stats__suffix,
 .anti-stats--solid .anti-stats__label,
 .anti-stats--solid .anti-stats__description {
-    color: var(--colorway-foreground, #ffffff);
+    color: var(--colorway-hard-contrast, #ffffff);
 }
 
 /* ==========================================================================
@@ -56,7 +56,7 @@
 
 .anti-stats--outline {
     background-color: #ffffff;
-    border-color: var(--colorway-background, var(--primary, #2563eb));
+    border-color: var(--colorway-accent, var(--primary, #2563eb));
     box-shadow: var(--shadow-m, 0 4px 6px rgba(0,0,0,0.1));
 }
 

@@ -113,8 +113,7 @@
     "space-xs",
     "space-s",
     "space-m",
-    "colorway-background",
-    "colorway-foreground",
-    "colorway-primary-accent"
+    "colorway-accent",
+    "colorway-hard-contrast"
   ]
 }

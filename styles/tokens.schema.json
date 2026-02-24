@@ -189,25 +189,22 @@
           "description": "Define color schemes that can be applied to sections",
           "properties": [
             {
-              "id": "background",
-              "label": "Background"
+              "id": "base",
+              "label": "Base"
             },
             {
-              "id": "foreground",
-              "label": "Foreground"
+              "id": "hard-contrast",
+              "label": "Hard Contrast"
+            },
+            {
+              "id": "soft-contrast",
+              "label": "Soft Contrast"
+            },
+            {
+              "id": "accent",
+              "label": "Accent"
             }
-          ],
-          "dynamicProperties": {
-            "source": "color.sections",
-            "filter": "enabled",
-            "colors": [
-              "base",
-              "primary",
-              "secondary",
-              "tertiary"
-            ],
-            "suffix": "-accent"
-          }
+          ]
         }
       ],
       "resetButton": {

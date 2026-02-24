@@ -25,6 +25,6 @@
    ========================================================================== */
 
 .anti-badge {
-    background-color: var(--colorway-background);
-    color: var(--colorway-foreground);
+    background-color: var(--colorway-base);
+    color: var(--colorway-hard-contrast);
 }

@@ -100,8 +100,8 @@
    ========================================================================== */
 
 .anti-card__icon {
-    background-color: var(--colorway-background, #2563eb);
-    color: var(--colorway-foreground, #ffffff);
+    background-color: var(--colorway-accent, #2563eb);
+    color: var(--colorway-hard-contrast, #ffffff);
     border-radius: var(--radius-m, 0.5rem);
 }
 
@@ -110,7 +110,7 @@
    ========================================================================== */
 
 .anti-card__link {
-    color: var(--colorway-background, #2563eb);
+    color: var(--colorway-accent, #2563eb);
     transition: gap 200ms ease;
 }
 

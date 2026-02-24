@@ -160,13 +160,16 @@
     },
     "colorways": {
       "default": {
-        "background": "var(--neutral-ultra-light)",
-        "foreground": "var(--neutral-dark)"
+        "base": "var(--neutral-ultra-light)",
+        "hard-contrast": "var(--neutral-dark)",
+        "soft-contrast": "var(--neutral)",
+        "accent": "var(--primary)"
       },
       "primary": {
-        "background": "var(--primary)",
-        "foreground": "#ffffff",
-        "primary-accent": "var(--primary-dark)"
+        "base": "var(--primary)",
+        "hard-contrast": "#ffffff",
+        "soft-contrast": "var(--primary-light)",
+        "accent": "var(--primary-dark)"
       }
     }
   },

@@ -315,29 +315,23 @@ $semanticColors = $colorSections['semantic']['colors'] ?? [];
 foreach ($semanticColors as $name => $colorData) {
     if (!empty($colorData['enabled']) && !isset($colorways[$name])) {
         $colorways[$name] = [
-            'background' => "var(--{$name}-ultra-light)",
-            'foreground' => "var(--{$name})",
+            'base' => "var(--{$name}-ultra-light)",
+            'hard-contrast' => "var(--{$name}-dark)",
+            'soft-contrast' => "var(--{$name})",
+            'accent' => "var(--{$name})",
         ];
     }
 }
 
+$colorwayTokens = ['base', 'hard-contrast', 'soft-contrast', 'accent'];
+
 foreach ($colorways as $wayName => $wayData) {
     $lines = [];
-    $bg = $wayData['background'] ?? null;
-    $fg = $wayData['foreground'] ?? null;
 
-    if ($bg !== null) {
-        $lines[] = "    --colorway-background: {$bg};";
-    }
-    if ($fg !== null) {
-        $lines[] = "    --colorway-foreground: {$fg};";
-    }
-
-    // Dynamic accent properties: for each enabled color name, add -accent
-    foreach ($enabledColors as $colorName => $_hex) {
-        $accentKey = "{$colorName}-accent";
-        if (isset($wayData[$accentKey])) {
-            $lines[] = "    --colorway-{$accentKey}: {$wayData[$accentKey]};";
+    foreach ($colorwayTokens as $token) {
+        $val = $wayData[$token] ?? null;
+        if ($val !== null) {
+            $lines[] = "    --colorway-{$token}: {$val};";
         }
     }
 

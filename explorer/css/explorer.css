@@ -16,8 +16,8 @@
 body {
     margin: 0;
     font-family: system-ui, -apple-system, sans-serif;
-    background: var(--colorway-background, #f5f5f5);
-    color: var(--colorway-foreground, #1f2937);
+    background: var(--colorway-base, #f5f5f5);
+    color: var(--colorway-hard-contrast, #1f2937);
 }
 
 /* ==========================================================================

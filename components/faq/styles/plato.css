@@ -33,7 +33,7 @@
 }
 
 .anti-faq__question:hover {
-    color: var(--colorway-background, #2563eb);
+    color: var(--colorway-accent, #2563eb);
 }
 
 .anti-faq__question:focus {
@@ -41,7 +41,7 @@
 }
 
 .anti-faq__question:focus-visible {
-    outline: 2px solid var(--colorway-background, #2563eb);
+    outline: 2px solid var(--colorway-accent, #2563eb);
     outline-offset: 2px;
     border-radius: var(--radius-s, 0.125rem);
 }
@@ -53,7 +53,7 @@
 }
 
 .anti-faq__question:hover .anti-faq__question-text {
-    color: var(--colorway-background, #2563eb);
+    color: var(--colorway-accent, #2563eb);
 }
 
 /* ==========================================================================
@@ -66,7 +66,7 @@
 }
 
 .anti-faq__question:hover .anti-faq__icon {
-    color: var(--colorway-background, #2563eb);
+    color: var(--colorway-accent, #2563eb);
 }
 
 /* ==========================================================================

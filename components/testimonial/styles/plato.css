@@ -48,7 +48,7 @@
    ========================================================================== */
 
 .anti-testimonial__avatar--placeholder {
-    background-color: var(--colorway-background, #2563eb);
+    background-color: var(--colorway-accent, #2563eb);
     color: #ffffff;
     font-size: var(--text-l, 1.125rem);
 }

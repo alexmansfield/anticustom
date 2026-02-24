@@ -483,7 +483,7 @@
     display: flex;
     flex-direction: column;
     min-height: calc(100vh - 48px);
-    background: var(--colorway-background, #f5f5f5);
+    background: var(--colorway-base, #f5f5f5);
 }
 
 .anti-playground__preview-header {

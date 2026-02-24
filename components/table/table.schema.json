@@ -208,7 +208,7 @@
     "radius-m",
     "neutral-light",
     "neutral-ultra-light",
-    "colorway-background",
-    "colorway-foreground"
+    "colorway-base",
+    "colorway-hard-contrast"
   ]
 }

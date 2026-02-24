@@ -129,7 +129,8 @@
     "neutral-dark",
     "neutral-semi-dark",
     "neutral-semi-light",
-    "colorway-background",
-    "colorway-foreground"
+    "colorway-base",
+    "colorway-hard-contrast",
+    "colorway-accent"
   ]
 }

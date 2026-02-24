@@ -35,8 +35,8 @@
    ========================================================================== */
 
 .anti-table__row--selected .anti-table__td {
-    background-color: var(--colorway-background, var(--neutral-ultra-light, #f8fafc));
-    color: var(--colorway-foreground, inherit);
+    background-color: var(--colorway-base, var(--neutral-ultra-light, #f8fafc));
+    color: var(--colorway-hard-contrast, inherit);
 }
 
 /* ==========================================================================
