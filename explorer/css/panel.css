@@ -231,6 +231,23 @@
     padding: 12px 4px;
 }
 
+.anti-panel .anti-nav__item-type {
+    display: none;
+}
+
+.anti-panel.settings-open .anti-nav__item-type {
+    display: block;
+    font-size: 10px;
+    text-transform: uppercase;
+    color: var(--anti-text-secondary);
+    line-height: 1;
+}
+
+.anti-panel.settings-open .anti-nav__footer .anti-nav__item {
+    flex-direction: column;
+    gap: 4px;
+}
+
 /* ==========================================================================
    Settings Panel (Right of Nav)
    ========================================================================== */

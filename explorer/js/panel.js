@@ -970,6 +970,7 @@ const getPanelHTML = () => `
                         title="Export CSS"
                     >
                         <span class="anti-nav__item-icon">${ICONS.export}</span>
+                        <span class="anti-nav__item-type">CSS</span>
                         <span class="anti-nav__item-label">Export CSS</span>
                     </button>
                     <button
@@ -978,6 +979,7 @@ const getPanelHTML = () => `
                         title="Export JSON"
                     >
                         <span class="anti-nav__item-icon">${ICONS.export}</span>
+                        <span class="anti-nav__item-type">JSON</span>
                         <span class="anti-nav__item-label">Export JSON</span>
                     </button>
                 </div>
