@@ -310,6 +310,17 @@ foreach ($enabledColors as $name => $hex) {
 
 $colorways = $tokens['color']['colorways'] ?? [];
 
+// Auto-generate colorways for enabled semantic colors
+$semanticColors = $colorSections['semantic']['colors'] ?? [];
+foreach ($semanticColors as $name => $colorData) {
+    if (!empty($colorData['enabled']) && !isset($colorways[$name])) {
+        $colorways[$name] = [
+            'background' => "var(--{$name}-ultra-light)",
+            'foreground' => "var(--{$name})",
+        ];
+    }
+}
+
 foreach ($colorways as $wayName => $wayData) {
     $lines = [];
     $bg = $wayData['background'] ?? null;
