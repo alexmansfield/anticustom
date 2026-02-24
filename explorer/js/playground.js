@@ -33,6 +33,16 @@ function registerComponentPanel() {
         sourceView: null,   // null = preview, 'html' = HTML source, 'css' = CSS source
         loading: false,
         previewColorway: localStorage.getItem('antiExplorer_previewColorway') || '',
+        cssFiles: {},
+        activeCssFile: null,
+
+        get cssFileNames() {
+            return Object.keys(this.cssFiles);
+        },
+
+        get activeCssContent() {
+            return this.cssFiles[this.activeCssFile] || '';
+        },
 
         toggleSource(type) {
             this.sourceView = this.sourceView === type ? null : type;
@@ -180,6 +190,8 @@ function registerComponentPanel() {
                 store.html = initial.html;
                 store.css = initial.css;
                 store.componentName = initial.componentName;
+                store.cssFiles = initial.cssFiles || {};
+                store.activeCssFile = initial.activeCssFile || null;
                 store.loading = false;
                 delete window.__antiInitialPreview;
                 return;
@@ -193,9 +205,23 @@ function registerComponentPanel() {
             if (!this.selected) return;
             const store = Alpine.store('componentPreview');
             try {
-                const resp = await fetch(`/shared/component-css.php?name=${encodeURIComponent(this.selected)}&style=${encodeURIComponent(this.activeStyle)}`);
-                store.css = resp.ok ? await resp.text() : '/* Could not load CSS */';
+                const resp = await fetch(`/shared/component-css.php?name=${encodeURIComponent(this.selected)}&style=${encodeURIComponent(this.activeStyle)}&split=1`);
+                if (resp.ok) {
+                    const files = await resp.json();
+                    store.cssFiles = files;
+                    // Combined CSS for backward compat
+                    store.css = Object.values(files).join('\n');
+                    // Default to theme file, fall back to _base.css
+                    const styleKey = this.activeStyle + '.css';
+                    store.activeCssFile = files[styleKey] !== undefined ? styleKey : Object.keys(files)[0] || null;
+                } else {
+                    store.cssFiles = {};
+                    store.activeCssFile = null;
+                    store.css = '/* Could not load CSS */';
+                }
             } catch (err) {
+                store.cssFiles = {};
+                store.activeCssFile = null;
                 store.css = `/* Fetch error: ${err.message} */`;
             }
         },

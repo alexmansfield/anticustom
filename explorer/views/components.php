@@ -200,13 +200,21 @@ $preRenderHtml = ob_get_clean();
 
 $preRenderStylesDir = $components[$preRenderName]['path'] . '/styles';
 $preRenderCss = '';
+$preRenderCssFiles = [];
 if (file_exists($preRenderStylesDir . '/_base.css')) {
-    $preRenderCss .= file_get_contents($preRenderStylesDir . '/_base.css') . "\n";
+    $baseContent = file_get_contents($preRenderStylesDir . '/_base.css');
+    $preRenderCss .= $baseContent . "\n";
+    $preRenderCssFiles['_base.css'] = $baseContent;
 }
 $preRenderStyleFile = $preRenderStylesDir . '/' . $activeStyle . '.css';
 if (file_exists($preRenderStyleFile)) {
-    $preRenderCss .= file_get_contents($preRenderStyleFile);
+    $styleContent = file_get_contents($preRenderStyleFile);
+    $preRenderCss .= $styleContent;
+    $preRenderCssFiles[$activeStyle . '.css'] = $styleContent;
 }
+$preRenderActiveCssFile = isset($preRenderCssFiles[$activeStyle . '.css'])
+    ? $activeStyle . '.css'
+    : (isset($preRenderCssFiles['_base.css']) ? '_base.css' : null);
 ?>
 
 <script>
@@ -216,6 +224,8 @@ window.__antiInitialPreview = {
     componentName: <?php echo json_encode($componentData[$preRenderName]['label']); ?>,
     html: <?php echo json_encode($preRenderHtml); ?>,
     css: <?php echo json_encode($preRenderCss); ?>,
+    cssFiles: <?php echo json_encode($preRenderCssFiles, JSON_UNESCAPED_UNICODE); ?>,
+    activeCssFile: <?php echo json_encode($preRenderActiveCssFile); ?>,
     style: <?php echo json_encode($activeStyle); ?>
 };
 window.__antiStyles = <?php echo json_encode($allStyleNames); ?>;
@@ -265,6 +275,17 @@ window.__antiColorways = <?php echo json_encode($colorwayNames); ?>;
     </template>
 
     <template x-if="$store.componentPreview.componentName && $store.componentPreview.sourceView === 'css'">
-        <pre class="anti-playground__source" x-text="$store.componentPreview.css"></pre>
+        <div class="anti-playground__css-view">
+            <div class="anti-playground__css-tabs">
+                <template x-for="fileName in $store.componentPreview.cssFileNames" :key="fileName">
+                    <button class="anti-playground__css-tab"
+                            :class="{ 'is-active': $store.componentPreview.activeCssFile === fileName }"
+                            @click="$store.componentPreview.activeCssFile = fileName"
+                            x-text="fileName"></button>
+                </template>
+            </div>
+            <pre class="anti-playground__source"
+                 x-text="$store.componentPreview.activeCssContent"></pre>
+        </div>
     </template>
 </div>

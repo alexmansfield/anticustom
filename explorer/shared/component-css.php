@@ -42,14 +42,27 @@ if (!is_dir($componentDir)) {
 }
 
 $stylesDir = $componentDir . '/styles';
-$css = '';
+$baseFile  = $stylesDir . '/_base.css';
+$styleFile = $stylesDir . '/' . $style . '.css';
 
-$baseFile = $stylesDir . '/_base.css';
+// split=1: return JSON with individual file contents
+if (!empty($_GET['split'])) {
+    header('Content-Type: application/json; charset=UTF-8');
+    $result = [];
+    if (file_exists($baseFile)) {
+        $result['_base.css'] = file_get_contents($baseFile);
+    }
+    if (file_exists($styleFile)) {
+        $result[basename($styleFile)] = file_get_contents($styleFile);
+    }
+    echo json_encode($result);
+    exit;
+}
+
+$css = '';
 if (file_exists($baseFile)) {
     $css .= file_get_contents($baseFile) . "\n";
 }
-
-$styleFile = $stylesDir . '/' . $style . '.css';
 if (file_exists($styleFile)) {
     $css .= file_get_contents($styleFile);
 }

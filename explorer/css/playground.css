@@ -573,6 +573,49 @@
     border-top: 1px solid var(--anti-border, #e5e7eb);
 }
 
+/* CSS sub-tab view */
+.anti-playground__css-view {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.anti-playground__css-tabs {
+    display: flex;
+    gap: 0;
+    background: #1e1e1e;
+    border-top: 1px solid var(--anti-border, #e5e7eb);
+    border-bottom: 1px solid #333;
+    padding: 0 12px;
+    flex-shrink: 0;
+}
+
+.anti-playground__css-tab {
+    padding: 7px 14px;
+    border: none;
+    background: transparent;
+    color: #858585;
+    font-size: 12px;
+    font-family: system-ui, -apple-system, sans-serif;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: color 0.12s ease, border-color 0.12s ease;
+    white-space: nowrap;
+}
+
+.anti-playground__css-tab:hover {
+    color: #cccccc;
+}
+
+.anti-playground__css-tab.is-active {
+    color: #e0e0e0;
+    border-bottom-color: #e0e0e0;
+}
+
+.anti-playground__css-view .anti-playground__source {
+    border-top: none;
+}
+
 /* Empty state */
 .anti-playground__empty {
     display: flex;
