@@ -219,11 +219,12 @@ Components can have multiple style files. The explorer auto-discovers them and p
 
 Components use colorway CSS variables instead of hard-coded colors:
 - `--colorway-base` — Surface/background color
-- `--colorway-hard-contrast` — Primary text, max contrast against base
-- `--colorway-soft-contrast` — Secondary text, subheadings, metadata
+- `--colorway-hard-contrast` — Headings, strong text
+- `--colorway-contrast` — Body text
+- `--colorway-soft-contrast` — Borders, strokes, dividers (not text)
 - `--colorway-accent` — Decorative highlights: links, icons, eyebrows
 
-Surface components use `base`/`hard-contrast`. Decorative elements (links, icons, eyebrows) use `accent`. Buttons invert — using `hard-contrast` as their prominent fill color.
+Surface components use `base`/`hard-contrast`. Body text uses `contrast`. Structural elements (borders, dividers) use `soft-contrast`. Decorative elements (links, icons, eyebrows) use `accent`.
 
 Set via `data-colorway` attribute: `<div data-colorway="primary">`.
 

@@ -162,13 +162,15 @@
       "default": {
         "base": "var(--neutral-ultra-light)",
         "hard-contrast": "var(--neutral-dark)",
-        "soft-contrast": "var(--neutral)",
+        "contrast": "var(--neutral)",
+        "soft-contrast": "var(--neutral-light)",
         "accent": "var(--primary)"
       },
       "primary": {
         "base": "var(--primary)",
         "hard-contrast": "#ffffff",
-        "soft-contrast": "var(--primary-light)",
+        "contrast": "var(--primary-light)",
+        "soft-contrast": "var(--primary-semi-light)",
         "accent": "var(--primary-dark)"
       }
     }

@@ -152,8 +152,9 @@
     "shadow-m",
     "shadow-l",
     "colorway-base",
+    "colorway-hard-contrast",
+    "colorway-contrast",
     "colorway-soft-contrast",
-    "colorway-accent",
-    "colorway-hard-contrast"
+    "colorway-accent"
   ]
 }

@@ -317,13 +317,14 @@ foreach ($semanticColors as $name => $colorData) {
         $colorways[$name] = [
             'base' => "var(--{$name}-ultra-light)",
             'hard-contrast' => "var(--{$name}-dark)",
-            'soft-contrast' => "var(--{$name})",
+            'contrast' => "var(--{$name})",
+            'soft-contrast' => "var(--{$name}-light)",
             'accent' => "var(--{$name})",
         ];
     }
 }
 
-$colorwayTokens = ['base', 'hard-contrast', 'soft-contrast', 'accent'];
+$colorwayTokens = ['base', 'hard-contrast', 'contrast', 'soft-contrast', 'accent'];
 
 foreach ($colorways as $wayName => $wayData) {
     $lines = [];

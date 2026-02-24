@@ -132,13 +132,14 @@ The generator takes the base color's hue and saturation, then replaces its light
 
 ### Colorways (`--colorway-*`)
 
-Colorways are named color schemes applied via `data-colorway` attributes. Each colorway defines four tokens:
+Colorways are named color schemes applied via `data-colorway` attributes. Each colorway defines five tokens:
 
 | Token | Role |
 |---|---|
 | `--colorway-base` | Surface/background color |
-| `--colorway-hard-contrast` | Primary text, max contrast against base |
-| `--colorway-soft-contrast` | Secondary text, subheadings, metadata |
+| `--colorway-hard-contrast` | Headings, strong text |
+| `--colorway-contrast` | Body text |
+| `--colorway-soft-contrast` | Borders, strokes, dividers (not text) |
 | `--colorway-accent` | Decorative highlights: links, icons, eyebrows |
 
 Each generates a scoped CSS block:
@@ -147,14 +148,15 @@ Each generates a scoped CSS block:
 [data-colorway="primary"] {
     --colorway-base: var(--primary);
     --colorway-hard-contrast: #ffffff;
-    --colorway-soft-contrast: var(--primary-light);
+    --colorway-contrast: var(--primary-light);
+    --colorway-soft-contrast: var(--primary-semi-light);
     --colorway-accent: var(--primary-dark);
 }
 ```
 
-Components pick the token that matches their semantic role: surface components use `base`/`hard-contrast`, decorative elements use `accent`, and buttons invert by using `hard-contrast` as their prominent color.
+Components pick the token that matches their semantic role: surface components use `base`/`hard-contrast`, body text uses `contrast`, structural elements (borders, dividers) use `soft-contrast`, and decorative elements (links, icons) use `accent`.
 
-**JSON path:** `color.colorways.{name}.{base,hard-contrast,soft-contrast,accent}`
+**JSON path:** `color.colorways.{name}.{base,hard-contrast,contrast,soft-contrast,accent}`
 
 ### Font Weights
 

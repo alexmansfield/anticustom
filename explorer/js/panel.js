@@ -254,8 +254,8 @@ const DEFAULT_SETTINGS = {
         }
     },
     colorways: {
-        default: { base: 'var(--neutral-ultra-light)', 'hard-contrast': 'var(--neutral-dark)', 'soft-contrast': 'var(--neutral)', accent: 'var(--primary)' },
-        primary: { base: 'var(--primary)', 'hard-contrast': '#ffffff', 'soft-contrast': 'var(--primary-light)', accent: 'var(--primary-dark)' }
+        default: { base: 'var(--neutral-ultra-light)', 'hard-contrast': 'var(--neutral-dark)', contrast: 'var(--neutral)', 'soft-contrast': 'var(--neutral-light)', accent: 'var(--primary)' },
+        primary: { base: 'var(--primary)', 'hard-contrast': '#ffffff', contrast: 'var(--primary-light)', 'soft-contrast': 'var(--primary-semi-light)', accent: 'var(--primary-dark)' }
     }
 };
 
@@ -358,8 +358,12 @@ function registerStylePanel() {
             }
 
             const savedCategory = localStorage.getItem('antiExplorer_category');
+            const savedTab = localStorage.getItem('antiExplorer_tab');
             if (savedCategory) {
                 this.openCategory(savedCategory);
+                if (savedTab) {
+                    this.activeTab = savedTab;
+                }
             }
 
             this.applyAllSettings();
@@ -404,6 +408,7 @@ function registerStylePanel() {
             }
 
             localStorage.setItem('antiExplorer_category', categoryId);
+            localStorage.setItem('antiExplorer_tab', this.activeTab);
         },
 
         closeSettings() {
@@ -411,10 +416,12 @@ function registerStylePanel() {
             this.activeCategory = null;
             this.activeTab = null;
             localStorage.removeItem('antiExplorer_category');
+            localStorage.removeItem('antiExplorer_tab');
         },
 
         switchTab(tabId) {
             this.activeTab = tabId;
+            localStorage.setItem('antiExplorer_tab', tabId);
         },
 
         get currentCategory() {
@@ -800,7 +807,7 @@ function registerStylePanel() {
             for (const [wayName, data] of Object.entries(this.settings.colorways)) {
                 const selector = wayName === 'default' ? ':root' : `[data-colorway="${wayName}"]`;
                 const lines = [];
-                const tokens = ['base', 'hard-contrast', 'soft-contrast', 'accent'];
+                const tokens = ['base', 'hard-contrast', 'contrast', 'soft-contrast', 'accent'];
                 for (const token of tokens) {
                     if (data[token]) lines.push(`    --colorway-${token}: ${data[token]};`);
                 }

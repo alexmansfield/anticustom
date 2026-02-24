@@ -69,7 +69,7 @@
 }
 
 .anti-card__description {
-    color: var(--colorway-soft-contrast, #475569);
+    color: var(--colorway-contrast, #475569);
 }
 
 /* ==========================================================================
