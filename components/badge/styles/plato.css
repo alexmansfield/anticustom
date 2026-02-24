@@ -21,22 +21,10 @@
 }
 
 /* ==========================================================================
-   Variant: Neutral
+   Colors (inherited from colorway)
    ========================================================================== */
 
-.anti-badge--neutral {
-    background-color: var(--neutral-light, #e2e8f0);
-    color: var(--neutral-dark, #334155);
-}
-
-/* ==========================================================================
-   Colorway Variants
-   ========================================================================== */
-
-.anti-badge--success,
-.anti-badge--warning,
-.anti-badge--danger,
-.anti-badge--info {
+.anti-badge {
     background-color: var(--colorway-background);
     color: var(--colorway-foreground);
 }

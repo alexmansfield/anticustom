@@ -28,41 +28,6 @@
       }
     },
     {
-      "name": "variant",
-      "type": "select",
-      "label": "Variant",
-      "description": "Semantic color variant",
-      "tab": "settings",
-      "options": [
-        {
-          "value": "neutral",
-          "label": "Neutral",
-          "description": "Gray, for default/inactive states"
-        },
-        {
-          "value": "success",
-          "label": "Success",
-          "description": "Green, for positive/active states"
-        },
-        {
-          "value": "warning",
-          "label": "Warning",
-          "description": "Yellow/amber, for caution states"
-        },
-        {
-          "value": "danger",
-          "label": "Danger",
-          "description": "Red, for error/destructive states"
-        },
-        {
-          "value": "info",
-          "label": "Info",
-          "description": "Blue, for informational states"
-        }
-      ],
-      "default": "neutral"
-    },
-    {
       "name": "size",
       "type": "select",
       "label": "Size",
