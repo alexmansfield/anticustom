@@ -151,11 +151,8 @@
     "radius-m",
     "shadow-m",
     "shadow-l",
-    "neutral-ultra-light",
-    "neutral-light",
-    "neutral-semi-light",
-    "neutral-dark",
-    "neutral-semi-dark",
+    "colorway-base",
+    "colorway-soft-contrast",
     "colorway-accent",
     "colorway-hard-contrast"
   ]

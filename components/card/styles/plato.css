@@ -22,7 +22,7 @@
     --anti-card-link-size: var(--text-s, 0.875rem);
     --anti-card-grid-gap: var(--space-l, 1.5rem);
 
-    background-color: #ffffff;
+    background-color: var(--colorway-base, #ffffff);
     border-radius: var(--radius-m, 0.5rem);
     overflow: hidden;
 }
@@ -44,12 +44,12 @@
    ========================================================================== */
 
 .anti-card--bordered {
-    border: 1px solid var(--neutral-light, #e2e8f0);
+    border: 1px solid var(--colorway-soft-contrast, #e2e8f0);
     box-shadow: none;
 }
 
 .anti-card--bordered.anti-card--clickable:hover {
-    border-color: var(--neutral-semi-light, #cbd5e1);
+    border-color: var(--colorway-accent, #cbd5e1);
     box-shadow: var(--shadow-m, 0 4px 6px rgba(0, 0, 0, 0.1));
 }
 
@@ -58,12 +58,12 @@
    ========================================================================== */
 
 .anti-card--flat {
-    background-color: var(--neutral-ultra-light, #f8fafc);
+    background-color: var(--colorway-base, #f8fafc);
     box-shadow: none;
 }
 
 .anti-card--flat.anti-card--clickable:hover {
-    background-color: var(--neutral-light, #f1f5f9);
+    background-color: var(--colorway-soft-contrast, #f1f5f9);
 }
 
 /* ==========================================================================
@@ -71,7 +71,7 @@
    ========================================================================== */
 
 .anti-card__image {
-    background-color: var(--neutral-ultra-light, #f8fafc);
+    background-color: var(--colorway-soft-contrast, #f8fafc);
 }
 
 .anti-card__image img {
@@ -88,11 +88,11 @@
 
 .anti-card__title {
     font-weight: 600;
-    color: var(--neutral-dark, #0f172a);
+    color: var(--colorway-hard-contrast, #0f172a);
 }
 
 .anti-card__description {
-    color: var(--neutral-semi-dark, #475569);
+    color: var(--colorway-soft-contrast, #475569);
 }
 
 /* ==========================================================================
