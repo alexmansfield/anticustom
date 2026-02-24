@@ -43,66 +43,73 @@ $navItems = [
     <style id="anti-components"><?php echo $componentCSS; ?></style>
     <link rel="stylesheet" href="css/panel.css">
     <link rel="stylesheet" href="css/explorer.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/mdbassit/Coloris@v0.24.0/dist/coloris.min.css">
+    <link rel="stylesheet" href="vendor/coloris.min.css">
     <?php if ($tool === 'components') : ?>
         <link rel="stylesheet" href="css/playground.css">
     <?php endif; ?>
-    <script src="https://cdn.jsdelivr.net/gh/mdbassit/Coloris@v0.24.0/dist/coloris.min.js"></script>
+    <script src="vendor/coloris.min.js"></script>
     <script>Coloris({ alpha: false, format: 'hex', themeMode: 'light', margin: 8, swatches: [] });</script>
     <?php if ($tool === 'components') : ?>
         <script defer src="js/playground.js"></script>
     <?php endif; ?>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3/dist/cdn.min.js"></script>
+    <script defer src="vendor/alpine.min.js"></script>
 </head>
 <body>
     <!-- Panel JS injects sidebar into body -->
-    <script src="js/panel.js"></script>
-
-    <!-- Panel toggle (visible when panel is hidden) -->
-    <button
-        x-data="{ hidden: localStorage.getItem('antiExplorer_isOpen') === 'false' }"
-        x-show="hidden"
-        x-transition
-        @anti-panel-toggled.window="hidden = !$event.detail.isOpen"
-        @click="window.dispatchEvent(new CustomEvent('antiOpenPanel')); hidden = false"
-        class="anti-panel-toggle"
-        aria-label="Open style panel"
-        title="Open style panel"
-    >
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="3" width="18" height="18" rx="2"></rect>
-            <path d="M9 3v18"></path>
-        </svg>
-    </button>
-
-    <!-- Component panel toggle (visible when panel is hidden) -->
-    <?php if ($tool === 'components') : ?>
-    <button
-        x-data="{ hidden: localStorage.getItem('antiExplorer_componentPanelOpen') === 'false' }"
-        x-show="hidden"
-        x-transition
-        @anti-component-panel-toggled.window="hidden = !$event.detail.isOpen"
-        @click="window.dispatchEvent(new CustomEvent('antiOpenComponentPanel')); hidden = false"
-        class="anti-component-panel-toggle"
-        aria-label="Open component panel"
-        title="Open component panel"
-    >
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="3" width="18" height="18" rx="2"></rect>
-            <path d="M15 3v18"></path>
-        </svg>
-    </button>
-    <?php endif; ?>
+    <script defer src="js/panel.js"></script>
 
     <!-- Main content area -->
     <main class="anti-explorer" id="explorer-main">
         <nav class="anti-explorer__nav">
-            <?php foreach ($navItems as $key => $label) : ?>
-                <a href="?tool=<?php echo $key; ?>"
-                   class="anti-explorer__nav-link<?php echo $tool === $key ? ' is-active' : ''; ?>">
-                    <?php echo $label; ?>
-                </a>
-            <?php endforeach; ?>
+            <!-- Styles panel toggle -->
+            <button
+                x-data="{ open: localStorage.getItem('antiExplorer_isOpen') !== 'false' }"
+                @anti-panel-toggled.window="open = $event.detail.isOpen"
+                @click="window.dispatchEvent(new CustomEvent('antiTogglePanel'))"
+                class="anti-explorer__nav-toggle"
+                :class="{ 'is-active': open }"
+                aria-label="Toggle style panel"
+                title="Toggle style panel"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="13.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"></circle>
+                    <circle cx="17.5" cy="10.5" r="1.5" fill="currentColor" stroke="none"></circle>
+                    <circle cx="8.5" cy="7.5" r="1.5" fill="currentColor" stroke="none"></circle>
+                    <circle cx="6.5" cy="12.5" r="1.5" fill="currentColor" stroke="none"></circle>
+                    <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"></path>
+                </svg>
+            </button>
+
+            <!-- Center nav links -->
+            <div class="anti-explorer__nav-links">
+                <?php foreach ($navItems as $key => $label) : ?>
+                    <a href="?tool=<?php echo $key; ?>"
+                       class="anti-explorer__nav-link<?php echo $tool === $key ? ' is-active' : ''; ?>">
+                        <?php echo $label; ?>
+                    </a>
+                <?php endforeach; ?>
+            </div>
+
+            <!-- Components panel toggle (or spacer) -->
+            <?php if ($tool === 'components') : ?>
+            <button
+                x-data="{ open: localStorage.getItem('antiExplorer_componentPanelOpen') !== 'false' }"
+                @anti-component-panel-toggled.window="open = $event.detail.isOpen"
+                @click="window.dispatchEvent(new CustomEvent('antiToggleComponentPanel'))"
+                class="anti-explorer__nav-toggle"
+                :class="{ 'is-active': open }"
+                aria-label="Toggle component panel"
+                title="Toggle component panel"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect width="18" height="12" x="3" y="8" rx="1"></rect>
+                    <path d="M10 8V5c0-.6-.4-1-1-1H6a1 1 0 0 0-1 1v3"></path>
+                    <path d="M19 8V5c0-.6-.4-1-1-1h-3c-.6 0-1 .4-1 1v3"></path>
+                </svg>
+            </button>
+            <?php else : ?>
+            <div class="anti-explorer__nav-toggle-spacer"></div>
+            <?php endif; ?>
         </nav>
 
         <div class="anti-explorer__content">

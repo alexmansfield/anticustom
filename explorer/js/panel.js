@@ -340,7 +340,10 @@ function registerStylePanel() {
 
             this.originalSettings = JSON.parse(JSON.stringify(this.settings));
 
-            // Listen for external open request
+            // Listen for external toggle/open requests
+            window.addEventListener('antiTogglePanel', () => {
+                this.togglePanel();
+            });
             window.addEventListener('antiOpenPanel', () => {
                 if (!this.isOpen) this.togglePanel();
             });

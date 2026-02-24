@@ -82,7 +82,10 @@ function registerComponentPanel() {
                 this.selectComponent(names[0]);
             }
 
-            // Listen for external open request (from toggle button)
+            // Listen for external toggle/open requests
+            window.addEventListener('antiToggleComponentPanel', () => {
+                this.togglePanel();
+            });
             window.addEventListener('antiOpenComponentPanel', () => {
                 if (!this.isOpen) this.togglePanel();
             });
