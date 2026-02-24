@@ -9,12 +9,13 @@ components/{name}/
 ├── {name}.schema.json      # Component definition (fields, tabs, tokens)
 ├── styles/
 │   ├── _base.css           # Structural layout (position, display, sizing)
-│   └── default.css         # Aesthetic styling (colors, typography, tokens)
+│   ├── plato.css           # Named style: clean, shadowed, professional
+│   └── aristotle.css       # Named style: flat, bordered, no shadows (optional)
 └── templates/
     └── php.php             # PHP rendering template
 ```
 
-**Key principle:** `_base.css` is structure-only (works without tokens), `default.css` maps design tokens to visual properties.
+**Key principle:** `_base.css` is structure-only (works without tokens). Named style files (e.g. `plato.css`, `aristotle.css`) map design tokens to visual properties. Components can have one or many style files — the explorer discovers them automatically via `scan_styles()`.
 
 ## Rendering
 
@@ -199,17 +200,20 @@ Handles layout, positioning, and responsive behavior. Uses CSS custom properties
 }
 ```
 
-### `default.css` — Aesthetics
+### `{style}.css` — Aesthetics (named styles)
 
-Maps design tokens to visual properties. This is the "theme" layer:
+Each named style file (e.g. `plato.css`, `aristotle.css`) maps design tokens to visual properties. This is the "theme" layer:
 
 ```css
+/* plato.css */
 .anti-badge {
     --anti-badge-padding-s: var(--space-xs, 0.25rem) var(--space-s, 0.5rem);
     --anti-badge-font-s: var(--text-xs, 0.75rem);
     border-radius: var(--radius-full, 9999px);
 }
 ```
+
+Components can have multiple style files. The explorer auto-discovers them and presents a style switcher in the nav bar. A component without a given style file simply shows base-only styling.
 
 ### Colorway system
 
@@ -225,7 +229,7 @@ Set via `data-colorway` attribute: `<div data-colorway="primary">`.
 1. **Create directory:** `components/{name}/styles/`, `components/{name}/templates/`
 2. **Write schema:** `{name}/{name}.schema.json` with fields, tabs, tokens_used
 3. **Write `_base.css`:** Structure only, no colors. Use CSS custom properties for values the theme layer should control.
-4. **Write `default.css`:** Map design tokens to CSS custom properties. Add color, typography, and visual refinements.
+4. **Write `plato.css`:** Map design tokens to CSS custom properties. Add color, typography, and visual refinements. Optionally create additional style files (e.g. `aristotle.css`) for alternative aesthetics.
 5. **Write `templates/{name}.php`:** Extract props, build classes with `anti_classes()`, escape all output.
 6. **Verify:** Add test case to `verify.php` and run `php components/verify.php`.
 
@@ -236,5 +240,5 @@ Set via `data-colorway` attribute: `<div data-colorway="primary">`.
 - [ ] All user content uses `html_escape()` or `attr_escape()`
 - [ ] CSS class prefix is `anti-{name}` (with `--` for modifiers)
 - [ ] `_base.css` works standalone (has fallback values)
-- [ ] `default.css` references only tokens listed in `tokens_used`
+- [ ] Style files (e.g. `plato.css`) reference only tokens listed in `tokens_used`
 - [ ] Component renders in `verify.php` without errors

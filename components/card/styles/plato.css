@@ -24,6 +24,7 @@
 
     background-color: #ffffff;
     border-radius: var(--radius-m, 0.5rem);
+    overflow: hidden;
 }
 
 /* ==========================================================================
@@ -35,7 +36,6 @@
 }
 
 .anti-card--elevated.anti-card--clickable:hover {
-    transform: translateY(-4px);
     box-shadow: var(--shadow-l, 0 10px 15px rgba(0, 0, 0, 0.1));
 }
 

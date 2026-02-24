@@ -4,7 +4,7 @@
  *
  * Collects all CSS needed for the explorer page:
  * - Token CSS variables (generated from defaults.json)
- * - Component CSS (_base.css + default.css for each component)
+ * - Component CSS (_base.css + {style}.css for each component)
  *
  * Requires components/render.php for scan_components().
  */
@@ -36,9 +36,9 @@ function explorer_get_token_css(): string {
 /**
  * Concatenate all component CSS files.
  *
- * For each discovered component, loads _base.css then default.css.
+ * For each discovered component, loads _base.css then {$style}.css.
  */
-function explorer_get_component_css(): string {
+function explorer_get_component_css(string $style = 'plato'): string {
     $css = '';
     $baseDir = dirname(__DIR__) . '/../components';
     $components = scan_components($baseDir);
@@ -52,10 +52,10 @@ function explorer_get_component_css(): string {
             $css .= file_get_contents($baseFile) . "\n\n";
         }
 
-        $defaultFile = $stylesDir . '/default.css';
-        if (file_exists($defaultFile)) {
-            $css .= "/* {$name} — default */\n";
-            $css .= file_get_contents($defaultFile) . "\n\n";
+        $styleFile = $stylesDir . '/' . $style . '.css';
+        if (file_exists($styleFile)) {
+            $css .= "/* {$name} — {$style} */\n";
+            $css .= file_get_contents($styleFile) . "\n\n";
         }
     }
 

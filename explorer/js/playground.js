@@ -48,6 +48,7 @@ function registerComponentPanel() {
         props: {},
         childrenJson: '',
         _debounceTimer: null,
+        activeStyle: window.__antiActiveStyle || 'plato',
 
         colorwayOptions: [
             { value: 'inherit', label: 'Inherit' },
@@ -89,6 +90,11 @@ function registerComponentPanel() {
             window.addEventListener('antiOpenComponentPanel', () => {
                 if (!this.isOpen) this.togglePanel();
             });
+
+            // Listen for style changes from the nav dropdown
+            window.addEventListener('antiStyleChange', (e) => {
+                this.switchStyle(e.detail.style);
+            });
         },
 
         togglePanel() {
@@ -97,6 +103,29 @@ function registerComponentPanel() {
             window.dispatchEvent(new CustomEvent('anti-component-panel-toggled', {
                 detail: { isOpen: this.isOpen }
             }));
+        },
+
+        async switchStyle(style) {
+            this.activeStyle = style;
+
+            // Persist preference
+            document.cookie = `antiExplorer_style=${encodeURIComponent(style)};path=/;max-age=31536000`;
+            localStorage.setItem('antiExplorer_style', style);
+
+            // Swap all component CSS in one request
+            try {
+                const resp = await fetch(`/shared/component-css.php?all=1&style=${encodeURIComponent(style)}`);
+                if (resp.ok) {
+                    const css = await resp.text();
+                    const el = document.getElementById('anti-components');
+                    if (el) el.textContent = css;
+                }
+            } catch (err) {
+                // Silently fail — old styles remain visible
+            }
+
+            // Refresh per-component source view CSS
+            this.fetchComponentCSS();
         },
 
         openView(viewId) {
@@ -156,7 +185,7 @@ function registerComponentPanel() {
             if (!this.selected) return;
             const store = Alpine.store('componentPreview');
             try {
-                const resp = await fetch(`/shared/component-css.php?name=${encodeURIComponent(this.selected)}`);
+                const resp = await fetch(`/shared/component-css.php?name=${encodeURIComponent(this.selected)}&style=${encodeURIComponent(this.activeStyle)}`);
                 store.css = resp.ok ? await resp.text() : '/* Could not load CSS */';
             } catch (err) {
                 store.css = `/* Fetch error: ${err.message} */`;

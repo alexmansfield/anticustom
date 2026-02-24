@@ -22,9 +22,12 @@ require_once __DIR__ . '/../components/render.php';
 require_once __DIR__ . '/shared/css.php';
 anti_components_dir(__DIR__ . '/../components');
 
+// Active style (from cookie, default to plato)
+$activeStyle = preg_replace('/[^a-z0-9-]/', '', $_COOKIE['antiExplorer_style'] ?? 'plato') ?: 'plato';
+
 // Generate CSS
 $tokenCSS = explorer_get_token_css();
-$componentCSS = explorer_get_component_css();
+$componentCSS = explorer_get_component_css($activeStyle);
 
 // Navigation items
 $navItems = [
@@ -89,6 +92,22 @@ $navItems = [
                     </a>
                 <?php endforeach; ?>
             </div>
+
+            <!-- Style selector (components view only) -->
+            <?php if ($tool === 'components') : ?>
+            <select
+                class="anti-explorer__style-select"
+                x-data="{ style: window.__antiActiveStyle || 'plato' }"
+                x-model="style"
+                @change="window.dispatchEvent(new CustomEvent('antiStyleChange', { detail: { style: style } }))"
+                aria-label="Design style"
+                title="Switch design style"
+            >
+                <template x-for="s in (window.__antiStyles || ['plato'])" :key="s">
+                    <option :value="s" x-text="s.charAt(0).toUpperCase() + s.slice(1)" :selected="s === style"></option>
+                </template>
+            </select>
+            <?php endif; ?>
 
             <!-- Components panel toggle (or spacer) -->
             <?php if ($tool === 'components') : ?>

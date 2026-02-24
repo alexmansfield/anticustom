@@ -2,11 +2,29 @@
 /**
  * Component CSS Endpoint
  *
- * Returns the concatenated CSS (_base.css + default.css) for a single component.
+ * Returns CSS for component(s) using the specified style.
  *
- * GET /shared/component-css.php?name=button
+ * GET /shared/component-css.php?name=button              — single component (base + style)
+ * GET /shared/component-css.php?name=button&style=plato  — single component, explicit style
+ * GET /shared/component-css.php?all=1&style=aristotle    — ALL components (base + style)
+ *
  * Response: CSS text (Content-Type: text/css)
  */
+
+// Sanitize style name: lowercase alphanumeric + hyphens only
+$style = preg_replace('/[^a-z0-9-]/', '', $_GET['style'] ?? 'plato') ?: 'plato';
+$all   = !empty($_GET['all']);
+
+header('Content-Type: text/css; charset=UTF-8');
+
+if ($all) {
+    // Return CSS for every component in the given style
+    require_once __DIR__ . '/../../components/render.php';
+    anti_components_dir(__DIR__ . '/../../components');
+    require_once __DIR__ . '/css.php';
+    echo explorer_get_component_css($style);
+    exit;
+}
 
 $name = $_GET['name'] ?? '';
 if (!$name) {
@@ -31,10 +49,9 @@ if (file_exists($baseFile)) {
     $css .= file_get_contents($baseFile) . "\n";
 }
 
-$defaultFile = $stylesDir . '/default.css';
-if (file_exists($defaultFile)) {
-    $css .= file_get_contents($defaultFile);
+$styleFile = $stylesDir . '/' . $style . '.css';
+if (file_exists($styleFile)) {
+    $css .= file_get_contents($styleFile);
 }
 
-header('Content-Type: text/css; charset=UTF-8');
 echo $css;

@@ -8,6 +8,19 @@
 
 $components = scan_components(anti_components_dir());
 
+// Discover all available style names across components
+$allStyleNames = [];
+foreach ($components as $cName => $cData) {
+    foreach ($cData['styles'] as $sName) {
+        $allStyleNames[$sName] = true;
+    }
+}
+$allStyleNames = array_keys($allStyleNames);
+sort($allStyleNames);
+
+// Active style (read from cookie, matches index.php)
+$activeStyle = preg_replace('/[^a-z0-9-]/', '', $_COOKIE['antiExplorer_style'] ?? 'plato') ?: 'plato';
+
 // Sample props for each component (initial values when selected)
 $samples = [
     'badge' => [
@@ -177,8 +190,9 @@ $preRenderCss = '';
 if (file_exists($preRenderStylesDir . '/_base.css')) {
     $preRenderCss .= file_get_contents($preRenderStylesDir . '/_base.css') . "\n";
 }
-if (file_exists($preRenderStylesDir . '/default.css')) {
-    $preRenderCss .= file_get_contents($preRenderStylesDir . '/default.css');
+$preRenderStyleFile = $preRenderStylesDir . '/' . $activeStyle . '.css';
+if (file_exists($preRenderStyleFile)) {
+    $preRenderCss .= file_get_contents($preRenderStyleFile);
 }
 ?>
 
@@ -188,8 +202,11 @@ window.__antiInitialPreview = {
     component: <?php echo json_encode($preRenderName); ?>,
     componentName: <?php echo json_encode($componentData[$preRenderName]['label']); ?>,
     html: <?php echo json_encode($preRenderHtml); ?>,
-    css: <?php echo json_encode($preRenderCss); ?>
+    css: <?php echo json_encode($preRenderCss); ?>,
+    style: <?php echo json_encode($activeStyle); ?>
 };
+window.__antiStyles = <?php echo json_encode($allStyleNames); ?>;
+window.__antiActiveStyle = <?php echo json_encode($activeStyle); ?>;
 </script>
 
 <!-- Preview area: reads from Alpine.store('componentPreview') set by playground.js -->

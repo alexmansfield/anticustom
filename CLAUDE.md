@@ -26,7 +26,7 @@ anticustom/
 │   ├── {name}/
 │   │   ├── {name}.schema.json
 │   │   ├── styles/_base.css
-│   │   ├── styles/default.css
+│   │   ├── styles/{style}.css    # e.g. plato.css, aristotle.css
 │   │   └── templates/{name}.php
 ├── forms/                    # Placeholder
 └── explorer/                 # Placeholder

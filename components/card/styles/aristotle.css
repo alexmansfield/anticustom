@@ -1,0 +1,99 @@
+/**
+ * Card Style: Aristotle
+ *
+ * Clean, flat card appearance with prominent borders and no shadows.
+ * Favors clarity over depth — no transforms, no elevation effects.
+ *
+ * @package Anticustom
+ */
+
+/* ==========================================================================
+   Configuration
+   ========================================================================== */
+
+.anti-card {
+    --anti-card-padding: var(--space-l, 1.5rem);
+    --anti-card-title-gap: var(--space-s, 0.5rem);
+    --anti-card-title-size: var(--heading-4, 1.25rem);
+    --anti-card-desc-size: var(--text-m, 1rem);
+    --anti-card-icon-size: 44px;
+    --anti-card-icon-gap: var(--space-m, 1rem);
+    --anti-card-link-gap: var(--space-xs, 0.25rem);
+    --anti-card-link-margin: var(--space-m, 1rem);
+    --anti-card-link-size: var(--text-s, 0.875rem);
+    --anti-card-grid-gap: var(--space-l, 1.5rem);
+
+    background-color: #ffffff;
+    border: 1px solid var(--neutral-light, #e2e8f0);
+    border-radius: var(--radius-l, 0.75rem);
+    overflow: hidden;
+}
+
+/* ==========================================================================
+   Variant: Elevated
+   ========================================================================== */
+
+/* TODO: Implement the elevated variant for aristotle.
+   In plato, elevated uses box-shadow and hover transform.
+   For aristotle, consider a heavier border or subtle background shift instead. */
+
+/* ==========================================================================
+   Variant: Bordered
+   ========================================================================== */
+
+/* TODO: Implement the bordered variant for aristotle.
+   Consider a stronger border weight or accent-colored border. */
+
+/* ==========================================================================
+   Variant: Flat
+   ========================================================================== */
+
+/* TODO: Implement the flat variant for aristotle.
+   Consider a subtle background tint with no border. */
+
+/* ==========================================================================
+   Image Aesthetics
+   ========================================================================== */
+
+.anti-card__image {
+    background-color: var(--neutral-ultra-light, #f8fafc);
+}
+
+/* ==========================================================================
+   Typography
+   ========================================================================== */
+
+.anti-card__title {
+    font-weight: 600;
+    color: var(--neutral-dark, #0f172a);
+}
+
+.anti-card__description {
+    color: var(--neutral-semi-dark, #475569);
+}
+
+/* ==========================================================================
+   Icon Aesthetics
+   ========================================================================== */
+
+/* TODO: Style the icon for aristotle.
+   Plato uses a filled background with contrasting text.
+   Consider a bordered circle or a subtler treatment. */
+
+/* ==========================================================================
+   Link Aesthetics
+   ========================================================================== */
+
+.anti-card__link {
+    color: var(--colorway-background, #2563eb);
+}
+
+/* ==========================================================================
+   Responsive Aesthetics
+   ========================================================================== */
+
+@media (max-width: 768px) {
+    .anti-card__content {
+        padding: var(--space-m, 1rem);
+    }
+}
