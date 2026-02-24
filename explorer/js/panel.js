@@ -84,11 +84,9 @@ const ICONS = {
     </svg>`,
 
     colors: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="13.5" cy="6.5" r="2.5"></circle>
-        <circle cx="17.5" cy="10.5" r="2.5"></circle>
-        <circle cx="8.5" cy="7.5" r="2.5"></circle>
-        <circle cx="6.5" cy="12.5" r="2.5"></circle>
-        <path d="M12 22C6.5 22 2 17.5 2 12S6.5 2 12 2s10 4.5 10 10c0 2.5-2 4.5-4.5 4.5h-2c-.8 0-1.5.7-1.5 1.5 0 .4.2.8.4 1.1.3.3.4.6.4 1 0 .8-.7 1.4-1.5 1.4-.4-.1-.7-.1-.8-.1z"></path>
+        <rect x="8" y="1" width="8" height="18" rx="2" transform="rotate(-25 12 19)" fill="var(--icon-fill, white)"></rect>
+        <rect x="8" y="1" width="8" height="18" rx="2" transform="rotate(0 12 19)" fill="var(--icon-fill, white)"></rect>
+        <rect x="8" y="1" width="8" height="18" rx="2" transform="rotate(25 12 19)" fill="var(--icon-fill, white)"></rect>
     </svg>`,
 
     spacing: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -114,7 +112,11 @@ const ICONS = {
     </svg>`,
 
     palette: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M2 12c0 2.8 2.2 5 5 5h1c.5 0 1 .2 1.4.6l.6.6c.4.4.6.9.6 1.4v1c0 2.8 2.2 5 5 5 5.5 0 10-4.5 10-10S17.5 2 12 2 2 6.5 2 12z"></path>
+        <circle cx="13.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"></circle>
+        <circle cx="17.5" cy="10.5" r="1.5" fill="currentColor" stroke="none"></circle>
+        <circle cx="8.5" cy="7.5" r="1.5" fill="currentColor" stroke="none"></circle>
+        <circle cx="6.5" cy="12.5" r="1.5" fill="currentColor" stroke="none"></circle>
+        <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"></path>
     </svg>`,
 
     export: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

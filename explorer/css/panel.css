@@ -157,6 +157,7 @@
 }
 
 .anti-panel .anti-nav__item {
+    --icon-fill: var(--anti-bg);
     display: flex;
     align-items: center;
     gap: 12px;
@@ -175,11 +176,13 @@
 }
 
 .anti-panel .anti-nav__item:hover {
+    --icon-fill: var(--anti-control-bg);
     background: var(--anti-control-bg);
     color: var(--anti-text);
 }
 
 .anti-panel .anti-nav__item.is-active {
+    --icon-fill: var(--anti-accent);
     background: var(--anti-accent);
     color: #ffffff;
 }
