@@ -863,3 +863,242 @@
 .anti-panel-container.is-hidden {
     transform: translateX(-100%);
 }
+
+/* ==========================================================================
+   Colorway Picker
+   ========================================================================== */
+
+.anti-panel .anti-colorway-picker {
+    position: relative;
+}
+
+.anti-panel .anti-colorway-picker__trigger {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    height: 36px;
+    padding: 0 10px;
+    background: var(--anti-bg);
+    border: 1px solid var(--anti-control-border);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: border-color 0.15s ease;
+    font-family: inherit;
+    font-size: 12px;
+    color: var(--anti-text);
+    text-align: left;
+}
+
+.anti-panel .anti-colorway-picker__trigger:hover {
+    border-color: var(--anti-accent);
+}
+
+.anti-panel .anti-colorway-picker__trigger:focus {
+    outline: none;
+    border-color: var(--anti-accent);
+    box-shadow: 0 0 0 3px rgba(85, 85, 85, 0.1);
+}
+
+.anti-panel .anti-colorway-picker__swatch {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    border: none;
+    flex-shrink: 0;
+}
+
+/* White swatches need a border to be visible */
+.anti-panel .anti-colorway-picker__swatch.is-white,
+.anti-panel .anti-colorway-picker__shade.is-white,
+.anti-panel .anti-colorway-picker__parent-swatch.is-white {
+    border: 1px solid var(--anti-control-border);
+}
+
+.anti-panel .anti-colorway-picker__label {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.anti-panel .anti-colorway-picker__chevron {
+    color: var(--anti-text-muted);
+    font-size: 12px;
+    flex-shrink: 0;
+}
+
+.anti-panel .anti-colorway-picker__dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin-top: 4px;
+    background: var(--anti-bg);
+    border: 1px solid var(--anti-control-border);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    max-height: 260px;
+    overflow-y: auto;
+    z-index: 10;
+}
+
+.anti-panel .anti-colorway-picker__dropdown::-webkit-scrollbar {
+    width: 6px;
+}
+
+.anti-panel .anti-colorway-picker__dropdown::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.anti-panel .anti-colorway-picker__dropdown::-webkit-scrollbar-thumb {
+    background: var(--anti-control-border);
+    border-radius: 3px;
+}
+
+.anti-panel .anti-colorway-picker__group {
+    border-bottom: 1px solid var(--anti-border);
+}
+
+.anti-panel .anti-colorway-picker__group:last-child {
+    border-bottom: none;
+}
+
+.anti-panel .anti-colorway-picker__group-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--anti-text-muted);
+    padding: 8px 10px 4px;
+    font-weight: 600;
+}
+
+/* Parent color row — clickable, selects base */
+.anti-panel .anti-colorway-picker__color-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 8px 10px 4px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 12px;
+    color: var(--anti-text);
+    text-align: left;
+    transition: background 0.1s ease;
+}
+
+.anti-panel .anti-colorway-picker__color-row:hover {
+    background: var(--anti-control-bg);
+}
+
+.anti-panel .anti-colorway-picker__color-row.is-selected {
+    font-weight: 600;
+}
+
+.anti-panel .anti-colorway-picker__parent-swatch {
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
+    border: none;
+    flex-shrink: 0;
+    transition: transform 0.1s ease, outline-color 0.1s ease;
+}
+
+.anti-panel .anti-colorway-picker__color-row:hover .anti-colorway-picker__parent-swatch {
+    transform: scale(1.15);
+}
+
+.anti-panel .anti-colorway-picker__color-row.is-selected .anti-colorway-picker__parent-swatch {
+    outline: 2px solid var(--anti-accent);
+    outline-offset: 2px;
+}
+
+.anti-panel .anti-colorway-picker__parent-label {
+    font-weight: 500;
+}
+
+/* Shade swatches — horizontal row */
+.anti-panel .anti-colorway-picker__shade-row {
+    display: flex;
+    gap: 10px;
+    padding: 4px 10px 8px;
+}
+
+.anti-panel .anti-colorway-picker__shade {
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.1s ease, outline-color 0.1s ease;
+    flex-shrink: 0;
+}
+
+.anti-panel .anti-colorway-picker__shade:hover {
+    transform: scale(1.15);
+}
+
+.anti-panel .anti-colorway-picker__shade.is-selected {
+    outline: 2px solid var(--anti-accent);
+    outline-offset: 2px;
+}
+
+/* Custom hex option — kept as a row */
+.anti-panel .anti-colorway-picker__option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 6px 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 12px;
+    color: var(--anti-text);
+    text-align: left;
+    transition: background 0.1s ease;
+}
+
+.anti-panel .anti-colorway-picker__option:hover {
+    background: var(--anti-control-bg);
+}
+
+.anti-panel .anti-colorway-picker__option-swatch {
+    width: 16px;
+    height: 16px;
+    border-radius: 3px;
+    border: 1px solid var(--anti-control-border);
+    flex-shrink: 0;
+}
+
+.anti-panel .anti-colorway-picker__option-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.anti-panel .anti-colorway-picker__custom {
+    padding: 10px;
+}
+
+.anti-panel .anti-colorway-picker__custom input[type="text"] {
+    width: 100%;
+    height: 36px;
+    border: 1px solid var(--anti-control-border);
+    border-radius: 6px;
+    padding: 0 10px;
+    font-family: ui-monospace, monospace;
+    font-size: 12px;
+    text-transform: uppercase;
+    background: var(--anti-bg);
+    color: var(--anti-text);
+}
+
+.anti-panel .anti-colorway-picker__custom input[type="text"]:focus {
+    outline: none;
+    border-color: var(--anti-accent);
+}

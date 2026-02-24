@@ -300,6 +300,10 @@ function registerStylePanel() {
         hasChanges: false,
         notification: null,
 
+        // Colorway picker state
+        colorwayDropdownId: null,
+        colorwayCustomMode: null,
+
         // Settings data
         settings: JSON.parse(JSON.stringify(DEFAULT_SETTINGS)),
         originalSettings: JSON.parse(JSON.stringify(DEFAULT_SETTINGS)),
@@ -359,6 +363,13 @@ function registerStylePanel() {
             }
 
             this.applyAllSettings();
+
+            // Close colorway dropdown on outside click
+            document.addEventListener('click', (e) => {
+                if (this.colorwayDropdownId && !e.target.closest('.anti-colorway-picker') && !e.target.closest('.clr-picker')) {
+                    this.closeColorwayDropdown();
+                }
+            });
         },
 
         deepMerge(target, source) {
@@ -660,6 +671,123 @@ function registerStylePanel() {
             this.markChanged();
         },
 
+        getPaletteOptions() {
+            const shadeMap = [
+                ['ultra-light', 90], ['light', 80], ['semi-light', 65],
+                ['semi-dark', 35], ['dark', 20], ['ultra-dark', 10]
+            ];
+            const groups = [];
+
+            // Fixed group — no parent, just swatches
+            groups.push({
+                group: 'Fixed',
+                base: null,
+                shades: [
+                    { value: '#ffffff', label: 'White', hex: '#ffffff' },
+                    { value: '#000000', label: 'Black', hex: '#000000' }
+                ]
+            });
+
+            // Palette colors — parent + shade swatches
+            for (const [name, data] of Object.entries(this.settings.colors)) {
+                if (!data.enabled) continue;
+                const displayName = name.charAt(0).toUpperCase() + name.slice(1);
+                const hsl = hexToHsl(data.base);
+
+                const base = {
+                    value: `var(--${name})`,
+                    label: displayName,
+                    hex: data.base
+                };
+
+                const shades = [];
+                for (const [shade, lightness] of shadeMap) {
+                    const shadeHex = hslToHex(hsl.h, hsl.s, lightness);
+                    const shadeLabel = shade.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+                    shades.push({
+                        value: `var(--${name}-${shade})`,
+                        label: `${displayName} ${shadeLabel}`,
+                        hex: shadeHex
+                    });
+                }
+
+                groups.push({ group: displayName, base, shades });
+            }
+
+            return groups;
+        },
+
+        resolveColorwayHex(value) {
+            if (!value) return '#cccccc';
+            if (value.startsWith('#')) return value;
+
+            const match = value.match(/^var\(--(.+)\)$/);
+            if (!match) return '#cccccc';
+
+            const varName = match[1];
+            const shadeMap = {
+                'ultra-light': 90, 'light': 80, 'semi-light': 65,
+                'semi-dark': 35, 'dark': 20, 'ultra-dark': 10
+            };
+
+            for (const [name, data] of Object.entries(this.settings.colors)) {
+                if (varName === name) {
+                    return data.base;
+                }
+                if (varName.startsWith(name + '-')) {
+                    const shade = varName.slice(name.length + 1);
+                    if (shade in shadeMap) {
+                        const hsl = hexToHsl(data.base);
+                        return hslToHex(hsl.h, hsl.s, shadeMap[shade]);
+                    }
+                }
+            }
+
+            return '#cccccc';
+        },
+
+        toggleColorwayDropdown(id) {
+            if (this.colorwayDropdownId === id) {
+                this.closeColorwayDropdown();
+            } else {
+                this.colorwayDropdownId = id;
+                this.colorwayCustomMode = null;
+            }
+        },
+
+        closeColorwayDropdown() {
+            this.colorwayDropdownId = null;
+            this.colorwayCustomMode = null;
+        },
+
+        selectColorwayOption(wayName, tokenId, value) {
+            this.updateColorway(wayName, tokenId, value);
+            this.closeColorwayDropdown();
+        },
+
+        enterCustomHexMode(id) {
+            this.colorwayCustomMode = id;
+        },
+
+        applyCustomHex(wayName, tokenId, hex) {
+            if (/^#[0-9a-fA-F]{6}$/.test(hex)) {
+                this.updateColorway(wayName, tokenId, hex);
+                this.closeColorwayDropdown();
+            }
+        },
+
+        getColorwayDisplayLabel(value) {
+            if (!value) return '';
+            if (value === '#ffffff') return 'White';
+            if (value === '#000000') return 'Black';
+            if (value.startsWith('#')) return value.toUpperCase();
+
+            const match = value.match(/^var\(--(.+)\)$/);
+            if (!match) return value;
+
+            return match[1].split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+        },
+
         applyColorwaySettings() {
             let styleEl = document.getElementById('anti-colorway-overrides');
             if (!styleEl) {
@@ -929,7 +1057,7 @@ const getPanelHTML = () => `
         <div x-data="stylePanel"
              class="anti-panel anti-panel-container"
              :class="{ 'settings-open': settingsOpen, 'is-hidden': !isOpen }"
-             @keydown.escape.window="closeSettings">
+             @keydown.escape.window="colorwayDropdownId ? closeColorwayDropdown() : closeSettings()">
 
             <!-- Navigation Panel -->
             <nav class="anti-nav">
@@ -1518,11 +1646,70 @@ const getPanelHTML = () => `
                                     <template x-for="token in [{id:'base',label:'Base'},{id:'hard-contrast',label:'Hard Contrast'},{id:'soft-contrast',label:'Soft Contrast'},{id:'accent',label:'Accent'}]" :key="token.id">
                                         <div class="anti-control-group" style="margin-top: 8px;">
                                             <label class="anti-control-label" style="font-size: 11px;" x-text="token.label"></label>
-                                            <div class="anti-color-input">
-                                                <span class="anti-color-swatch" :style="'background:' + way[token.id]"></span>
-                                                <input type="text" data-coloris
-                                                    :value="way[token.id]"
-                                                    @input="updateColorway(wayName, token.id, $event.target.value)">
+                                            <div class="anti-colorway-picker">
+                                                <button class="anti-colorway-picker__trigger"
+                                                    @click="toggleColorwayDropdown(wayName + '-' + token.id)">
+                                                    <span class="anti-colorway-picker__swatch"
+                                                        :class="{ 'is-white': resolveColorwayHex(way[token.id]) === '#ffffff' }"
+                                                        :style="'background:' + resolveColorwayHex(way[token.id])"></span>
+                                                    <span class="anti-colorway-picker__label"
+                                                        x-text="getColorwayDisplayLabel(way[token.id])"></span>
+                                                    <span class="anti-colorway-picker__chevron">&#9662;</span>
+                                                </button>
+                                                <div class="anti-colorway-picker__dropdown"
+                                                    x-show="colorwayDropdownId === wayName + '-' + token.id"
+                                                    x-cloak>
+                                                    <template x-if="colorwayCustomMode !== wayName + '-' + token.id">
+                                                        <div>
+                                                            <template x-for="group in getPaletteOptions()" :key="group.group">
+                                                                <div class="anti-colorway-picker__group">
+                                                                    <!-- Parent color row (palette colors) -->
+                                                                    <button x-show="group.base"
+                                                                        class="anti-colorway-picker__color-row"
+                                                                        :class="{ 'is-selected': way[token.id] === group.base?.value }"
+                                                                        @click="selectColorwayOption(wayName, token.id, group.base?.value)">
+                                                                        <span class="anti-colorway-picker__parent-swatch"
+                                                                            :class="{ 'is-white': group.base?.hex === '#ffffff' }"
+                                                                            :style="'background:' + group.base?.hex"></span>
+                                                                        <span class="anti-colorway-picker__parent-label"
+                                                                            x-text="group.base?.label"></span>
+                                                                    </button>
+                                                                    <!-- Group label for Fixed -->
+                                                                    <div x-show="!group.base" class="anti-colorway-picker__group-label"
+                                                                        x-text="group.group"></div>
+                                                                    <!-- Shade swatches row -->
+                                                                    <div class="anti-colorway-picker__shade-row">
+                                                                        <template x-for="shade in group.shades" :key="shade.value">
+                                                                            <button class="anti-colorway-picker__shade"
+                                                                                :class="{ 'is-selected': way[token.id] === shade.value, 'is-white': shade.hex === '#ffffff' }"
+                                                                                :style="'background:' + shade.hex"
+                                                                                :title="shade.label"
+                                                                                @click="selectColorwayOption(wayName, token.id, shade.value)">
+                                                                            </button>
+                                                                        </template>
+                                                                    </div>
+                                                                </div>
+                                                            </template>
+                                                            <div class="anti-colorway-picker__group">
+                                                                <button class="anti-colorway-picker__option"
+                                                                    @click="enterCustomHexMode(wayName + '-' + token.id)">
+                                                                    <span class="anti-colorway-picker__option-swatch"
+                                                                        style="background: linear-gradient(135deg, #ff0000, #ff8800, #ffff00, #00ff00, #0088ff, #8800ff)"></span>
+                                                                    <span class="anti-colorway-picker__option-label">Custom hex...</span>
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </template>
+                                                    <template x-if="colorwayCustomMode === wayName + '-' + token.id">
+                                                        <div class="anti-colorway-picker__custom">
+                                                            <input type="text" data-coloris
+                                                                :value="way[token.id].startsWith('#') ? way[token.id] : ''"
+                                                                placeholder="#000000"
+                                                                @input="updateColorway(wayName, token.id, $event.target.value)"
+                                                                @keydown.enter="applyCustomHex(wayName, token.id, $event.target.value)">
+                                                        </div>
+                                                    </template>
+                                                </div>
                                             </div>
                                         </div>
                                     </template>
