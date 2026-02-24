@@ -58,6 +58,11 @@ $navItems = [
     <script defer src="vendor/alpine.min.js"></script>
 </head>
 <body>
+    <!-- Schema + defaults inlined for panel.js (styles/ is outside document root) -->
+    <script>
+        window.ANTI_SCHEMA = <?php echo file_get_contents(__DIR__ . '/../styles/tokens.schema.json'); ?>;
+        window.ANTI_DEFAULTS = <?php echo file_get_contents(__DIR__ . '/../styles/defaults.json'); ?>;
+    </script>
     <!-- Panel JS injects sidebar into body -->
     <script defer src="js/panel.js"></script>
 

@@ -2,14 +2,57 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "name": "style-panel",
   "label": "Style Editor Panel",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Design token editor for typography, colors, spacing, borders, and effects",
   "icons": {
-    "typography": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polyline points=\"4 7 4 4 20 4 20 7\"></polyline><line x1=\"9\" y1=\"20\" x2=\"15\" y2=\"20\"></line><line x1=\"12\" y1=\"4\" x2=\"12\" y2=\"20\"></line></svg>",
-    "colors": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"13.5\" cy=\"6.5\" r=\"2.5\"></circle><circle cx=\"17.5\" cy=\"10.5\" r=\"2.5\"></circle><circle cx=\"8.5\" cy=\"7.5\" r=\"2.5\"></circle><circle cx=\"6.5\" cy=\"12.5\" r=\"2.5\"></circle><path d=\"M12 22C6.5 22 2 17.5 2 12S6.5 2 12 2s10 4.5 10 10c0 2.5-2 4.5-4.5 4.5h-2c-.8 0-1.5.7-1.5 1.5 0 .4.2.8.4 1.1.3.3.4.6.4 1 0 .8-.7 1.4-1.5 1.4-.4-.1-.7-.1-.8-.1z\"></path></svg>",
-    "spacing": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z\"></path><polyline points=\"3.29 7 12 12 20.71 7\"></polyline><line x1=\"12\" y1=\"22\" x2=\"12\" y2=\"12\"></line></svg>",
-    "borders": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"2\" ry=\"2\"></rect><line x1=\"3\" y1=\"9\" x2=\"21\" y2=\"9\"></line><line x1=\"9\" y1=\"21\" x2=\"9\" y2=\"9\"></line></svg>",
-    "effects": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 3l1.912 5.813a2 2 0 0 0 1.275 1.275L21 12l-5.813 1.912a2 2 0 0 0-1.275 1.275L12 21l-1.912-5.813a2 2 0 0 0-1.275-1.275L3 12l5.813-1.912a2 2 0 0 0 1.275-1.275L12 3z\"></path></svg>"
+    "typography": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polyline points=\"4 7 4 4 20 4 20 7\"></polyline><line x1=\"9\" y1=\"20\" x2=\"15\" y2=\"20\"></line><line x1=\"12\" y1=\"4\" x2=\"12\" y2=\"20\"></line></svg>",
+    "colors": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"8\" y=\"1\" width=\"8\" height=\"18\" rx=\"2\" transform=\"rotate(-25 12 19)\" fill=\"var(--icon-fill, white)\"></rect><rect x=\"8\" y=\"1\" width=\"8\" height=\"18\" rx=\"2\" transform=\"rotate(0 12 19)\" fill=\"var(--icon-fill, white)\"></rect><rect x=\"8\" y=\"1\" width=\"8\" height=\"18\" rx=\"2\" transform=\"rotate(25 12 19)\" fill=\"var(--icon-fill, white)\"></rect></svg>",
+    "spacing": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z\"></path><polyline points=\"3.29 7 12 12 20.71 7\"></polyline><line x1=\"12\" y1=\"22\" x2=\"12\" y2=\"12\"></line></svg>",
+    "borders": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"2\" ry=\"2\"></rect><line x1=\"3\" y1=\"9\" x2=\"21\" y2=\"9\"></line><line x1=\"9\" y1=\"21\" x2=\"9\" y2=\"9\"></line></svg>"
+  },
+  "sizes": {
+    "headingLevels": {
+      "items": {
+        "h1": { "position": 5, "cssKey": "heading-1" },
+        "h2": { "position": 4, "cssKey": "heading-2" },
+        "h3": { "position": 3, "cssKey": "heading-3" },
+        "h4": { "position": 2, "cssKey": "heading-4" },
+        "h5": { "position": 1, "cssKey": "heading-5" },
+        "h6": { "position": 0, "cssKey": "heading-6" }
+      }
+    },
+    "textSizes": {
+      "items": {
+        "xl": { "position": 2 },
+        "l":  { "position": 1 },
+        "m":  { "position": 0 },
+        "s":  { "position": -1 },
+        "xs": { "position": -2 }
+      }
+    },
+    "spacingSizes": {
+      "items": {
+        "xxs": { "position": -3 },
+        "xs":  { "position": -2 },
+        "s":   { "position": -1 },
+        "m":   { "position": 0 },
+        "l":   { "position": 1 },
+        "xl":  { "position": 2 },
+        "xxl": { "position": 3 }
+      }
+    },
+    "borderSizes": {
+      "items": { "s": {}, "m": {}, "l": {} }
+    },
+    "radiusSizes": {
+      "items": {
+        "xs": {}, "s": {}, "m": {}, "l": {}, "xl": {},
+        "full": { "fixed": true, "displayNote": "9999px (pill/circle)" }
+      }
+    },
+    "shadowSizes": {
+      "items": { "xs": {}, "s": {}, "m": {}, "l": {}, "xl": {} }
+    }
   },
   "panels": [
     {
@@ -24,7 +67,7 @@
           "sections": [
             {
               "id": "defaults",
-              "label": "Default Styles",
+              "label": "Base",
               "fields": [
                 {
                   "id": "baseSize",
@@ -50,25 +93,24 @@
             },
             {
               "id": "overrides",
-              "label": "Overrides",
+              "label": "Individual Sizes",
               "settingsKey": "typography.headings.sizes",
               "sizesArray": "headingLevels",
               "cssPrefix": "heading",
               "unit": "px",
               "fields": [
-                "value",
-                "enabled",
-                "lineHeight",
-                "letterSpacing",
-                "weight"
-              ],
-              "range": {
-                "min": 12,
-                "max": 128,
-                "step": 1
-              }
+                { "id": "value", "type": "range", "isMain": true, "min": 12, "max": 128, "step": 1 },
+                { "id": "enabled", "type": "toggle" },
+                { "id": "lineHeight", "label": "Line Height", "type": "number", "min": 0.5, "max": 3, "step": 0.05, "cssSuffix": "-line-height" },
+                { "id": "letterSpacing", "label": "Letter Spacing", "type": "number", "min": -0.1, "max": 0.5, "step": 0.01, "cssSuffix": "-letter-spacing", "cssUnit": "em" },
+                { "id": "weight", "label": "Weight", "type": "select", "presets": "fontWeights", "cssSuffix": "-weight" }
+              ]
             }
-          ]
+          ],
+          "resetButton": {
+            "label": "Reset Typography",
+            "sections": ["typography"]
+          }
         },
         {
           "id": "text",
@@ -77,7 +119,7 @@
           "sections": [
             {
               "id": "defaults",
-              "label": "Default Styles",
+              "label": "Base",
               "fields": [
                 {
                   "id": "baseSize",
@@ -103,30 +145,19 @@
             },
             {
               "id": "overrides",
-              "label": "Overrides",
+              "label": "Individual Sizes",
               "settingsKey": "typography.text.sizes",
               "sizesArray": "textSizes",
               "cssPrefix": "text",
               "unit": "px",
               "fields": [
-                "value",
-                "enabled"
-              ],
-              "range": {
-                "min": 10,
-                "max": 48,
-                "step": 1
-              }
+                { "id": "value", "type": "range", "isMain": true, "min": 10, "max": 48, "step": 1 },
+                { "id": "enabled", "type": "toggle" }
+              ]
             }
           ]
         }
-      ],
-      "resetButton": {
-        "label": "Reset Typography",
-        "sections": [
-          "typography"
-        ]
-      }
+      ]
     },
     {
       "id": "colors",
@@ -137,7 +168,6 @@
           "id": "palette",
           "label": "Palette",
           "settingsKey": "color.sections",
-          "dataStructure": "nested",
           "sections": [
             {
               "id": "brand",
@@ -173,13 +203,17 @@
           "hues": {
             "settingsKey": "color.hues",
             "shades": [
-              "ultra-light",
-              "light",
-              "semi-light",
-              "semi-dark",
-              "dark",
-              "ultra-dark"
+              { "id": "ultra-light", "lightness": 90 },
+              { "id": "light", "lightness": 80 },
+              { "id": "semi-light", "lightness": 65 },
+              { "id": "semi-dark", "lightness": 35 },
+              { "id": "dark", "lightness": 20 },
+              { "id": "ultra-dark", "lightness": 10 }
             ]
+          },
+          "resetButton": {
+            "label": "Reset Colors",
+            "sections": ["color.sections"]
           }
         },
         {
@@ -188,35 +222,18 @@
           "settingsKey": "color.colorways",
           "description": "Define color schemes that can be applied to sections",
           "properties": [
-            {
-              "id": "base",
-              "label": "Base"
-            },
-            {
-              "id": "hard-contrast",
-              "label": "Hard Contrast"
-            },
-            {
-              "id": "contrast",
-              "label": "Contrast"
-            },
-            {
-              "id": "soft-contrast",
-              "label": "Soft Contrast"
-            },
-            {
-              "id": "accent",
-              "label": "Accent"
-            }
-          ]
+            { "id": "base", "label": "Base" },
+            { "id": "hard-contrast", "label": "Hard Contrast" },
+            { "id": "contrast", "label": "Contrast" },
+            { "id": "soft-contrast", "label": "Soft Contrast" },
+            { "id": "accent", "label": "Accent" }
+          ],
+          "resetButton": {
+            "label": "Reset Colorways",
+            "sections": ["color.colorways"]
+          }
         }
-      ],
-      "resetButton": {
-        "label": "Reset Colors",
-        "sections": [
-          "colors"
-        ]
-      }
+      ]
     },
     {
       "id": "spacing",
@@ -225,7 +242,7 @@
       "sections": [
         {
           "id": "defaults",
-          "label": "Default Styles",
+          "label": "Base",
           "fields": [
             {
               "id": "baseSize",
@@ -251,26 +268,20 @@
         },
         {
           "id": "overrides",
-          "label": "Overrides",
+          "label": "Individual Sizes",
           "settingsKey": "spacing.sizes",
+          "sizesArray": "spacingSizes",
           "cssPrefix": "space",
           "unit": "px",
           "fields": [
-            "value",
-            "enabled"
-          ],
-          "range": {
-            "min": 0,
-            "max": 128,
-            "step": 1
-          }
+            { "id": "value", "type": "range", "isMain": true, "min": 0, "max": 128, "step": 1 },
+            { "id": "enabled", "type": "toggle" }
+          ]
         }
       ],
       "resetButton": {
         "label": "Reset Spacing",
-        "sections": [
-          "spacing"
-        ]
+        "sections": ["spacing"]
       }
     },
     {
@@ -282,114 +293,70 @@
           "id": "borders",
           "label": "Borders",
           "settingsKey": "borders.sizes",
+          "sizesArray": "borderSizes",
           "cssPrefix": "border",
           "unit": "px",
           "fields": [
-            "value",
-            "enabled"
-          ]
+            { "id": "value", "type": "range", "isMain": true, "min": 1, "max": 16, "step": 1 },
+            { "id": "enabled", "type": "toggle" }
+          ],
+          "resetButton": {
+            "label": "Reset Borders",
+            "sections": ["borders", "shadows", "radius"]
+          }
         },
         {
           "id": "shadows",
           "label": "Shadows",
           "settingsKey": "shadows",
+          "sizesArray": "shadowSizes",
           "cssPrefix": "shadow",
-          "unit": null,
+          "composite": {
+            "template": "{x}px {y}px {blur}px {spread}px rgba(0,0,0,{opacity})",
+            "fields": [
+              { "id": "x", "label": "X Offset", "type": "range", "min": -50, "max": 50, "step": 1, "unit": "px" },
+              { "id": "y", "label": "Y Offset", "type": "range", "min": -50, "max": 50, "step": 1, "unit": "px" },
+              { "id": "blur", "label": "Blur", "type": "range", "min": 0, "max": 100, "step": 1, "unit": "px" },
+              { "id": "spread", "label": "Spread", "type": "range", "min": -50, "max": 50, "step": 1, "unit": "px" },
+              { "id": "opacity", "label": "Opacity", "type": "range", "min": 0, "max": 1, "step": 0.01 }
+            ]
+          },
           "fields": [
-            "x",
-            "y",
-            "blur",
-            "spread",
-            "opacity",
-            "enabled"
-          ],
-          "composite": true
+            { "id": "enabled", "type": "toggle" }
+          ]
         },
         {
           "id": "radius",
           "label": "Radius",
           "settingsKey": "radius.sizes",
+          "sizesArray": "radiusSizes",
           "cssPrefix": "radius",
           "unit": "px",
           "fields": [
-            "value",
-            "enabled"
+            { "id": "value", "type": "range", "isMain": true, "min": 0, "max": 64, "step": 1 },
+            { "id": "enabled", "type": "toggle" }
           ]
         }
-      ],
-      "resetButton": {
-        "label": "Reset Borders",
-        "sections": [
-          "borders",
-          "shadows",
-          "radius"
-        ]
-      }
+      ]
     }
   ],
   "presets": {
     "typeScales": [
-      {
-        "value": 1.067,
-        "label": "Minor Second (1.067)"
-      },
-      {
-        "value": 1.125,
-        "label": "Major Second (1.125)"
-      },
-      {
-        "value": 1.2,
-        "label": "Minor Third (1.2)"
-      },
-      {
-        "value": 1.25,
-        "label": "Major Third (1.25)"
-      },
-      {
-        "value": 1.333,
-        "label": "Perfect Fourth (1.333)"
-      },
-      {
-        "value": 1.414,
-        "label": "Augmented Fourth (1.414)"
-      },
-      {
-        "value": 1.5,
-        "label": "Perfect Fifth (1.5)"
-      },
-      {
-        "value": 1.618,
-        "label": "Golden Ratio (1.618)"
-      }
+      { "value": 1.067, "label": "Minor Second (1.067)" },
+      { "value": 1.125, "label": "Major Second (1.125)" },
+      { "value": 1.2, "label": "Minor Third (1.2)" },
+      { "value": 1.25, "label": "Major Third (1.25)" },
+      { "value": 1.333, "label": "Perfect Fourth (1.333)" },
+      { "value": 1.414, "label": "Augmented Fourth (1.414)" },
+      { "value": 1.5, "label": "Perfect Fifth (1.5)" },
+      { "value": 1.618, "label": "Golden Ratio (1.618)" }
     ],
     "spacingScales": [
-      {
-        "value": 1.25,
-        "label": "Minor (1.25)"
-      },
-      {
-        "value": 1.5,
-        "label": "Standard (1.5)"
-      },
-      {
-        "value": 1.618,
-        "label": "Golden Ratio (1.618)"
-      },
-      {
-        "value": 2,
-        "label": "Double (2)"
-      }
+      { "value": 1.25, "label": "Minor (1.25)" },
+      { "value": 1.5, "label": "Standard (1.5)" },
+      { "value": 1.618, "label": "Golden Ratio (1.618)" },
+      { "value": 2, "label": "Double (2)" }
     ],
-    "fontWeights": [
-      100,
-      200,
-      300,
-      400,
-      500,
-      600,
-      700,
-      800,
-      900
-    ]
+    "fontWeights": [100, 200, 300, 400, 500, 600, 700, 800, 900]
   }
 }

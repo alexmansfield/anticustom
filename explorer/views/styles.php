@@ -165,39 +165,46 @@ anti_component('section', [
     ],
 ]);
 
-// Token reference table data — built from defaults.json
+// Token reference table data — built from defaults.json + schema positions
 $tokenRows = [];
 $defaultsPath = dirname(__DIR__, 2) . '/styles/defaults.json';
+$schemaPath = dirname(__DIR__, 2) . '/styles/tokens.schema.json';
 $tokenData = json_decode(file_get_contents($defaultsPath), true);
+$schema = json_decode(file_get_contents($schemaPath), true);
+$schemaSizes = $schema['sizes'] ?? [];
 
-// Spacing tokens
+// Spacing tokens — positions from schema
 $spaceBase = $tokenData['spacing']['baseSize'] ?? 16;
 $spaceScale = $tokenData['spacing']['scale'] ?? 1.5;
-$spacePositions = ['xxs' => -3, 'xs' => -2, 's' => -1, 'm' => 0, 'l' => 1, 'xl' => 2, 'xxl' => 3];
-foreach ($spacePositions as $size => $pos) {
+foreach (($schemaSizes['spacingSizes']['items'] ?? []) as $size => $def) {
     $sizeData = $tokenData['spacing']['sizes'][$size] ?? [];
-    $val = (!empty($sizeData['enabled']) && isset($sizeData['value']))
-        ? $sizeData['value']
-        : round($spaceBase * pow($spaceScale, $pos));
+    if (!empty($sizeData['enabled']) && isset($sizeData['value'])) {
+        $val = $sizeData['value'];
+    } elseif (isset($def['position'])) {
+        $val = round($spaceBase * pow($spaceScale, $def['position']));
+    } else {
+        continue;
+    }
     $tokenRows[] = ['id' => "space-{$size}", 'variable' => "--space-{$size}", 'category' => 'Spacing', 'default_value' => "{$val}px"];
 }
 
-// Typography — text sizes
+// Typography — text sizes from schema
 $textBase = $tokenData['typography']['text']['baseSize'] ?? 16;
 $textScale = $tokenData['typography']['text']['scale'] ?? 1.125;
-$textPositions = ['xs' => -2, 's' => -1, 'm' => 0, 'l' => 1, 'xl' => 2];
-foreach ($textPositions as $size => $pos) {
+foreach (($schemaSizes['textSizes']['items'] ?? []) as $size => $def) {
+    $pos = $def['position'] ?? 0;
     $val = round($textBase * pow($textScale, $pos), 1);
     $tokenRows[] = ['id' => "text-{$size}", 'variable' => "--text-{$size}", 'category' => 'Typography', 'default_value' => "{$val}px"];
 }
 
-// Typography — heading sizes
+// Typography — heading sizes from schema
 $headingBase = $tokenData['typography']['headings']['baseSize'] ?? 16;
 $headingScale = $tokenData['typography']['headings']['scale'] ?? 1.618;
-$headingPositions = [6 => 0, 5 => 1, 4 => 2, 3 => 3, 2 => 4, 1 => 5];
-foreach ($headingPositions as $level => $pos) {
+foreach (($schemaSizes['headingLevels']['items'] ?? []) as $key => $def) {
+    $pos = $def['position'] ?? 0;
+    $cssKey = $def['cssKey'] ?? "heading-{$key}";
     $val = round($headingBase * pow($headingScale, $pos));
-    $tokenRows[] = ['id' => "heading-{$level}", 'variable' => "--heading-{$level}", 'category' => 'Typography', 'default_value' => "{$val}px"];
+    $tokenRows[] = ['id' => $cssKey, 'variable' => "--{$cssKey}", 'category' => 'Typography', 'default_value' => "{$val}px"];
 }
 
 // Colors

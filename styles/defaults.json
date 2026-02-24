@@ -91,13 +91,16 @@
             "color": "#336699"
           },
           "secondary": {
-            "enabled": false
+            "enabled": false,
+            "color": "#64748b"
           },
           "tertiary": {
-            "enabled": false
+            "enabled": false,
+            "color": "#8b5cf6"
           },
           "base": {
-            "enabled": false
+            "enabled": false,
+            "color": "#94a3b8"
           }
         }
       },
