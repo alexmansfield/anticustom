@@ -213,7 +213,7 @@ const DEFAULT_SETTINGS = {
         info: { enabled: false, base: '#0ea5e9' },
         success: { enabled: false, base: '#22c55e' },
         warning: { enabled: false, base: '#eab308' },
-        error: { enabled: false, base: '#ef4444' }
+        danger: { enabled: false, base: '#ef4444' }
     },
     spacing: {
         baseSize: 16,
@@ -323,10 +323,10 @@ function registerStylePanel() {
                     const saved = JSON.parse(savedSettings);
                     this.settings = this.deepMerge(this.settings, saved);
                     // Prune stale keys that no longer exist in defaults
-                    for (const section of ['borders.sizes', 'spacing.sizes']) {
-                        const [a, b] = section.split('.');
-                        const defaults = DEFAULT_SETTINGS[a][b];
-                        const current = this.settings[a]?.[b];
+                    for (const section of ['colors', 'colorways', 'shadows', 'spacing.sizes', 'borders.sizes', 'radius.sizes', 'typography.headings.sizes', 'typography.text.sizes']) {
+                        const parts = section.split('.');
+                        const defaults = parts.reduce((o, k) => o?.[k], DEFAULT_SETTINGS);
+                        const current = parts.reduce((o, k) => o?.[k], this.settings);
                         if (current && defaults) {
                             for (const key of Object.keys(current)) {
                                 if (!(key in defaults)) delete current[key];
@@ -815,7 +815,7 @@ function registerStylePanel() {
             const s = this.settings;
 
             // Route flat panel colors into defaults.json section structure
-            const semanticNames = ['info', 'success', 'warning', 'error'];
+            const semanticNames = ['info', 'success', 'warning', 'danger'];
             const brandColors = {};
             const neutralColors = {};
             const semanticColors = {};

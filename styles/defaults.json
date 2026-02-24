@@ -125,7 +125,7 @@
             "enabled": false,
             "color": "#eab308"
           },
-          "error": {
+          "danger": {
             "enabled": false,
             "color": "#ef4444"
           }
