@@ -215,6 +215,9 @@ if (file_exists($preRenderStyleFile)) {
 $preRenderActiveCssFile = isset($preRenderCssFiles[$activeStyle . '.css'])
     ? $activeStyle . '.css'
     : (isset($preRenderCssFiles['_base.css']) ? '_base.css' : null);
+
+$preRenderTemplateFile = $components[$preRenderName]['path'] . '/templates/' . $preRenderName . '.php';
+$preRenderPhp = file_exists($preRenderTemplateFile) ? file_get_contents($preRenderTemplateFile) : '';
 ?>
 
 <script>
@@ -223,6 +226,7 @@ window.__antiInitialPreview = {
     component: <?php echo json_encode($preRenderName); ?>,
     componentName: <?php echo json_encode($componentData[$preRenderName]['label']); ?>,
     html: <?php echo json_encode($preRenderHtml); ?>,
+    php: <?php echo json_encode($preRenderPhp); ?>,
     css: <?php echo json_encode($preRenderCss); ?>,
     cssFiles: <?php echo json_encode($preRenderCssFiles, JSON_UNESCAPED_UNICODE); ?>,
     activeCssFile: <?php echo json_encode($preRenderActiveCssFile); ?>,
@@ -246,9 +250,9 @@ window.__antiColorways = <?php echo json_encode($colorwayNames); ?>;
                 Preview
             </button>
             <button class="anti-playground__source-toggle"
-                    :class="{ 'is-active': $store.componentPreview.sourceView === 'html' }"
-                    @click="$store.componentPreview.toggleSource('html')">
-                HTML
+                    :class="{ 'is-active': $store.componentPreview.sourceView === 'php' }"
+                    @click="$store.componentPreview.toggleSource('php')">
+                PHP
             </button>
             <button class="anti-playground__source-toggle"
                     :class="{ 'is-active': $store.componentPreview.sourceView === 'css' }"
@@ -270,8 +274,8 @@ window.__antiColorways = <?php echo json_encode($colorwayNames); ?>;
         </div>
     </template>
 
-    <template x-if="$store.componentPreview.componentName && $store.componentPreview.sourceView === 'html'">
-        <pre class="anti-playground__source" x-text="$store.componentPreview.html"></pre>
+    <template x-if="$store.componentPreview.componentName && $store.componentPreview.sourceView === 'php'">
+        <pre class="anti-playground__source" x-text="$store.componentPreview.php"></pre>
     </template>
 
     <template x-if="$store.componentPreview.componentName && $store.componentPreview.sourceView === 'css'">

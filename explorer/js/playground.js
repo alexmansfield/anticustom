@@ -29,8 +29,9 @@ function registerComponentPanel() {
     Alpine.store('componentPreview', {
         html: '',
         css: '',
+        php: '',
         componentName: '',
-        sourceView: null,   // null = preview, 'html' = HTML source, 'css' = CSS source
+        sourceView: null,   // null = preview, 'php' = PHP source, 'css' = CSS source
         loading: false,
         previewColorway: localStorage.getItem('antiExplorer_previewColorway') || '',
         cssFiles: {},
@@ -189,6 +190,7 @@ function registerComponentPanel() {
                 const store = Alpine.store('componentPreview');
                 store.html = initial.html;
                 store.css = initial.css;
+                store.php = initial.php || '';
                 store.componentName = initial.componentName;
                 store.cssFiles = initial.cssFiles || {};
                 store.activeCssFile = initial.activeCssFile || null;
@@ -199,6 +201,7 @@ function registerComponentPanel() {
 
             this.renderPreview();
             this.fetchComponentCSS();
+            this.fetchTemplatePHP();
         },
 
         async fetchComponentCSS() {
@@ -223,6 +226,17 @@ function registerComponentPanel() {
                 store.cssFiles = {};
                 store.activeCssFile = null;
                 store.css = `/* Fetch error: ${err.message} */`;
+            }
+        },
+
+        async fetchTemplatePHP() {
+            if (!this.selected) return;
+            const store = Alpine.store('componentPreview');
+            try {
+                const resp = await fetch(`/shared/template-source.php?name=${encodeURIComponent(this.selected)}`);
+                store.php = resp.ok ? await resp.text() : '/* Could not load template */';
+            } catch (err) {
+                store.php = `/* Fetch error: ${err.message} */`;
             }
         },
 
