@@ -22,7 +22,7 @@
 
     background-color: var(--colorway-base, #ffffff);
     color: var(--colorway-hard-contrast, #0f172a);
-    font-weight: 500;
+    font-weight: var(--font-weight-medium, 500);
 }
 
 /* ==========================================================================
@@ -48,7 +48,7 @@
 .anti-button--solid {
     background-color: var(--colorway-hard-contrast);
     color: var(--colorway-base);
-    border: 2px solid var(--colorway-hard-contrast);
+    border: var(--border-m, 2px) solid var(--colorway-hard-contrast);
 }
 
 .anti-button--solid:hover {
@@ -66,7 +66,7 @@
 .anti-button--outline {
     background-color: transparent;
     color: var(--colorway-hard-contrast);
-    border: 2px solid var(--colorway-hard-contrast);
+    border: var(--border-m, 2px) solid var(--colorway-hard-contrast);
 }
 
 .anti-button--outline:hover {
@@ -85,7 +85,7 @@
 .anti-button--ghost {
     background-color: transparent;
     color: var(--colorway-hard-contrast);
-    border: 2px solid transparent;
+    border: var(--border-m, 2px) solid transparent;
 }
 
 .anti-button--ghost:hover {

@@ -12,7 +12,7 @@
     background-color: var(--colorway-base, #ffffff);
     color: var(--colorway-hard-contrast, #0f172a);
     border-radius: var(--radius-l, 0.75rem);
-    border: 1px solid var(--colorway-soft-contrast, #e2e8f0);
+    border: var(--border-s, 1px) solid var(--colorway-soft-contrast, #e2e8f0);
 }
 
 /* ==========================================================================
@@ -24,7 +24,7 @@
 }
 
 .anti-testimonial__star--filled {
-    color: #fbbf24;
+    color: var(--warning, #fbbf24);
 }
 
 /* ==========================================================================

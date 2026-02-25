@@ -23,7 +23,7 @@
 }
 
 .anti-testimonial__star--filled {
-    color: #fbbf24;
+    color: var(--warning, #fbbf24);
 }
 
 /* ==========================================================================
@@ -42,7 +42,7 @@
 
 .anti-testimonial__avatar--placeholder {
     background-color: var(--colorway-accent, #2563eb);
-    color: #ffffff;
+    color: var(--colorway-base, #ffffff);
     font-size: var(--text-l, 1.125rem);
 }
 

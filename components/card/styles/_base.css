@@ -99,7 +99,7 @@
     gap: var(--anti-card-link-gap, 0.25rem);
     margin-top: var(--anti-card-link-margin, 1rem);
     font-size: var(--anti-card-link-size, 0.875rem);
-    font-weight: 500;
+    font-weight: var(--font-weight-medium, 500);
 }
 
 .anti-card__arrow {

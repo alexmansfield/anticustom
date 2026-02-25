@@ -22,12 +22,12 @@
 
 .anti-code-block__header {
     padding: var(--space-xs, 0.25rem) var(--space-m, 1rem);
-    border-bottom: 1px solid var(--neutral-ultra-dark, #0f172a);
+    border-bottom: var(--border-s, 1px) solid var(--neutral-ultra-dark, #0f172a);
 }
 
 .anti-code-block__title {
     font-size: var(--text-s, 0.875rem);
-    font-weight: 500;
+    font-weight: var(--font-weight-medium, 500);
     color: var(--neutral-light, #e2e8f0);
 }
 

@@ -19,11 +19,11 @@
 
     background-color: var(--colorway-base, #ffffff);
     color: var(--colorway-hard-contrast, #0f172a);
-    border-bottom: 1px solid var(--neutral-light, #e2e8f0);
+    border-bottom: var(--border-s, 1px) solid var(--neutral-light, #e2e8f0);
 }
 
 .anti-faq:first-child {
-    border-top: 1px solid var(--neutral-light, #e2e8f0);
+    border-top: var(--border-s, 1px) solid var(--neutral-light, #e2e8f0);
 }
 
 /* ==========================================================================
@@ -43,8 +43,8 @@
 }
 
 .anti-faq__question:focus-visible {
-    outline: 2px solid var(--colorway-accent, #2563eb);
-    outline-offset: 2px;
+    outline: var(--border-m, 2px) solid var(--colorway-accent, #2563eb);
+    outline-offset: var(--border-m, 2px);
     border-radius: var(--radius-s, 0.125rem);
 }
 

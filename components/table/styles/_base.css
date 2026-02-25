@@ -57,7 +57,7 @@
 
 .anti-table__sort-icon {
     display: inline-block;
-    margin-left: 0.25rem;
+    margin-left: var(--space-xxs, 0.25rem);
     font-size: 0.625em;
     vertical-align: middle;
 }

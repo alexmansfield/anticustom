@@ -27,5 +27,5 @@
 .anti-badge {
     background-color: var(--colorway-base, #ffffff);
     color: var(--colorway-hard-contrast, #0f172a);
-    border: 1px solid var(--colorway-soft-contrast, #e2e8f0);
+    border: var(--border-s, 1px) solid var(--colorway-soft-contrast, #e2e8f0);
 }

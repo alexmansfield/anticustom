@@ -10,5 +10,5 @@
 .anti-section {
     background-color: var(--colorway-base, #ffffff);
     color: var(--colorway-hard-contrast, #0f172a);
-    border-bottom: 1px solid var(--colorway-soft-contrast, #e2e8f0);
+    border-bottom: var(--border-s, 1px) solid var(--colorway-soft-contrast, #e2e8f0);
 }

@@ -16,7 +16,7 @@
     font-weight: 600;
     color: var(--colorway-accent, #2563eb);
     padding-bottom: var(--space-xs, 0.25rem);
-    border-bottom: 2px solid var(--colorway-accent, #2563eb);
+    border-bottom: var(--border-m, 2px) solid var(--colorway-accent, #2563eb);
     display: inline-block;
 }
 
