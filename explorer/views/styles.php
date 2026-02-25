@@ -78,17 +78,36 @@ foreach ($tokenData['radius']['sizes'] ?? [] as $size => $data) {
 ?>
 
 <?php
-anti_component('intro', [
-    'title' => 'Design Tokens',
-    'size' => 'l',
-]);
-
-anti_component('table', [
-    'columns' => [
-        ['key' => 'variable', 'label' => 'Variable'],
-        ['key' => 'category', 'label' => 'Category'],
-        ['key' => 'default_value', 'label' => 'Default'],
+anti_component('section', [
+    'padding_top' => 'xl',
+    'padding_bottom' => 'xl',
+    'gap' => 'l',
+    'children' => [
+        [
+            'type' => 'intro',
+            'props' => [
+                'title' => 'Design Tokens',
+                'size' => 'l',
+            ],
+        ],
+        [
+            'type' => 'container',
+            'props' => [
+                'children' => [
+                    [
+                        'type' => 'table',
+                        'props' => [
+                            'columns' => [
+                                ['key' => 'variable', 'label' => 'Variable'],
+                                ['key' => 'category', 'label' => 'Category'],
+                                ['key' => 'default_value', 'label' => 'Default'],
+                            ],
+                            'data' => $tokenRows,
+                            'row_key' => 'id',
+                        ],
+                    ],
+                ],
+            ],
+        ],
     ],
-    'data' => $tokenRows,
-    'row_key' => 'id',
 ]);

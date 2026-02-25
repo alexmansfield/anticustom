@@ -61,7 +61,7 @@
           "label": "Custom"
         }
       ],
-      "default": "3"
+      "default": "1"
     },
     {
       "name": "custom_columns",
