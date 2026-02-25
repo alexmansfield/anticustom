@@ -196,6 +196,8 @@ function registerStylePanel() {
             }
 
             this.applyAllSettings();
+            window.__antiSettings = this.settings;
+            window.dispatchEvent(new CustomEvent('anti-settings-changed'));
 
             // Close colorway dropdown on outside click
             document.addEventListener('click', (e) => {
@@ -897,6 +899,8 @@ function registerStylePanel() {
             this.hasChanges = true;
             this.settings._version = SETTINGS_VERSION;
             localStorage.setItem('antiExplorer_data', JSON.stringify(this.settings));
+            window.__antiSettings = this.settings;
+            window.dispatchEvent(new CustomEvent('anti-settings-changed'));
         },
 
         // ============================================
@@ -919,6 +923,8 @@ function registerStylePanel() {
             this.originalSettings = JSON.parse(JSON.stringify(this.settings));
             this.hasChanges = false;
             this.applyAllSettings();
+            window.__antiSettings = this.settings;
+            window.dispatchEvent(new CustomEvent('anti-settings-changed'));
             this.showNotification('Changes discarded', 'success');
         },
 
