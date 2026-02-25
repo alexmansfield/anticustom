@@ -1,0 +1,74 @@
+/**
+ * Code Block Style: Aristotle
+ *
+ * Lighter code theme with clear border delineation.
+ * No dark background — uses colorway base with visible border.
+ *
+ * @package Anticustom
+ */
+
+/* ==========================================================================
+   Container
+   ========================================================================== */
+
+.anti-code-block {
+    border-radius: var(--radius-l, 0.75rem);
+    background-color: var(--colorway-base, #ffffff);
+    color: var(--colorway-hard-contrast, #0f172a);
+    border: 1px solid var(--colorway-soft-contrast, #e2e8f0);
+}
+
+/* ==========================================================================
+   Header
+   ========================================================================== */
+
+.anti-code-block__header {
+    padding: var(--space-xs, 0.25rem) var(--space-m, 1rem);
+    border-bottom: 1px solid var(--colorway-soft-contrast, #e2e8f0);
+}
+
+.anti-code-block__title {
+    font-size: var(--text-s, 0.875rem);
+    font-weight: 500;
+    color: var(--colorway-hard-contrast, #0f172a);
+}
+
+.anti-code-block__language {
+    font-size: var(--text-xs, 0.75rem);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--colorway-contrast, #475569);
+}
+
+/* ==========================================================================
+   Code Area
+   ========================================================================== */
+
+.anti-code-block__pre {
+    padding: var(--space-m, 1rem);
+}
+
+.anti-code-block__code {
+    font-size: var(--text-s, 0.875rem);
+    line-height: 1.6;
+    color: var(--colorway-hard-contrast, #0f172a);
+}
+
+/* ==========================================================================
+   Line Numbers
+   ========================================================================== */
+
+.anti-code-block--has-line-numbers .anti-code-block__line::before {
+    width: 3ch;
+    margin-right: var(--space-m, 1rem);
+    color: var(--colorway-soft-contrast, #e2e8f0);
+    font-size: var(--text-xs, 0.75rem);
+}
+
+/* ==========================================================================
+   No header — add top padding to pre
+   ========================================================================== */
+
+.anti-code-block:not(.anti-code-block--has-title):not([data-language]) .anti-code-block__pre {
+    padding-top: var(--space-m, 1rem);
+}

@@ -77,30 +77,6 @@
         }
       ],
       "default": "true"
-    },
-    {
-      "name": "variant",
-      "type": "select",
-      "label": "Variant",
-      "description": "Visual style of the testimonial",
-      "options": [
-        {
-          "value": "default",
-          "label": "Default",
-          "description": "Standard card style"
-        },
-        {
-          "value": "featured",
-          "label": "Featured",
-          "description": "Larger, more prominent"
-        },
-        {
-          "value": "compact",
-          "label": "Compact",
-          "description": "Smaller, inline style"
-        }
-      ],
-      "default": "default"
     }
   ],
   "tokens_used": [

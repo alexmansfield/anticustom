@@ -10,7 +10,6 @@
  * @var string $prefix      Text before value (e.g., $)
  * @var string $suffix      Text after value (e.g., +, %)
  * @var string $description Additional context
- * @var string $variant     Style: solid|outline|ghost
  * @var string $colorway    Color scheme: inherit|default|base|primary|secondary
  */
 
@@ -20,13 +19,11 @@ $label       = $props['label'] ?? 'Happy Customers';
 $prefix      = $props['prefix'] ?? '';
 $suffix      = $props['suffix'] ?? '+';
 $description = $props['description'] ?? '';
-$variant     = $props['variant'] ?? 'solid';
 $colorway    = $props['colorway'] ?? 'inherit';
 
 // Build CSS classes
 $classes = anti_classes([
-    'anti-stats'              => true,
-    "anti-stats--{$variant}"  => true,
+    'anti-stats' => true,
 ]);
 
 // Build data attributes (skip if 'inherit' - let it inherit from parent)

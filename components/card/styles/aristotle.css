@@ -24,32 +24,11 @@
     --anti-card-grid-gap: var(--space-l, 1.5rem);
 
     background-color: var(--colorway-base, #ffffff);
+    color: var(--colorway-hard-contrast, #0f172a);
     border: 1px solid var(--colorway-soft-contrast, #e2e8f0);
     border-radius: var(--radius-l, 0.75rem);
     overflow: hidden;
 }
-
-/* ==========================================================================
-   Variant: Elevated
-   ========================================================================== */
-
-/* TODO: Implement the elevated variant for aristotle.
-   In plato, elevated uses box-shadow and hover transform.
-   For aristotle, consider a heavier border or subtle background shift instead. */
-
-/* ==========================================================================
-   Variant: Bordered
-   ========================================================================== */
-
-/* TODO: Implement the bordered variant for aristotle.
-   Consider a stronger border weight or accent-colored border. */
-
-/* ==========================================================================
-   Variant: Flat
-   ========================================================================== */
-
-/* TODO: Implement the flat variant for aristotle.
-   Consider a subtle background tint with no border. */
 
 /* ==========================================================================
    Image Aesthetics

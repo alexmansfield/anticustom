@@ -6,6 +6,11 @@
  * @package Anticustom
  */
 
+.anti-intro {
+    background-color: var(--colorway-base, #ffffff);
+    color: var(--colorway-hard-contrast, #0f172a);
+}
+
 .anti-intro__eyebrow {
     font-weight: 600;
     color: var(--colorway-accent);

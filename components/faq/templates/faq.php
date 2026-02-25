@@ -9,19 +9,16 @@
  * @var string $question       The FAQ question (required)
  * @var string $answer         The answer text (required)
  * @var string $initially_open Whether expanded by default: "true"|"false"
- * @var string $variant        Style: default|bordered|filled
  */
 
 // Extract props with defaults
 $question       = $props['question'] ?? 'What is your return policy?';
 $answer         = $props['answer'] ?? 'We offer a 30-day money-back guarantee on all purchases.';
 $initially_open = ($props['initially_open'] ?? 'false') === 'true';
-$variant        = $props['variant'] ?? 'default';
 
 // Build CSS classes
 $classes = anti_classes([
-    'anti-faq'              => true,
-    "anti-faq--{$variant}"  => true,
+    'anti-faq' => true,
 ]);
 ?>
 

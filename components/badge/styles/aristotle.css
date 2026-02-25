@@ -1,0 +1,31 @@
+/**
+ * Badge Style: Aristotle
+ *
+ * Bordered pill with subtle background instead of filled.
+ * Clear, readable status labels with no depth effects.
+ *
+ * @package Anticustom
+ */
+
+/* ==========================================================================
+   Configuration
+   ========================================================================== */
+
+.anti-badge {
+    --anti-badge-padding-s: var(--space-xs, 0.25rem) var(--space-s, 0.5rem);
+    --anti-badge-padding-m: var(--space-xs, 0.25rem) var(--space-s, 0.5rem);
+    --anti-badge-font-s: var(--text-xs, 0.75rem);
+    --anti-badge-font-m: var(--text-s, 0.875rem);
+
+    border-radius: var(--radius-full, 9999px);
+}
+
+/* ==========================================================================
+   Colors (bordered pill — outline with subtle tint)
+   ========================================================================== */
+
+.anti-badge {
+    background-color: var(--colorway-base, #ffffff);
+    color: var(--colorway-hard-contrast, #0f172a);
+    border: 1px solid var(--colorway-soft-contrast, #e2e8f0);
+}

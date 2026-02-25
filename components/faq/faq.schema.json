@@ -46,30 +46,6 @@
         }
       ],
       "default": "false"
-    },
-    {
-      "name": "variant",
-      "type": "select",
-      "label": "Variant",
-      "description": "Visual style of the FAQ item",
-      "options": [
-        {
-          "value": "default",
-          "label": "Default",
-          "description": "Clean with subtle separator"
-        },
-        {
-          "value": "bordered",
-          "label": "Bordered",
-          "description": "With visible border"
-        },
-        {
-          "value": "filled",
-          "label": "Filled",
-          "description": "With background color"
-        }
-      ],
-      "default": "default"
     }
   ],
   "tokens_used": [

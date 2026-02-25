@@ -15,7 +15,6 @@
  * @var string $icon           Icon name or emoji
  * @var string $link_url       Makes card clickable
  * @var string $link_text      CTA link text
- * @var string $variant        Style: elevated|bordered|flat
  * @var string $image_position Image placement: top|left|right
  * @var string $image_ratio    Aspect ratio: auto|16:9|4:3|square
  */
@@ -28,7 +27,6 @@ $image_alt      = $props['image_alt'] ?? '';
 $icon           = $props['icon'] ?? '';
 $link_url       = $props['link_url'] ?? '';
 $link_text      = $props['link_text'] ?? 'Learn More';
-$variant        = $props['variant'] ?? 'elevated';
 $image_position = $props['image_position'] ?? 'top';
 $image_ratio    = $props['image_ratio'] ?? '16:9';
 
@@ -51,7 +49,6 @@ $has_link  = !empty($link_url);
 // Build CSS classes
 $classes = anti_classes([
     'anti-card'                        => true,
-    "anti-card--{$variant}"            => true,
     "anti-card--img-{$image_position}" => $has_image,
     "anti-card--ratio-{$image_ratio}"  => $has_image && $image_ratio !== 'auto',
     'anti-card--has-icon'              => $has_icon,

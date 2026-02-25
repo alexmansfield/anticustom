@@ -1,7 +1,8 @@
 /**
- * Testimonial Style: Default
+ * Testimonial Style: Aristotle
  *
- * Clean testimonial cards with subtle shadows.
+ * Border instead of shadow. No italic quotes.
+ * Clean, structured look with explicit colors.
  *
  * @package Anticustom
  */
@@ -10,8 +11,8 @@
     --anti-testimonial-padding: var(--space-l, 1.5rem);
     background-color: var(--colorway-base, #ffffff);
     color: var(--colorway-hard-contrast, #0f172a);
-    border-radius: var(--radius-l, 0.5rem);
-    box-shadow: var(--shadow-m, 0 4px 6px rgba(0,0,0,0.1));
+    border-radius: var(--radius-l, 0.75rem);
+    border: 1px solid var(--colorway-soft-contrast, #e2e8f0);
 }
 
 /* ==========================================================================
@@ -19,7 +20,7 @@
    ========================================================================== */
 
 .anti-testimonial__star {
-    color: var(--neutral-light, #d1d5db);
+    color: var(--colorway-soft-contrast, #d1d5db);
 }
 
 .anti-testimonial__star--filled {
@@ -27,13 +28,12 @@
 }
 
 /* ==========================================================================
-   Quote
+   Quote (no italic)
    ========================================================================== */
 
 .anti-testimonial__quote p {
     font-size: var(--text-l, 1.125rem);
-    color: var(--neutral-semi-dark, #374151);
-    font-style: italic;
+    color: var(--colorway-contrast, #475569);
 }
 
 /* ==========================================================================
@@ -42,19 +42,19 @@
 
 .anti-testimonial__avatar--placeholder {
     background-color: var(--colorway-accent, #2563eb);
-    color: #ffffff;
+    color: var(--colorway-base, #ffffff);
     font-size: var(--text-l, 1.125rem);
 }
 
 .anti-testimonial__name {
     font-size: var(--text-m, 1rem);
     font-weight: 600;
-    color: var(--neutral-dark, #0f172a);
+    color: var(--colorway-hard-contrast, #0f172a);
 }
 
 .anti-testimonial__role {
     font-size: var(--text-s, 0.875rem);
-    color: var(--neutral-semi-light, #6b7280);
+    color: var(--colorway-contrast, #475569);
 }
 
 /* ==========================================================================

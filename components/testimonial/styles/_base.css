@@ -83,64 +83,6 @@
 }
 
 /* ==========================================================================
-   Variant: Featured
-   ========================================================================== */
-
-.anti-testimonial--featured {
-    padding: var(--space-xl, 3rem);
-    text-align: center;
-}
-
-.anti-testimonial--featured .anti-testimonial__rating {
-    justify-content: center;
-}
-
-.anti-testimonial--featured .anti-testimonial__author {
-    flex-direction: column;
-    text-align: center;
-}
-
-.anti-testimonial--featured .anti-testimonial__avatar {
-    width: 64px;
-    height: 64px;
-}
-
-.anti-testimonial--featured .anti-testimonial__author-info {
-    align-items: center;
-}
-
-/* ==========================================================================
-   Variant: Compact
-   ========================================================================== */
-
-.anti-testimonial--compact {
-    padding: var(--space-m, 1rem);
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: var(--space-m, 1rem);
-}
-
-.anti-testimonial--compact .anti-testimonial__rating {
-    margin-bottom: 0;
-    order: 1;
-}
-
-.anti-testimonial--compact .anti-testimonial__quote {
-    margin-bottom: 0;
-    flex-basis: 100%;
-    order: 2;
-}
-
-.anti-testimonial--compact .anti-testimonial__author {
-    order: 3;
-}
-
-.anti-testimonial--compact .anti-testimonial__avatar {
-    width: 40px;
-    height: 40px;
-}
-
-/* ==========================================================================
    Testimonial Grid Container
    ========================================================================== */
 
@@ -160,9 +102,5 @@
 @media (max-width: 768px) {
     .anti-testimonial {
         padding: var(--space-m, 1rem);
-    }
-
-    .anti-testimonial--featured {
-        padding: var(--space-l, 1.5rem);
     }
 }

@@ -11,7 +11,6 @@
  * @var string $avatar       Avatar image URL
  * @var int    $rating       Star rating 1-5
  * @var string $show_rating  Whether to show stars: "true"|"false"
- * @var string $variant      Style: default|featured|compact
  */
 
 // Extract props with defaults
@@ -21,7 +20,6 @@ $author_role = $props['author_role'] ?? '';
 $avatar      = $props['avatar'] ?? '';
 $rating      = (int) ($props['rating'] ?? 5);
 $show_rating = ($props['show_rating'] ?? 'true') === 'true';
-$variant     = $props['variant'] ?? 'default';
 
 // Clamp rating between 1-5
 $rating = max(1, min(5, $rating));
@@ -29,7 +27,6 @@ $rating = max(1, min(5, $rating));
 // Build CSS classes
 $classes = anti_classes([
     'anti-testimonial'              => true,
-    "anti-testimonial--{$variant}"  => true,
     'anti-testimonial--has-avatar'  => !empty($avatar),
 ]);
 ?>

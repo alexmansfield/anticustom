@@ -79,31 +79,6 @@
       }
     },
     {
-      "name": "variant",
-      "type": "select",
-      "label": "Variant",
-      "description": "Visual style of the stat",
-      "options": [
-        {
-          "value": "solid",
-          "label": "Solid",
-          "description": "Filled colorway background"
-        },
-        {
-          "value": "outline",
-          "label": "Outline",
-          "description": "White background with colored border"
-        },
-        {
-          "value": "ghost",
-          "label": "Ghost",
-          "description": "Transparent, no border or shadow"
-        }
-      ],
-      "default": "solid",
-      "tab": "settings"
-    },
-    {
       "name": "colorway",
       "type": "colorway",
       "label": "Colorway",

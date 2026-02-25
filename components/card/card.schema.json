@@ -70,30 +70,6 @@
       "required": false
     },
     {
-      "name": "variant",
-      "type": "select",
-      "label": "Variant",
-      "description": "Visual style of the card",
-      "options": [
-        {
-          "value": "elevated",
-          "label": "Elevated",
-          "description": "Raised with shadow"
-        },
-        {
-          "value": "bordered",
-          "label": "Bordered",
-          "description": "Flat with border"
-        },
-        {
-          "value": "flat",
-          "label": "Flat",
-          "description": "No border or shadow"
-        }
-      ],
-      "default": "elevated"
-    },
-    {
       "name": "image_position",
       "type": "select",
       "label": "Image Position",

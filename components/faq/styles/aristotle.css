@@ -1,7 +1,8 @@
 /**
- * FAQ Style: Default
+ * FAQ Style: Aristotle
  *
- * Clean accordion with subtle borders and hover effects.
+ * Heavier borders between items. No hover color animations.
+ * No expand animation. Clean, structured accordion.
  *
  * @package Anticustom
  */
@@ -19,24 +20,16 @@
 
     background-color: var(--colorway-base, #ffffff);
     color: var(--colorway-hard-contrast, #0f172a);
-    border-bottom: 1px solid var(--neutral-light, #e2e8f0);
+    border-bottom: 2px solid var(--colorway-soft-contrast, #e2e8f0);
 }
 
 .anti-faq:first-child {
-    border-top: 1px solid var(--neutral-light, #e2e8f0);
+    border-top: 2px solid var(--colorway-soft-contrast, #e2e8f0);
 }
 
 /* ==========================================================================
    Question Styling
    ========================================================================== */
-
-.anti-faq__question {
-    transition: color 200ms ease;
-}
-
-.anti-faq__question:hover {
-    color: var(--colorway-accent, #2563eb);
-}
 
 .anti-faq__question:focus {
     outline: none;
@@ -51,11 +44,7 @@
 .anti-faq__question-text {
     font-size: var(--text-l, 1.125rem);
     font-weight: 600;
-    color: var(--neutral-dark, #0f172a);
-}
-
-.anti-faq__question:hover .anti-faq__question-text {
-    color: var(--colorway-accent, #2563eb);
+    color: var(--colorway-hard-contrast, #0f172a);
 }
 
 /* ==========================================================================
@@ -63,29 +52,15 @@
    ========================================================================== */
 
 .anti-faq__icon {
-    color: var(--neutral-semi-light, #6b7280);
-    transition: transform 300ms ease, color 200ms ease;
-}
-
-.anti-faq__question:hover .anti-faq__icon {
-    color: var(--colorway-accent, #2563eb);
+    color: var(--colorway-contrast, #475569);
 }
 
 /* ==========================================================================
-   Answer Styling
+   Answer Styling (no animation)
    ========================================================================== */
-
-.anti-faq__answer {
-    animation: anti-faq-expand 300ms ease;
-}
-
-@keyframes anti-faq-expand {
-    from { transform: translateY(-8px); }
-    to { transform: translateY(0); }
-}
 
 .anti-faq__answer p {
     font-size: var(--text-m, 1rem);
-    color: var(--neutral-semi-dark, #475569);
+    color: var(--colorway-contrast, #475569);
 }
 

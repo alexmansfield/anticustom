@@ -1,0 +1,18 @@
+/**
+ * Hero Style: Aristotle
+ *
+ * Background and text color from colorway tokens.
+ * Bottom border to anchor the section visually.
+ *
+ * @package Anticustom
+ */
+
+.anti-hero {
+    background-color: var(--colorway-base, #ffffff);
+    color: var(--colorway-hard-contrast, #0f172a);
+    border-bottom: 2px solid var(--colorway-soft-contrast, #e2e8f0);
+}
+
+.anti-hero--has-bg {
+    border-bottom: none;
+}
