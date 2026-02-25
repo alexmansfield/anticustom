@@ -50,7 +50,7 @@ foreach (($schemaSizes['headingLevels']['items'] ?? []) as $key => $def) {
 // Colors
 foreach ($tokenData['color']['sections'] ?? [] as $section) {
     foreach ($section['colors'] ?? [] as $name => $colorData) {
-        if (isset($colorData['color'])) {
+        if (!empty($colorData['enabled']) && isset($colorData['color'])) {
             $tokenRows[] = ['id' => $name, 'variable' => "--{$name}", 'category' => 'Colors', 'default_value' => $colorData['color']];
         }
     }
@@ -58,20 +58,21 @@ foreach ($tokenData['color']['sections'] ?? [] as $section) {
 
 // Borders
 foreach ($tokenData['borders']['sizes'] ?? [] as $size => $data) {
-    if (isset($data['value'])) {
+    if (!empty($data['enabled']) && isset($data['value'])) {
         $tokenRows[] = ['id' => "border-{$size}", 'variable' => "--border-{$size}", 'category' => 'Borders', 'default_value' => "{$data['value']}px"];
     }
 }
 
 // Shadows
 foreach ($tokenData['shadows'] ?? [] as $size => $s) {
+    if (isset($s['enabled']) && !$s['enabled']) continue;
     $val = ($s['x'] ?? 0) . 'px ' . ($s['y'] ?? 0) . 'px ' . ($s['blur'] ?? 0) . 'px ' . ($s['spread'] ?? 0) . 'px rgba(0,0,0,' . ($s['opacity'] ?? 0.1) . ')';
     $tokenRows[] = ['id' => "shadow-{$size}", 'variable' => "--shadow-{$size}", 'category' => 'Shadows', 'default_value' => $val];
 }
 
 // Radius
 foreach ($tokenData['radius']['sizes'] ?? [] as $size => $data) {
-    if (isset($data['value'])) {
+    if (!empty($data['enabled']) && isset($data['value'])) {
         $tokenRows[] = ['id' => "radius-{$size}", 'variable' => "--radius-{$size}", 'category' => 'Radius', 'default_value' => "{$data['value']}px"];
     }
 }

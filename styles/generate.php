@@ -221,6 +221,7 @@ $rootVars[] = '';
 $rootVars[] = '    /* Radius */';
 foreach ($radiusOrder as $size) {
     $data = $radius[$size] ?? [];
+    if (isset($data['enabled']) && !$data['enabled']) continue;
     $val = $data['value'] ?? null;
     if ($val !== null) {
         $unit = ($size === 'full') ? 'px' : 'px';
@@ -240,6 +241,7 @@ $rootVars[] = '    /* Shadows */';
 foreach ($shadowOrder as $size) {
     $s = $shadows[$size] ?? null;
     if ($s === null) continue;
+    if (isset($s['enabled']) && !$s['enabled']) continue;
     $x = $s['x'] ?? 0;
     $y = $s['y'] ?? 0;
     $blur = $s['blur'] ?? 0;
@@ -259,6 +261,7 @@ $rootVars[] = '';
 $rootVars[] = '    /* Borders */';
 foreach ($borderOrder as $size) {
     $data = $borders[$size] ?? [];
+    if (isset($data['enabled']) && !$data['enabled']) continue;
     $val = $data['value'] ?? null;
     if ($val !== null) {
         $rootVars[] = "    --border-{$size}: {$val}px;";
@@ -299,6 +302,7 @@ foreach ($enabledColors as $name => $hex) {
     // Generate hue variants
     foreach ($hues as $hueName => $hueData) {
         if (!isset($hueData['value'])) continue;
+        if (isset($hueData['enabled']) && !$hueData['enabled']) continue;
         $shade = color_shade($hex, $hueData['value']);
         $rootVars[] = "    --{$name}-{$hueName}: {$shade};";
     }
