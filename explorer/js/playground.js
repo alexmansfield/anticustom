@@ -36,6 +36,8 @@ function registerComponentPanel() {
         previewColorway: localStorage.getItem('antiExplorer_previewColorway') || '',
         cssFiles: {},
         activeCssFile: null,
+        activeComponentStyles: [],
+        activeStyle: window.__antiActiveStyle || 'plato',
 
         get cssFileNames() {
             return Object.keys(this.cssFiles);
@@ -43,6 +45,12 @@ function registerComponentPanel() {
 
         get activeCssContent() {
             return this.cssFiles[this.activeCssFile] || '';
+        },
+
+        get styleAvailable() {
+            if (this.activeStyle === 'none') return true;
+            if (!this.activeComponentStyles.length) return true;
+            return this.activeComponentStyles.includes(this.activeStyle);
         },
 
         toggleSource(type) {
@@ -126,6 +134,7 @@ function registerComponentPanel() {
 
         async switchStyle(style) {
             this.activeStyle = style;
+            Alpine.store('componentPreview').activeStyle = style;
 
             // Persist preference
             document.cookie = `antiExplorer_style=${encodeURIComponent(style)};path=/;max-age=31536000`;
@@ -184,10 +193,13 @@ function registerComponentPanel() {
                 this.childrenJson = '';
             }
 
+            // Update store with this component's available styles
+            const store = Alpine.store('componentPreview');
+            store.activeComponentStyles = comp.styles || [];
+
             // Use server-rendered preview if available for this component
             const initial = window.__antiInitialPreview;
             if (initial && initial.component === name) {
-                const store = Alpine.store('componentPreview');
                 store.html = initial.html;
                 store.css = initial.css;
                 store.php = initial.php || '';

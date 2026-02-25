@@ -175,6 +175,7 @@ foreach ($components as $name => $comp) {
         'fields'      => $schema['fields'] ?? [],
         'hasChildren' => $hasChildren,
         'sampleProps' => $samples[$name] ?? [],
+        'styles'      => $comp['styles'],
     ];
 }
 
@@ -260,6 +261,12 @@ window.__antiColorways = <?php echo json_encode($colorwayNames); ?>;
                 CSS
             </button>
         </div>
+    </div>
+
+    <div class="anti-playground__style-notice"
+         x-show="$store.componentPreview.componentName && !$store.componentPreview.sourceView && !$store.componentPreview.styleAvailable"
+         x-cloak>
+        <span x-text="'No ' + $store.componentPreview.activeStyle.charAt(0).toUpperCase() + $store.componentPreview.activeStyle.slice(1) + ' style for ' + $store.componentPreview.componentName + ' \u2014 showing base styles only'"></span>
     </div>
 
     <template x-if="!$store.componentPreview.componentName">

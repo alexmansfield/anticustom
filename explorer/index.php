@@ -127,7 +127,7 @@ $navItems = [
             >
                 <option value="none" :selected="style === 'none'">None</option>
                 <template x-for="s in (window.__antiStyles || ['plato'])" :key="s">
-                    <option :value="s" x-text="s.charAt(0).toUpperCase() + s.slice(1)" :selected="s === style"></option>
+                    <option :value="s" x-text="s.charAt(0).toUpperCase() + s.slice(1) + ($store.componentPreview && $store.componentPreview.activeComponentStyles.length && !$store.componentPreview.activeComponentStyles.includes(s) ? ' (N/A)' : '')" :selected="s === style"></option>
                 </template>
             </select>
             <?php endif; ?>
