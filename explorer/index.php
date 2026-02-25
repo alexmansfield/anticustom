@@ -92,14 +92,18 @@ $navItems = [
             <?php if ($tool === 'components') : ?>
             <select
                 class="anti-explorer__colorway-select"
-                x-data="{ colorway: localStorage.getItem('antiExplorer_previewColorway') || '' }"
+                x-data="{
+                    colorway: localStorage.getItem('antiExplorer_previewColorway') || '',
+                    colorways: (window.__antiColorways || []).filter(n => n !== 'default')
+                }"
                 x-model="colorway"
                 @change="window.dispatchEvent(new CustomEvent('antiColorwayChange', { detail: { colorway: colorway } }))"
+                @anti-colorways-changed.window="colorways = $event.detail.colorways.filter(n => n !== 'default')"
                 aria-label="Preview colorway"
                 title="Preview colorway"
             >
                 <option value="">Default</option>
-                <template x-for="c in (window.__antiColorways || []).filter(n => n !== 'default')" :key="c">
+                <template x-for="c in colorways" :key="c">
                     <option :value="c" x-text="c.charAt(0).toUpperCase() + c.slice(1)" :selected="c === colorway"></option>
                 </template>
             </select>

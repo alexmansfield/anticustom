@@ -236,6 +236,16 @@ window.__antiInitialPreview = {
 window.__antiStyles = <?php echo json_encode($allStyleNames); ?>;
 window.__antiActiveStyle = <?php echo json_encode($activeStyle); ?>;
 window.__antiColorways = <?php echo json_encode($colorwayNames); ?>;
+// Merge user-created colorways from localStorage so the selector is complete on first render
+try {
+    var _saved = JSON.parse(localStorage.getItem('antiExplorer_data') || '{}');
+    var _stored = Object.keys((_saved.color || {}).colorways || {});
+    for (var i = 0; i < _stored.length; i++) {
+        if (window.__antiColorways.indexOf(_stored[i]) === -1) {
+            window.__antiColorways.push(_stored[i]);
+        }
+    }
+} catch(e) {}
 </script>
 
 <!-- Preview area: reads from Alpine.store('componentPreview') set by playground.js -->

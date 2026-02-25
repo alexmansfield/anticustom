@@ -1106,3 +1106,75 @@
     outline: none;
     border-color: var(--anti-accent);
 }
+
+/* ============================================
+   Colorway Management (Add / Delete)
+   ============================================ */
+
+.anti-panel .anti-colorway-delete {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    border: none;
+    border-radius: 4px;
+    background: none;
+    color: var(--anti-text-muted);
+    cursor: pointer;
+    transition: color 0.15s, background 0.15s;
+}
+
+.anti-panel .anti-colorway-delete svg {
+    width: 12px;
+    height: 12px;
+}
+
+.anti-panel .anti-colorway-delete:hover {
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.1);
+}
+
+.anti-panel .anti-colorway-add {
+    margin-top: 12px;
+}
+
+.anti-panel .anti-btn--add-colorway {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px dashed var(--anti-control-border);
+    border-radius: 6px;
+    background: none;
+    color: var(--anti-text-muted);
+    font-size: 12px;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+}
+
+.anti-panel .anti-btn--add-colorway:hover {
+    border-color: var(--anti-accent);
+    color: var(--anti-accent);
+}
+
+.anti-panel .anti-colorway-add__form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.anti-panel .anti-colorway-add__form .anti-input {
+    font-size: 12px;
+    padding: 6px 10px;
+}
+
+.anti-panel .anti-colorway-add__actions {
+    display: flex;
+    gap: 6px;
+}
+
+.anti-panel .anti-btn--small {
+    padding: 4px 12px;
+    font-size: 11px;
+    border-radius: 4px;
+}

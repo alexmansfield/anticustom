@@ -130,6 +130,10 @@ function registerStylePanel() {
         colorwayDropdownId: null,
         colorwayCustomMode: null,
 
+        // Colorway management state
+        addingColorway: false,
+        newColorwayName: '',
+
         // Schema-driven data
         schema: null,
         settings: {},
@@ -240,8 +244,7 @@ function registerStylePanel() {
         pruneStaleKeys() {
             const prunePaths = [
                 'shadows', 'spacing.sizes', 'borders.sizes', 'radius.sizes',
-                'typography.headings.sizes', 'typography.text.sizes',
-                'color.colorways'
+                'typography.headings.sizes', 'typography.text.sizes'
             ];
             for (const path of prunePaths) {
                 const defaults = this.getByPathFrom(this.defaultSettings, path);
@@ -834,6 +837,56 @@ function registerStylePanel() {
                 }
             }
             styleEl.textContent = css;
+
+            this.syncColorwayList();
+        },
+
+        /** Broadcast current colorway names so other components (e.g. preview selector) stay in sync */
+        syncColorwayList() {
+            const colorways = Object.keys(this.settings.color?.colorways || {});
+            window.__antiColorways = colorways;
+            window.dispatchEvent(new CustomEvent('anti-colorways-changed', { detail: { colorways } }));
+        },
+
+        // ============================================
+        // Colorway Management (Add / Delete)
+        // ============================================
+
+        addColorway() {
+            const name = this.newColorwayName.trim();
+            if (!name) return;
+
+            const colorways = this.settings.color?.colorways;
+            if (!colorways || colorways[name]) {
+                this.showNotification(colorways[name] ? 'Colorway already exists' : 'Error', 'error');
+                return;
+            }
+
+            // Clone from default colorway as starting point
+            const defaultWay = colorways['default'] || {};
+            colorways[name] = JSON.parse(JSON.stringify(defaultWay));
+
+            this.newColorwayName = '';
+            this.addingColorway = false;
+            this.applyColorwaySettings();
+            this.markChanged();
+            this.showNotification(`Colorway "${name}" added`, 'success');
+        },
+
+        deleteColorway(wayName) {
+            if (wayName === 'default') return;
+            const colorways = this.settings.color?.colorways;
+            if (!colorways?.[wayName]) return;
+
+            delete colorways[wayName];
+            this.applyColorwaySettings();
+            this.markChanged();
+            this.showNotification(`Colorway "${wayName}" removed`, 'success');
+        },
+
+        cancelAddColorway() {
+            this.addingColorway = false;
+            this.newColorwayName = '';
         },
 
         // ============================================
@@ -1244,6 +1297,13 @@ const getPanelHTML = () => `
                                             <div class="anti-size-header">
                                                 <span class="anti-size-name"
                                                     x-text="wayName.charAt(0).toUpperCase() + wayName.slice(1)"></span>
+                                                <button x-show="wayName !== 'default'"
+                                                    class="anti-colorway-delete"
+                                                    @click="deleteColorway(wayName)"
+                                                    :title="'Delete ' + wayName + ' colorway'"
+                                                    aria-label="Delete colorway">
+                                                    ${UI_ICONS.close}
+                                                </button>
                                             </div>
                                             <div class="anti-size-controls">
                                                 <template x-for="token in section.properties" :key="token.id">
@@ -1316,6 +1376,29 @@ const getPanelHTML = () => `
                                             </div>
                                         </div>
                                     </template>
+
+                                    <!-- Add Colorway -->
+                                    <div class="anti-colorway-add">
+                                        <template x-if="!addingColorway">
+                                            <button class="anti-btn anti-btn--add-colorway" @click="addingColorway = true">
+                                                + Add Colorway
+                                            </button>
+                                        </template>
+                                        <template x-if="addingColorway">
+                                            <div class="anti-colorway-add__form">
+                                                <input type="text" class="anti-input"
+                                                    x-model="newColorwayName"
+                                                    placeholder="Colorway Name"
+                                                    @keydown.enter="addColorway()"
+                                                    @keydown.escape="cancelAddColorway()"
+                                                    x-init="$nextTick(() => $el.focus())">
+                                                <div class="anti-colorway-add__actions">
+                                                    <button class="anti-btn anti-btn--small anti-btn--primary" @click="addColorway()">Add</button>
+                                                    <button class="anti-btn anti-btn--small anti-btn--secondary" @click="cancelAddColorway()">Cancel</button>
+                                                </div>
+                                            </div>
+                                        </template>
+                                    </div>
                                 </div>
                             </template>
 
