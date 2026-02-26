@@ -1,0 +1,180 @@
+/**
+ * Select Component - Base Styles
+ *
+ * Structure and behavior for dropdown, radio, and checkbox modes.
+ * Requires a style file (e.g., plato.css).
+ *
+ * @package Anticustom
+ */
+
+/* ==========================================================================
+   Structure (shared)
+   ========================================================================== */
+
+.anti-select {
+    display: flex;
+    flex-direction: column;
+    gap: var(--anti-select-label-gap, 0.25rem);
+    width: 100%;
+}
+
+.anti-select__label,
+.anti-select__legend {
+    font-weight: var(--anti-select-label-weight, 500);
+    font-size: var(--anti-select-label-font, 0.875rem);
+}
+
+/* Reset fieldset defaults */
+.anti-select--radio,
+.anti-select--checkbox {
+    border: none;
+    margin: 0;
+    padding: 0;
+}
+
+.anti-select__legend {
+    padding: 0;
+}
+
+/* ==========================================================================
+   Dropdown mode
+   ========================================================================== */
+
+.anti-select__control {
+    width: 100%;
+    font-family: inherit;
+    border: none;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+    appearance: none;
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    padding-right: 2.5rem;
+    transition:
+        border-color 150ms ease,
+        box-shadow 150ms ease;
+}
+
+.anti-select__control:focus {
+    outline: none;
+}
+
+/* ==========================================================================
+   Radio & Checkbox mode
+   ========================================================================== */
+
+.anti-select__options {
+    display: flex;
+    flex-direction: column;
+    gap: var(--anti-select-option-gap, 0.5rem);
+}
+
+.anti-select__option {
+    display: flex;
+    align-items: center;
+    gap: var(--anti-select-option-inline-gap, 0.5rem);
+    cursor: pointer;
+    font-size: var(--anti-select-option-font, 1rem);
+}
+
+.anti-select__input {
+    cursor: pointer;
+}
+
+.anti-select__option-label {
+    cursor: pointer;
+}
+
+/* ==========================================================================
+   Button Group mode
+   ========================================================================== */
+
+.anti-select--button-group {
+    border: none;
+    margin: 0;
+    padding: 0;
+}
+
+.anti-select__btngroup {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--anti-select-btngroup-gap, 0.25rem);
+}
+
+.anti-select__btn {
+    padding: var(--anti-select-btn-padding, 0.25rem 0.625rem);
+    border: var(--anti-select-btn-border, 1px) solid var(--anti-select-btn-border-color, currentColor);
+    border-radius: var(--anti-select-btn-radius, 0.25rem);
+    background: transparent;
+    font-family: inherit;
+    font-size: var(--anti-select-btn-font, 0.875rem);
+    color: inherit;
+    cursor: pointer;
+    transition: all 0.12s ease;
+}
+
+.anti-select__btn:hover:not(:disabled) {
+    border-color: var(--anti-select-btn-hover-border, currentColor);
+}
+
+.anti-select__btn.is-active {
+    background: var(--anti-select-btn-active-bg, currentColor);
+    color: var(--anti-select-btn-active-color, #ffffff);
+    border-color: var(--anti-select-btn-active-border, currentColor);
+}
+
+.anti-select__btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+/* ==========================================================================
+   States
+   ========================================================================== */
+
+.anti-select--disabled .anti-select__label,
+.anti-select--disabled .anti-select__legend,
+.anti-select--disabled .anti-select__helper {
+    opacity: 0.5;
+}
+
+.anti-select--disabled .anti-select__control,
+.anti-select--disabled .anti-select__option {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.anti-select--disabled .anti-select__input,
+.anti-select--disabled .anti-select__option-label {
+    cursor: not-allowed;
+}
+
+/* ==========================================================================
+   Size Structure (dropdown)
+   ========================================================================== */
+
+.anti-select--s .anti-select__control {
+    padding: var(--anti-select-padding-s, 0.25rem 0.5rem);
+    font-size: var(--anti-select-font-s, 0.875rem);
+}
+
+.anti-select--m .anti-select__control {
+    padding: var(--anti-select-padding-m, 0.5rem 0.75rem);
+    font-size: var(--anti-select-font-m, 1rem);
+}
+
+.anti-select--l .anti-select__control {
+    padding: var(--anti-select-padding-l, 0.75rem 1rem);
+    font-size: var(--anti-select-font-l, 1.125rem);
+}
+
+/* ==========================================================================
+   Helper & Error Text
+   ========================================================================== */
+
+.anti-select__helper,
+.anti-select__error {
+    margin: 0;
+    font-size: var(--anti-select-hint-font, 0.8125rem);
+}

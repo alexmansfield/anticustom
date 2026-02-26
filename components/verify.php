@@ -230,6 +230,10 @@ $result = verify('select', ['display' => 'checkbox', 'label' => 'Pick many', 'na
 echo "select/checkbox . {$result}\n";
 if ($result === 'OK') $passed++; else { $failed++; $errors[] = "select/checkbox: {$result}"; }
 
+$result = verify('select', ['display' => 'button-group', 'label' => 'Pick one', 'name' => 'choice_bg', 'options' => $select_options, 'value' => 'b'], 'anti-select--button-group');
+echo "select/btngroup . {$result}\n";
+if ($result === 'OK') $passed++; else { $failed++; $errors[] = "select/btngroup: {$result}"; }
+
 // Verify radio uses fieldset/legend
 ob_start();
 anti_component('select', ['display' => 'radio', 'label' => 'Group', 'name' => 'grp', 'options' => $select_options]);

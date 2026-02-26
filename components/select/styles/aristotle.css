@@ -1,0 +1,120 @@
+/**
+ * Select Style: Aristotle
+ *
+ * Border-driven selects. No shadows or transforms.
+ * All states use visible border changes for clarity.
+ *
+ * @package Anticustom
+ */
+
+/* ==========================================================================
+   Configuration
+   ========================================================================== */
+
+.anti-select {
+    --anti-select-label-gap: var(--space-xs, 0.25rem);
+    --anti-select-label-weight: var(--font-weight-medium, 500);
+    --anti-select-label-font: var(--text-s, 0.875rem);
+    --anti-select-padding-s: var(--space-xs, 0.25rem) var(--space-s, 0.5rem);
+    --anti-select-padding-m: var(--space-s, 0.5rem) var(--space-m, 0.75rem);
+    --anti-select-padding-l: var(--space-m, 0.75rem) var(--space-l, 1rem);
+    --anti-select-font-s: var(--text-s, 0.875rem);
+    --anti-select-font-m: var(--text-m, 1rem);
+    --anti-select-font-l: var(--text-l, 1.125rem);
+    --anti-select-hint-font: var(--text-s, 0.8125rem);
+    --anti-select-option-gap: var(--space-s, 0.5rem);
+    --anti-select-option-inline-gap: var(--space-s, 0.5rem);
+    --anti-select-option-font: var(--text-m, 1rem);
+
+    background-color: var(--colorway-base, #ffffff);
+    color: var(--colorway-hard-contrast, #0f172a);
+}
+
+/* ==========================================================================
+   Label & Legend
+   ========================================================================== */
+
+.anti-select__label,
+.anti-select__legend {
+    color: var(--colorway-hard-contrast, #0f172a);
+}
+
+.anti-select__required {
+    color: var(--danger, #ef4444);
+}
+
+/* ==========================================================================
+   Dropdown Control
+   ========================================================================== */
+
+.anti-select__control {
+    border: var(--border-m, 2px) solid var(--colorway-soft-contrast, #cbd5e1);
+    background-color: var(--colorway-base, #ffffff);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 5l3 3 3-3' stroke='%2364748b' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    color: var(--colorway-hard-contrast, #0f172a);
+    border-radius: var(--radius-l);
+}
+
+/* ==========================================================================
+   Focus
+   ========================================================================== */
+
+.anti-select__control:focus {
+    border-color: var(--colorway-hard-contrast, #0f172a);
+}
+
+.anti-select__input:focus-visible {
+    outline: var(--border-m, 2px) solid var(--colorway-hard-contrast, #0f172a);
+    outline-offset: var(--border-m, 2px);
+}
+
+/* Aristotle does not use box-shadow for focus — border-color change only */
+
+/* ==========================================================================
+   Error State
+   ========================================================================== */
+
+.anti-select--error .anti-select__control {
+    border-color: var(--danger, #ef4444);
+}
+
+.anti-select--error .anti-select__control:focus {
+    border-color: var(--danger, #ef4444);
+}
+
+/* ==========================================================================
+   Button Group
+   ========================================================================== */
+
+.anti-select--button-group {
+    --anti-select-btngroup-gap: var(--space-xxs, 0.25rem);
+    --anti-select-btn-padding: var(--space-xxs, 0.25rem) var(--space-s, 0.625rem);
+    --anti-select-btn-border: var(--border-m, 2px);
+    --anti-select-btn-border-color: var(--colorway-soft-contrast, #cbd5e1);
+    --anti-select-btn-radius: var(--radius-l);
+    --anti-select-btn-font: var(--text-s, 0.875rem);
+    --anti-select-btn-hover-border: var(--colorway-hard-contrast, #0f172a);
+    --anti-select-btn-active-bg: var(--colorway-hard-contrast, #0f172a);
+    --anti-select-btn-active-color: var(--colorway-base, #ffffff);
+    --anti-select-btn-active-border: var(--colorway-hard-contrast, #0f172a);
+}
+
+/* ==========================================================================
+   Radio & Checkbox options
+   ========================================================================== */
+
+.anti-select__option-label {
+    color: var(--colorway-hard-contrast, #0f172a);
+}
+
+/* ==========================================================================
+   Helper & Error Text
+   ========================================================================== */
+
+.anti-select__helper {
+    color: var(--colorway-soft-contrast, #64748b);
+}
+
+.anti-select__error {
+    color: var(--danger, #ef4444);
+}

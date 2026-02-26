@@ -1,0 +1,152 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "name": "select",
+  "label": "Select",
+  "version": "1.0.0",
+  "category": "form",
+  "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"6\" width=\"18\" height=\"12\" rx=\"2\"></rect><polyline points=\"8 10 12 14 16 10\"></polyline></svg>",
+  "tabs": [
+    {
+      "id": "content",
+      "label": "Content"
+    },
+    {
+      "id": "settings",
+      "label": "Settings"
+    }
+  ],
+  "fields": [
+    {
+      "name": "display",
+      "type": "select",
+      "label": "Display Mode",
+      "description": "How options are presented",
+      "options": [
+        { "value": "dropdown", "label": "Dropdown" },
+        { "value": "radio", "label": "Radio Group" },
+        { "value": "checkbox", "label": "Checkbox Group" },
+        { "value": "button-group", "label": "Button Group" }
+      ],
+      "default": "dropdown",
+      "tab": "settings"
+    },
+    {
+      "name": "label",
+      "type": "text",
+      "label": "Label",
+      "description": "Label text for the field",
+      "default": "Label",
+      "required": true,
+      "tab": "content"
+    },
+    {
+      "name": "name",
+      "type": "text",
+      "label": "Name",
+      "description": "Form field name attribute",
+      "default": "",
+      "required": true,
+      "tab": "content"
+    },
+    {
+      "name": "options",
+      "type": "json",
+      "label": "Options",
+      "description": "Array of { value, label } objects",
+      "default": [],
+      "tab": "content"
+    },
+    {
+      "name": "value",
+      "type": "text",
+      "label": "Value",
+      "description": "Currently selected value (runtime)",
+      "default": "",
+      "tab": "content"
+    },
+    {
+      "name": "placeholder",
+      "type": "text",
+      "label": "Placeholder",
+      "description": "Placeholder text for dropdown mode",
+      "default": "",
+      "tab": "content"
+    },
+    {
+      "name": "helper_text",
+      "type": "text",
+      "label": "Helper Text",
+      "description": "Hint text shown below the field",
+      "default": "",
+      "tab": "content"
+    },
+    {
+      "name": "error_text",
+      "type": "text",
+      "label": "Error Text",
+      "description": "Error message shown when invalid (runtime)",
+      "default": "",
+      "tab": "content"
+    },
+    {
+      "name": "required",
+      "type": "boolean",
+      "label": "Required",
+      "description": "Whether the field is required",
+      "default": false,
+      "tab": "settings"
+    },
+    {
+      "name": "disabled",
+      "type": "boolean",
+      "label": "Disabled",
+      "description": "Whether the field is disabled",
+      "default": false,
+      "tab": "settings"
+    },
+    {
+      "name": "size",
+      "type": "select",
+      "label": "Size",
+      "description": "Field size",
+      "options": [
+        { "value": "s", "label": "Small" },
+        { "value": "m", "label": "Medium" },
+        { "value": "l", "label": "Large" }
+      ],
+      "default": "m",
+      "tab": "settings"
+    },
+    {
+      "name": "colorway",
+      "type": "colorway",
+      "label": "Colorway",
+      "description": "Color scheme for this select",
+      "default": "inherit",
+      "tab": "settings"
+    },
+    {
+      "name": "class",
+      "type": "text",
+      "label": "Custom Class",
+      "description": "Additional CSS class(es) to apply",
+      "default": "",
+      "tab": "settings"
+    }
+  ],
+  "tokens_used": [
+    "space-xs",
+    "space-s",
+    "space-m",
+    "space-l",
+    "text-s",
+    "text-m",
+    "text-l",
+    "radius-s",
+    "radius-m",
+    "radius-l",
+    "colorway-base",
+    "colorway-hard-contrast",
+    "colorway-soft-contrast"
+  ]
+}

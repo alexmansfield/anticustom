@@ -590,26 +590,15 @@ const getComponentPanelHTML = () => `
                                         </label>
                                     </template>
 
-                                    <!-- Multiple options: radio group -->
+                                    <!-- Multiple options: button group -->
                                     <template x-if="ctrl.options.length > 1">
-                                        <div class="anti-comp-field__radios">
-                                            <label class="anti-comp-field__radio">
-                                                <input type="radio"
-                                                       :name="'iface_' + ctrl.prop"
-                                                       value=""
-                                                       :checked="!props[ctrl.prop]"
-                                                       @change="props[ctrl.prop] = ''; applyInterfaceStyles(); scheduleRender()">
-                                                <span>None</span>
-                                            </label>
+                                        <div class="anti-select__btngroup">
                                             <template x-for="opt in ctrl.options" :key="opt.value">
-                                                <label class="anti-comp-field__radio">
-                                                    <input type="radio"
-                                                           :name="'iface_' + ctrl.prop"
-                                                           :value="opt.value"
-                                                           :checked="props[ctrl.prop] === opt.value"
-                                                           @change="props[ctrl.prop] = opt.value; applyInterfaceStyles(); scheduleRender()">
-                                                    <span x-text="opt.label"></span>
-                                                </label>
+                                                <button class="anti-select__btn"
+                                                        :class="{ 'is-active': props[ctrl.prop] === opt.value }"
+                                                        @click="props[ctrl.prop] = props[ctrl.prop] === opt.value ? '' : opt.value; applyInterfaceStyles(); scheduleRender()"
+                                                        x-text="opt.label">
+                                                </button>
                                             </template>
                                         </div>
                                     </template>

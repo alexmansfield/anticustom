@@ -494,27 +494,28 @@
     font-weight: 600;
 }
 
-.anti-comp-field__radios {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px 10px;
+/* Button group in sidebar — size overrides for component's base styles */
+.anti-comp-field .anti-select__btngroup {
+    gap: 4px;
 }
 
-.anti-comp-field__radio {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    cursor: pointer;
-    font-size: 13px;
+.anti-comp-field .anti-select__btn {
+    padding: 3px 8px;
+    border: 1px solid var(--anti-control-border, #d1d5db);
+    border-radius: 4px;
+    font-size: 12px;
+    color: var(--anti-text-secondary, #6b7280);
+}
+
+.anti-comp-field .anti-select__btn:hover {
+    border-color: var(--anti-accent, #555555);
     color: var(--anti-text, #1f2937);
 }
 
-.anti-comp-field__radio input[type="radio"] {
-    width: 14px;
-    height: 14px;
-    accent-color: var(--anti-accent, #555555);
-    cursor: pointer;
-    margin: 0;
+.anti-comp-field .anti-select__btn.is-active {
+    background: var(--anti-accent, #555555);
+    color: #ffffff;
+    border-color: var(--anti-accent, #555555);
 }
 
 /* ==========================================================================
