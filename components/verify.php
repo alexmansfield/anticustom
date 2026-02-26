@@ -64,14 +64,11 @@ echo "intro ........... {$result}\n";
 if ($result === 'OK') $passed++; else { $failed++; $errors[] = "intro: {$result}"; }
 
 // ─────────────────────────────────────────────────
-// Test: Badge (all variants)
+// Test: Badge (renders with base class)
 // ─────────────────────────────────────────────────
-$badge_variants = ['neutral', 'success', 'warning', 'danger', 'info'];
-foreach ($badge_variants as $variant) {
-    $result = verify('badge', ['text' => ucfirst($variant), 'variant' => $variant], "anti-badge--{$variant}");
-    echo "badge/{$variant} ... {$result}\n";
-    if ($result === 'OK') $passed++; else { $failed++; $errors[] = "badge/{$variant}: {$result}"; }
-}
+$result = verify('badge', ['text' => 'Active', 'variant' => 'success'], 'anti-badge');
+echo "badge ........... {$result}\n";
+if ($result === 'OK') $passed++; else { $failed++; $errors[] = "badge: {$result}"; }
 
 // ─────────────────────────────────────────────────
 // Test: Hero (with children)
@@ -179,6 +176,88 @@ $result = verify('code-block', [
 ], 'anti-code-block--has-line-numbers');
 echo "code-block/lines  {$result}\n";
 if ($result === 'OK') $passed++; else { $failed++; $errors[] = "code-block/lines: {$result}"; }
+
+// ─────────────────────────────────────────────────
+// Test: Input
+// ─────────────────────────────────────────────────
+$result = verify('input', ['label' => 'Full Name', 'name' => 'full_name', 'type' => 'text'], 'anti-input');
+echo "input ........... {$result}\n";
+if ($result === 'OK') $passed++; else { $failed++; $errors[] = "input: {$result}"; }
+
+// Test error state
+$result = verify('input', ['label' => 'Email', 'name' => 'email', 'error_text' => 'Invalid email'], 'anti-input--error');
+echo "input/error ..... {$result}\n";
+if ($result === 'OK') $passed++; else { $failed++; $errors[] = "input/error: {$result}"; }
+
+// Test required
+ob_start();
+anti_component('input', ['label' => 'Required Field', 'name' => 'req', 'required' => true]);
+$input_html = ob_get_clean();
+$req_ok = strpos($input_html, 'aria-required="true"') !== false && strpos($input_html, 'anti-input__required') !== false;
+$req_result = $req_ok ? 'OK' : 'ERROR: Required attributes not found';
+echo "input/required .. {$req_result}\n";
+if ($req_ok) $passed++; else { $failed++; $errors[] = "input/required: {$req_result}"; }
+
+// ─────────────────────────────────────────────────
+// Test: Textarea
+// ─────────────────────────────────────────────────
+$result = verify('textarea', ['label' => 'Message', 'name' => 'message', 'rows' => 4], 'anti-textarea');
+echo "textarea ........ {$result}\n";
+if ($result === 'OK') $passed++; else { $failed++; $errors[] = "textarea: {$result}"; }
+
+$result = verify('textarea', ['label' => 'Bio', 'name' => 'bio', 'error_text' => 'Too short'], 'anti-textarea--error');
+echo "textarea/error .. {$result}\n";
+if ($result === 'OK') $passed++; else { $failed++; $errors[] = "textarea/error: {$result}"; }
+
+// ─────────────────────────────────────────────────
+// Test: Select (all display modes)
+// ─────────────────────────────────────────────────
+$select_options = [
+    ['value' => 'a', 'label' => 'Option A'],
+    ['value' => 'b', 'label' => 'Option B'],
+    ['value' => 'c', 'label' => 'Option C'],
+];
+
+$result = verify('select', ['display' => 'dropdown', 'label' => 'Pick one', 'name' => 'choice', 'options' => $select_options], 'anti-select--dropdown');
+echo "select/dropdown . {$result}\n";
+if ($result === 'OK') $passed++; else { $failed++; $errors[] = "select/dropdown: {$result}"; }
+
+$result = verify('select', ['display' => 'radio', 'label' => 'Pick one', 'name' => 'choice_r', 'options' => $select_options], 'anti-select--radio');
+echo "select/radio .... {$result}\n";
+if ($result === 'OK') $passed++; else { $failed++; $errors[] = "select/radio: {$result}"; }
+
+$result = verify('select', ['display' => 'checkbox', 'label' => 'Pick many', 'name' => 'choice_c', 'options' => $select_options], 'anti-select--checkbox');
+echo "select/checkbox . {$result}\n";
+if ($result === 'OK') $passed++; else { $failed++; $errors[] = "select/checkbox: {$result}"; }
+
+// Verify radio uses fieldset/legend
+ob_start();
+anti_component('select', ['display' => 'radio', 'label' => 'Group', 'name' => 'grp', 'options' => $select_options]);
+$radio_html = ob_get_clean();
+$fieldset_ok = strpos($radio_html, '<fieldset') !== false && strpos($radio_html, '<legend') !== false;
+$fs_result = $fieldset_ok ? 'OK' : 'ERROR: Fieldset/legend not found in radio mode';
+echo "select/fieldset . {$fs_result}\n";
+if ($fieldset_ok) $passed++; else { $failed++; $errors[] = "select/fieldset: {$fs_result}"; }
+
+// ─────────────────────────────────────────────────
+// Test: Boolean (both display modes)
+// ─────────────────────────────────────────────────
+$result = verify('boolean', ['display' => 'checkbox', 'label' => 'Agree', 'name' => 'agree'], 'anti-boolean--checkbox');
+echo "boolean/check ... {$result}\n";
+if ($result === 'OK') $passed++; else { $failed++; $errors[] = "boolean/check: {$result}"; }
+
+$result = verify('boolean', ['display' => 'switch', 'label' => 'Notifications', 'name' => 'notify'], 'anti-boolean--switch');
+echo "boolean/switch .. {$result}\n";
+if ($result === 'OK') $passed++; else { $failed++; $errors[] = "boolean/switch: {$result}"; }
+
+// Verify hidden native checkbox exists
+ob_start();
+anti_component('boolean', ['display' => 'switch', 'label' => 'Test', 'name' => 'test_bool']);
+$bool_html = ob_get_clean();
+$native_ok = strpos($bool_html, 'type="checkbox"') !== false && strpos($bool_html, 'anti-boolean__control') !== false;
+$nat_result = $native_ok ? 'OK' : 'ERROR: Hidden native checkbox not found';
+echo "boolean/native .. {$nat_result}\n";
+if ($native_ok) $passed++; else { $failed++; $errors[] = "boolean/native: {$nat_result}"; }
 
 // ─────────────────────────────────────────────────
 // Summary

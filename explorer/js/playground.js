@@ -185,6 +185,14 @@ function registerComponentPanel() {
             const sample = comp.sampleProps || {};
             this.props = { ...defaults, ...sample };
 
+            // Initialize interface props
+            if (comp.interface && comp.interface.length) {
+                if (!('padding' in this.props)) this.props.padding = '';
+                if (!('border_width' in this.props)) this.props.border_width = '';
+                if (!('border_radius' in this.props)) this.props.border_radius = '';
+                if (!('shadow' in this.props)) this.props.shadow = '';
+            }
+
             // Handle children separately
             if (sample.children) {
                 this.childrenJson = JSON.stringify(sample.children, null, 2);
@@ -285,6 +293,64 @@ function registerComponentPanel() {
             if (!this.selected) return false;
             const comp = this.components[this.selected];
             return comp && comp.hasChildren;
+        },
+
+        getEnabledTokens(feature) {
+            const defaults = window.ANTI_DEFAULTS || {};
+            let saved = {};
+            try { saved = JSON.parse(localStorage.getItem('antiExplorer_data') || '{}'); } catch(e) {}
+
+            let source;
+            if (feature === 'padding') {
+                const merged = { ...defaults.spacing?.sizes };
+                const over = saved.spacing?.sizes || {};
+                for (const k in over) merged[k] = { ...merged[k], ...over[k] };
+                source = merged;
+            } else if (feature === 'border') {
+                const merged = { ...defaults.borders?.sizes };
+                const over = saved.borders?.sizes || {};
+                for (const k in over) merged[k] = { ...merged[k], ...over[k] };
+                source = merged;
+            } else if (feature === 'radius') {
+                const merged = { ...defaults.radius?.sizes };
+                const over = saved.radius?.sizes || {};
+                for (const k in over) merged[k] = { ...merged[k], ...over[k] };
+                source = merged;
+            } else if (feature === 'shadow') {
+                const merged = { ...defaults.shadows };
+                const over = saved.shadows || {};
+                for (const k in over) merged[k] = { ...merged[k], ...over[k] };
+                source = merged;
+            } else {
+                return [];
+            }
+
+            return Object.entries(source || {})
+                .filter(([, v]) => v && v.enabled)
+                .map(([key]) => ({ value: key, label: key.toUpperCase() }));
+        },
+
+        getInterfaceControls() {
+            if (!this.selected) return [];
+            const comp = this.components[this.selected];
+            if (!comp || !comp.interface || !comp.interface.length) return [];
+
+            const controls = [];
+            for (const feature of comp.interface) {
+                if (feature === 'padding') {
+                    const opts = this.getEnabledTokens('padding');
+                    if (opts.length) controls.push({ feature: 'padding', label: 'Padding', prop: 'padding', options: opts });
+                } else if (feature === 'border') {
+                    const widthOpts = this.getEnabledTokens('border');
+                    if (widthOpts.length) controls.push({ feature: 'border', label: 'Border Width', prop: 'border_width', options: widthOpts });
+                    const radiusOpts = this.getEnabledTokens('radius');
+                    if (radiusOpts.length) controls.push({ feature: 'radius', label: 'Border Radius', prop: 'border_radius', options: radiusOpts });
+                } else if (feature === 'shadow') {
+                    const opts = this.getEnabledTokens('shadow');
+                    if (opts.length) controls.push({ feature: 'shadow', label: 'Shadow', prop: 'shadow', options: opts });
+                }
+            }
+            return controls;
         },
 
         scheduleRender() {
@@ -489,6 +555,52 @@ const getComponentPanelHTML = () => `
                                 </div>
                             </template>
 
+                        </div>
+                    </template>
+
+                    <!-- Interface controls -->
+                    <template x-if="getInterfaceControls().length > 0">
+                        <div class="anti-comp-interface">
+                            <div class="anti-comp-interface__heading">Interface</div>
+                            <template x-for="ctrl in getInterfaceControls()" :key="ctrl.prop">
+                                <div class="anti-comp-field">
+                                    <label class="anti-comp-field__label" x-text="ctrl.label"></label>
+
+                                    <!-- Single option: checkbox toggle -->
+                                    <template x-if="ctrl.options.length === 1">
+                                        <label class="anti-comp-field__checkbox">
+                                            <input type="checkbox"
+                                                   :checked="props[ctrl.prop] === ctrl.options[0].value"
+                                                   @change="props[ctrl.prop] = $event.target.checked ? ctrl.options[0].value : ''; scheduleRender()">
+                                            <span x-text="ctrl.options[0].label"></span>
+                                        </label>
+                                    </template>
+
+                                    <!-- Multiple options: radio group -->
+                                    <template x-if="ctrl.options.length > 1">
+                                        <div class="anti-comp-field__radios">
+                                            <label class="anti-comp-field__radio">
+                                                <input type="radio"
+                                                       :name="'iface_' + ctrl.prop"
+                                                       value=""
+                                                       :checked="!props[ctrl.prop]"
+                                                       @change="props[ctrl.prop] = ''; scheduleRender()">
+                                                <span>None</span>
+                                            </label>
+                                            <template x-for="opt in ctrl.options" :key="opt.value">
+                                                <label class="anti-comp-field__radio">
+                                                    <input type="radio"
+                                                           :name="'iface_' + ctrl.prop"
+                                                           :value="opt.value"
+                                                           :checked="props[ctrl.prop] === opt.value"
+                                                           @change="props[ctrl.prop] = opt.value; scheduleRender()">
+                                                    <span x-text="opt.label"></span>
+                                                </label>
+                                            </template>
+                                        </div>
+                                    </template>
+                                </div>
+                            </template>
                         </div>
                     </template>
 

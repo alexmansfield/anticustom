@@ -161,6 +161,36 @@ $samples = [
         'show_rating' => 'true',
         'variant' => 'default',
     ],
+    'input' => [
+        'type' => 'text',
+        'label' => 'Full Name',
+        'name' => 'full_name',
+        'placeholder' => 'Enter your name',
+        'helper_text' => 'As it appears on your ID',
+    ],
+    'textarea' => [
+        'label' => 'Message',
+        'name' => 'message',
+        'placeholder' => 'Type your message...',
+        'rows' => 4,
+    ],
+    'select' => [
+        'display' => 'dropdown',
+        'label' => 'Country',
+        'name' => 'country',
+        'placeholder' => 'Select a country',
+        'options' => [
+            ['value' => 'us', 'label' => 'United States'],
+            ['value' => 'gb', 'label' => 'United Kingdom'],
+            ['value' => 'ca', 'label' => 'Canada'],
+            ['value' => 'au', 'label' => 'Australia'],
+        ],
+    ],
+    'boolean' => [
+        'display' => 'checkbox',
+        'label' => 'I agree to the terms and conditions',
+        'name' => 'agree_terms',
+    ],
 ];
 
 // Build component registry for JS
@@ -176,11 +206,12 @@ foreach ($components as $name => $comp) {
         'hasChildren' => $hasChildren,
         'sampleProps' => $samples[$name] ?? [],
         'styles'      => $comp['styles'],
+        'interface'   => $schema['interface'] ?? [],
     ];
 }
 
 // Sort by display order: layout -> content -> interactive -> data-display
-$categoryOrder = ['layout' => 0, 'content' => 1, 'interactive' => 2, 'data-display' => 3, 'other' => 4];
+$categoryOrder = ['layout' => 0, 'content' => 1, 'interactive' => 2, 'data-display' => 3, 'form' => 4, 'other' => 5];
 uksort($componentData, function ($a, $b) use ($componentData, $categoryOrder) {
     $catA = $categoryOrder[$componentData[$a]['category']] ?? 99;
     $catB = $categoryOrder[$componentData[$b]['category']] ?? 99;

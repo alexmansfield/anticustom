@@ -476,6 +476,48 @@
 }
 
 /* ==========================================================================
+   Interface Controls (inside settings content)
+   ========================================================================== */
+
+.anti-comp-interface {
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid var(--anti-border, #e5e7eb);
+}
+
+.anti-comp-interface__heading {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--anti-text-muted, #9ca3af);
+    padding: 0 0 8px;
+    font-weight: 600;
+}
+
+.anti-comp-field__radios {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 10px;
+}
+
+.anti-comp-field__radio {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--anti-text, #1f2937);
+}
+
+.anti-comp-field__radio input[type="radio"] {
+    width: 14px;
+    height: 14px;
+    accent-color: var(--anti-accent, #555555);
+    cursor: pointer;
+    margin: 0;
+}
+
+/* ==========================================================================
    Preview Area (in main content)
    ========================================================================== */
 

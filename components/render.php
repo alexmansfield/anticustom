@@ -294,6 +294,44 @@ if (!function_exists('render_components')) {
     }
 }
 
+// === Interface Styles ===
+
+if (!function_exists('anti_interface_css')) {
+    /**
+     * Build inline CSS from interface props (padding, border, radius, shadow).
+     * Returns a CSS string for use in a style attribute, or empty string.
+     *
+     * @param array $props Component props containing interface values
+     * @return string CSS declarations (e.g. "padding: var(--space-m); box-shadow: var(--shadow-l)")
+     */
+    function anti_interface_css(array $props): string
+    {
+        $parts = [];
+
+        $padding = $props['padding'] ?? '';
+        if ($padding !== '') {
+            $parts[] = 'padding: var(--space-' . attr_escape($padding) . ')';
+        }
+
+        $borderWidth = $props['border_width'] ?? '';
+        if ($borderWidth !== '') {
+            $parts[] = 'border: var(--border-' . attr_escape($borderWidth) . ') solid var(--colorway-soft-contrast)';
+        }
+
+        $borderRadius = $props['border_radius'] ?? '';
+        if ($borderRadius !== '') {
+            $parts[] = 'border-radius: var(--radius-' . attr_escape($borderRadius) . ')';
+        }
+
+        $shadow = $props['shadow'] ?? '';
+        if ($shadow !== '') {
+            $parts[] = 'box-shadow: var(--shadow-' . attr_escape($shadow) . ')';
+        }
+
+        return implode('; ', $parts);
+    }
+}
+
 // === Interpolation ===
 
 if (!function_exists('anti_interpolate')) {
