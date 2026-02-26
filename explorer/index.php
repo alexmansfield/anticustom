@@ -158,7 +158,7 @@ $navItems = [
             <?php endif; ?>
         </nav>
 
-        <div class="anti-explorer__content">
+        <div class="anti-explorer__content" data-tool="<?php echo $tool; ?>">
             <?php
             $viewFile = __DIR__ . "/views/{$tool}.php";
             if (file_exists($viewFile)) {
