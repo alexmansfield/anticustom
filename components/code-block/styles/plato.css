@@ -11,9 +11,9 @@
    ========================================================================== */
 
 .anti-code-block {
-    border-radius: var(--radius-m, 0.5rem);
-    background-color: var(--neutral-dark, #1e293b);
-    color: var(--neutral-ultra-light, #f1f5f9);
+    border-radius: var(--radius-m);
+    background-color: var(--colorway-base, #1e293b);
+    color: var(--colorway-hard-contrast, #f1f5f9);
 }
 
 /* ==========================================================================
@@ -22,13 +22,13 @@
 
 .anti-code-block__header {
     padding: var(--space-xs, 0.25rem) var(--space-m, 1rem);
-    border-bottom: var(--border-s, 1px) solid var(--neutral-ultra-dark, #0f172a);
+    border-bottom: var(--border-s, 1px) solid var(--colorway-soft-contrast, #0f172a);
 }
 
 .anti-code-block__title {
     font-size: var(--text-s, 0.875rem);
     font-weight: var(--font-weight-medium, 500);
-    color: var(--neutral-light, #e2e8f0);
+    color: var(--colorway-contrast, #e2e8f0);
 }
 
 .anti-code-block__language {
@@ -58,7 +58,7 @@
 .anti-code-block--has-line-numbers .anti-code-block__line::before {
     width: 3ch;
     margin-right: var(--space-m, 1rem);
-    color: var(--neutral-light, #e2e8f0);
+    color: var(--colorway-soft-contrast, #e2e8f0);
     opacity: 0.3;
     font-size: var(--text-xs, 0.75rem);
 }

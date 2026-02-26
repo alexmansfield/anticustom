@@ -64,9 +64,9 @@
     "space-s",
     "space-m",
     "radius-m",
-    "neutral-dark",
-    "neutral-ultra-dark",
-    "neutral-ultra-light",
-    "neutral-light"
+    "colorway-base",
+    "colorway-hard-contrast",
+    "colorway-contrast",
+    "colorway-soft-contrast"
   ]
 }

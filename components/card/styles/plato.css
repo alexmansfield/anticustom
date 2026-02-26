@@ -24,7 +24,7 @@
 
     background-color: var(--colorway-base, #ffffff);
     color: var(--colorway-hard-contrast, #0f172a);
-    border-radius: var(--radius-m, 0.5rem);
+    border-radius: var(--radius-m);
     overflow: hidden;
 }
 
@@ -64,7 +64,7 @@
 .anti-card__icon {
     background-color: var(--colorway-accent, #2563eb);
     color: var(--colorway-hard-contrast, #ffffff);
-    border-radius: var(--radius-m, 0.5rem);
+    border-radius: var(--radius-m);
 }
 
 /* ==========================================================================

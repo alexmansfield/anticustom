@@ -38,7 +38,7 @@
 .anti-faq__question:focus-visible {
     outline: var(--border-m, 2px) solid var(--colorway-accent, #2563eb);
     outline-offset: var(--border-m, 2px);
-    border-radius: var(--radius-s, 0.125rem);
+    border-radius: var(--radius-s);
 }
 
 .anti-faq__question-text {

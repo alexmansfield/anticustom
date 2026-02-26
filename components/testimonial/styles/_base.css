@@ -59,7 +59,7 @@
 .anti-testimonial__avatar {
     width: 48px;
     height: 48px;
-    border-radius: 50%;
+    border-radius: var(--radius-full);
     object-fit: cover;
     flex-shrink: 0;
 }

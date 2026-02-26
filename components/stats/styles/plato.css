@@ -11,7 +11,7 @@
     background-color: var(--colorway-base, #ffffff);
     color: var(--colorway-hard-contrast, #0f172a);
     border: var(--border-m, 2px) solid transparent;
-    border-radius: var(--radius-m, 0.25rem);
+    border-radius: var(--radius-m);
 }
 
 /* ==========================================================================
@@ -20,18 +20,18 @@
 
 .anti-stats__prefix,
 .anti-stats__suffix {
-    color: var(--colorway-accent, var(--primary, #2563eb));
+    color: var(--colorway-accent, #2563eb);
 }
 
 .anti-stats__number {
-    color: var(--neutral-dark, #0f172a);
+    color: var(--colorway-hard-contrast, #0f172a);
 }
 
 .anti-stats__label {
-    color: var(--neutral-semi-dark, #374151);
+    color: var(--colorway-contrast, #374151);
 }
 
 .anti-stats__description {
-    color: var(--neutral-semi-light, #6b7280);
+    color: var(--colorway-contrast, #6b7280);
 }
 

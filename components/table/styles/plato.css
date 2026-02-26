@@ -25,8 +25,7 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.03em;
-    background-color: var(--neutral-ultra-light, #f8fafc);
-    border-bottom: var(--border-s, 1px) solid var(--neutral-light, #e2e8f0);
+    background-color: var(--colorway-soft-contrast, #f8fafc);
 }
 
 /* ==========================================================================
@@ -36,7 +35,6 @@
 .anti-table__td {
     padding: var(--space-s, 0.5rem) var(--space-m, 1rem);
     font-size: var(--text-m, 1rem);
-    border-bottom: var(--border-s, 1px) solid var(--neutral-light, #e2e8f0);
 }
 
 /* ==========================================================================
@@ -44,7 +42,7 @@
    ========================================================================== */
 
 .anti-table__row--selected .anti-table__td {
-    background-color: var(--colorway-base, var(--neutral-ultra-light, #f8fafc));
+    background-color: var(--colorway-base, #f8fafc);
     color: var(--colorway-hard-contrast, inherit);
 }
 
@@ -87,8 +85,7 @@
    ========================================================================== */
 
 .anti-table-wrap {
-    border-radius: var(--radius-m, 0.5rem);
-    border: var(--border-s, 1px) solid var(--neutral-light, #e2e8f0);
+    border-radius: var(--radius-m);
 }
 
 .anti-table__body .anti-table__row:last-child .anti-table__td {

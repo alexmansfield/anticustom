@@ -10,7 +10,7 @@
     --anti-testimonial-padding: var(--space-l, 1.5rem);
     background-color: var(--colorway-base, #ffffff);
     color: var(--colorway-hard-contrast, #0f172a);
-    border-radius: var(--radius-l, 0.5rem);
+    border-radius: var(--radius-l);
     box-shadow: var(--shadow-m, 0 4px 6px rgba(0,0,0,0.1));
 }
 
@@ -19,7 +19,7 @@
    ========================================================================== */
 
 .anti-testimonial__star {
-    color: var(--neutral-light, #d1d5db);
+    color: var(--colorway-soft-contrast, #d1d5db);
 }
 
 .anti-testimonial__star--filled {
@@ -32,7 +32,7 @@
 
 .anti-testimonial__quote p {
     font-size: var(--text-l, 1.125rem);
-    color: var(--neutral-semi-dark, #374151);
+    color: var(--colorway-contrast, #374151);
     font-style: italic;
 }
 
@@ -49,12 +49,12 @@
 .anti-testimonial__name {
     font-size: var(--text-m, 1rem);
     font-weight: 600;
-    color: var(--neutral-dark, #0f172a);
+    color: var(--colorway-hard-contrast, #0f172a);
 }
 
 .anti-testimonial__role {
     font-size: var(--text-s, 0.875rem);
-    color: var(--neutral-semi-light, #6b7280);
+    color: var(--colorway-contrast, #6b7280);
 }
 
 /* ==========================================================================

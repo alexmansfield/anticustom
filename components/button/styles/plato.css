@@ -30,15 +30,15 @@
    ========================================================================== */
 
 .anti-button--s {
-    border-radius: var(--radius-s, 0.125rem);
+    border-radius: var(--radius-s);
 }
 
 .anti-button--m {
-    border-radius: var(--radius-m, 0.25rem);
+    border-radius: var(--radius-m);
 }
 
 .anti-button--l {
-    border-radius: var(--radius-l, 0.375rem);
+    border-radius: var(--radius-l);
 }
 
 /* ==========================================================================

@@ -26,7 +26,7 @@
     background-color: var(--colorway-base, #ffffff);
     color: var(--colorway-hard-contrast, #0f172a);
     border: var(--border-s, 1px) solid var(--colorway-soft-contrast, #e2e8f0);
-    border-radius: var(--radius-l, 0.75rem);
+    border-radius: var(--radius-l);
     overflow: hidden;
 }
 
@@ -58,7 +58,7 @@
 .anti-card__icon {
     border: var(--border-m, 2px) solid var(--colorway-accent, #2563eb);
     color: var(--colorway-accent, #2563eb);
-    border-radius: 50%;
+    border-radius: var(--radius-full);
 }
 
 /* ==========================================================================

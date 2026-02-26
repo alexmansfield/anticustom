@@ -19,11 +19,11 @@
 
     background-color: var(--colorway-base, #ffffff);
     color: var(--colorway-hard-contrast, #0f172a);
-    border-bottom: var(--border-s, 1px) solid var(--neutral-light, #e2e8f0);
+    border-bottom: var(--border-s, 1px) solid var(--colorway-soft-contrast, #e2e8f0);
 }
 
 .anti-faq:first-child {
-    border-top: var(--border-s, 1px) solid var(--neutral-light, #e2e8f0);
+    border-top: var(--border-s, 1px) solid var(--colorway-soft-contrast, #e2e8f0);
 }
 
 /* ==========================================================================
@@ -45,13 +45,13 @@
 .anti-faq__question:focus-visible {
     outline: var(--border-m, 2px) solid var(--colorway-accent, #2563eb);
     outline-offset: var(--border-m, 2px);
-    border-radius: var(--radius-s, 0.125rem);
+    border-radius: var(--radius-s);
 }
 
 .anti-faq__question-text {
     font-size: var(--text-l, 1.125rem);
     font-weight: 600;
-    color: var(--neutral-dark, #0f172a);
+    color: var(--colorway-hard-contrast, #0f172a);
 }
 
 .anti-faq__question:hover .anti-faq__question-text {
@@ -63,7 +63,7 @@
    ========================================================================== */
 
 .anti-faq__icon {
-    color: var(--neutral-semi-light, #6b7280);
+    color: var(--colorway-contrast, #6b7280);
     transition: transform 300ms ease, color 200ms ease;
 }
 
@@ -86,6 +86,6 @@
 
 .anti-faq__answer p {
     font-size: var(--text-m, 1rem);
-    color: var(--neutral-semi-dark, #475569);
+    color: var(--colorway-contrast, #475569);
 }
 

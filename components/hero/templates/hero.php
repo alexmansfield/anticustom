@@ -56,7 +56,6 @@ $classes = anti_classes([
     'anti-hero'                    => true,
     "anti-hero--{$alignment}"      => true,
     "anti-hero--{$size}"           => true,
-    'anti-hero--has-bg'            => !empty($background_image),
 ]);
 
 // Build data attributes (skip if 'inherit' - let it inherit from parent)

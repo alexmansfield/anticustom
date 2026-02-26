@@ -7,10 +7,6 @@
  */
 
 .anti-hero {
-    background-color: var(--colorway-base, var(--neutral-ultra-light, #f8fafc));
+    background-color: var(--colorway-base, #f8fafc);
     color: var(--colorway-hard-contrast, #0f172a);
-}
-
-.anti-hero--has-bg {
-    background-color: var(--neutral-dark, #0f172a);
 }

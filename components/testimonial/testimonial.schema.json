@@ -90,10 +90,11 @@
     "text-xl",
     "radius-l",
     "shadow-m",
-    "neutral-light",
-    "neutral-semi-light",
-    "neutral-dark",
-    "neutral-semi-dark",
-    "colorway-accent"
+    "colorway-base",
+    "colorway-hard-contrast",
+    "colorway-contrast",
+    "colorway-soft-contrast",
+    "colorway-accent",
+    "warning"
   ]
 }

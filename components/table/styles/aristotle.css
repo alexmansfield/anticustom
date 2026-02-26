@@ -28,7 +28,7 @@
     letter-spacing: 0.03em;
     background-color: var(--colorway-base, #ffffff);
     color: var(--colorway-hard-contrast, #0f172a);
-    border-bottom: var(--border-m, 2px) solid var(--colorway-hard-contrast, #0f172a);
+    border-bottom: var(--border-s, 1px) solid var(--colorway-soft-contrast, #0f172a);
 }
 
 /* ==========================================================================
@@ -93,8 +93,8 @@
 .anti-table-wrap {
     background-color: var(--colorway-base, #ffffff);
     color: var(--colorway-hard-contrast, #0f172a);
-    border-radius: var(--radius-l, 0.75rem);
-    border: var(--border-m, 2px) solid var(--colorway-soft-contrast, #e2e8f0);
+    border-radius: var(--radius-l);
+    border: var(--border-s, 1px) solid var(--colorway-soft-contrast, #e2e8f0);
 }
 
 .anti-table__body .anti-table__row:last-child .anti-table__td {
