@@ -68,6 +68,7 @@ function registerComponentPanel() {
         props: {},
         childrenJson: '',
         _debounceTimer: null,
+        _settingsVersion: 0,
         activeStyle: window.__antiActiveStyle || 'plato',
 
         colorwayOptions: [
@@ -114,6 +115,11 @@ function registerComponentPanel() {
             // Listen for style changes from the nav dropdown
             window.addEventListener('antiStyleChange', (e) => {
                 this.switchStyle(e.detail.style);
+            });
+
+            // Listen for style settings changes (token enable/disable)
+            window.addEventListener('anti-settings-changed', () => {
+                this._settingsVersion++;
             });
 
             // Listen for colorway changes from the nav dropdown
@@ -333,6 +339,7 @@ function registerComponentPanel() {
         },
 
         getInterfaceControls() {
+            void this._settingsVersion; // reactive dependency on token changes
             if (!this.selected) return [];
             const comp = this.components[this.selected];
             if (!comp || !comp.interface || !comp.interface.length) return [];
@@ -580,28 +587,16 @@ const getComponentPanelHTML = () => `
                                 <div class="anti-comp-field">
                                     <label class="anti-comp-field__label" x-text="ctrl.label"></label>
 
-                                    <!-- Single option: checkbox toggle -->
-                                    <template x-if="ctrl.options.length === 1">
-                                        <label class="anti-comp-field__checkbox">
-                                            <input type="checkbox"
-                                                   :checked="props[ctrl.prop] === ctrl.options[0].value"
-                                                   @change="props[ctrl.prop] = $event.target.checked ? ctrl.options[0].value : ''; applyInterfaceStyles(); scheduleRender()">
-                                            <span x-text="ctrl.options[0].label"></span>
-                                        </label>
-                                    </template>
-
-                                    <!-- Multiple options: button group -->
-                                    <template x-if="ctrl.options.length > 1">
-                                        <div class="anti-select__btngroup">
-                                            <template x-for="opt in ctrl.options" :key="opt.value">
-                                                <button class="anti-select__btn"
-                                                        :class="{ 'is-active': props[ctrl.prop] === opt.value }"
-                                                        @click="props[ctrl.prop] = props[ctrl.prop] === opt.value ? '' : opt.value; applyInterfaceStyles(); scheduleRender()"
-                                                        x-text="opt.label">
-                                                </button>
-                                            </template>
-                                        </div>
-                                    </template>
+                                    <!-- Button group (works for 1 or many options) -->
+                                    <div class="anti-select__btngroup">
+                                        <template x-for="opt in ctrl.options" :key="opt.value">
+                                            <button class="anti-select__btn"
+                                                    :class="{ 'is-active': props[ctrl.prop] === opt.value }"
+                                                    @click="props[ctrl.prop] = props[ctrl.prop] === opt.value ? '' : opt.value; applyInterfaceStyles(); scheduleRender()"
+                                                    x-text="opt.label">
+                                            </button>
+                                        </template>
+                                    </div>
                                 </div>
                             </template>
                         </div>

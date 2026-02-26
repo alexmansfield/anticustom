@@ -192,7 +192,8 @@ function registerStylePanel() {
             const savedTab = localStorage.getItem('antiExplorer_tab');
             if (savedCategory) {
                 this.openCategory(savedCategory);
-                if (savedTab) this.activeTab = savedTab;
+                const panel = this.getPanel(savedCategory);
+                if (savedTab && panel?.tabs?.some(t => t.id === savedTab)) this.activeTab = savedTab;
             }
 
             this.applyAllSettings();
@@ -584,7 +585,7 @@ function registerStylePanel() {
                 // Non-scale sections (radius, borders, shadows): add/remove variable
                 const sectionDef = this.findSectionBySettingsKey(settingsKey);
                 if (sectionDef) {
-                    if (!enabled) {
+                    if (!toggled) {
                         const cssName = this.getItemCSSName(sectionDef, itemKey);
                         this.applyCSSVariable(cssName, 'initial');
                     } else if (sectionDef.composite) {
