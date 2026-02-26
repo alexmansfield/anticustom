@@ -442,13 +442,11 @@ function registerStylePanel() {
                 section.scale = parseFloat(value);
             }
 
-            if (!section.customized) {
-                this.recalculateSizes(parentKey);
-            }
+            this.recalculateSizes(parentKey);
             this.markChanged();
         },
 
-        recalculateSizes(parentKey) {
+        recalculateSizes(parentKey, force = false) {
             const section = this.getByPath(parentKey);
             if (!section || section.customized === undefined) return;
 
@@ -478,11 +476,17 @@ function registerStylePanel() {
 
             for (const [key, def] of Object.entries(items)) {
                 if (def.position !== undefined && settingsObj?.[key]) {
+                    if (!force && settingsObj[key].enabled) continue;
                     settingsObj[key].value = Math.round(baseSize * Math.pow(scale, def.position));
+                    if (force) settingsObj[key].enabled = false;
                 }
             }
 
-            section.customized = false;
+            // Derive customized from whether any override is still active
+            section.customized = Object.values(settingsObj).some(
+                s => typeof s === 'object' && s.enabled
+            );
+
             this.applySectionCSS(overridesDef);
         },
 
@@ -543,10 +547,48 @@ function registerStylePanel() {
 
         toggleItem(settingsKey, itemKey, enabled) {
             const items = this.getByPath(settingsKey);
-            if (items?.[itemKey]) {
-                items[itemKey].enabled = enabled;
-                this.markChanged();
+            if (!items?.[itemKey]) return;
+
+            items[itemKey].enabled = enabled;
+
+            const parentKey = this.getParentKey(settingsKey);
+            const parent = this.getByPath(parentKey);
+            const isScaleBased = parent?.baseSize !== undefined && parent?.scale !== undefined;
+
+            if (isScaleBased) {
+                // Scale sections: recalculate when disabling, variable always stays
+                if (!enabled) {
+                    const sectionDef = this.findSectionBySettingsKey(settingsKey);
+                    const itemDef = this.schema.sizes?.[sectionDef?.sizesArray]?.items?.[itemKey];
+                    if (itemDef?.position !== undefined) {
+                        items[itemKey].value = Math.round(parent.baseSize * Math.pow(parent.scale, itemDef.position));
+                        if (sectionDef) {
+                            const cssName = this.getItemCSSName(sectionDef, itemKey);
+                            this.applyCSSVariable(cssName, `${items[itemKey].value}${sectionDef.unit || ''}`);
+                        }
+                    }
+                    parent.customized = Object.values(items).some(
+                        s => typeof s === 'object' && s.enabled
+                    );
+                }
+            } else {
+                // Non-scale sections (radius, borders, shadows): add/remove variable
+                const sectionDef = this.findSectionBySettingsKey(settingsKey);
+                if (sectionDef) {
+                    if (!enabled) {
+                        const cssName = this.getItemCSSName(sectionDef, itemKey);
+                        this.applyCSSVariable(cssName, 'initial');
+                    } else if (sectionDef.composite) {
+                        this.applyCompositeCSS(sectionDef, itemKey);
+                    } else if (items[itemKey].value !== undefined) {
+                        const cssName = this.getItemCSSName(sectionDef, itemKey);
+                        const unit = sectionDef.unit || '';
+                        this.applyCSSVariable(cssName, `${items[itemKey].value}${unit}`);
+                    }
+                }
             }
+
+            this.markChanged();
         },
 
         findSectionBySettingsKey(settingsKey) {
@@ -588,8 +630,21 @@ function registerStylePanel() {
             const items = this.getByPath(sectionDef.settingsKey);
             if (!items) return;
 
+            // Scale-based sections always emit variables; non-scale sections
+            // (radius, borders, shadows) must remove them when disabled.
+            const parentKey = this.getParentKey(sectionDef.settingsKey);
+            const parent = this.getByPath(parentKey);
+            const isScaleBased = parent?.baseSize !== undefined && parent?.scale !== undefined;
+
             for (const [key, data] of Object.entries(items)) {
                 if (typeof data !== 'object') continue;
+
+                // Non-scale: remove CSS variable for disabled items
+                if (!isScaleBased && data.enabled === false) {
+                    const cssName = this.getItemCSSName(sectionDef, key);
+                    this.applyCSSVariable(cssName, 'initial');
+                    continue;
+                }
 
                 if (sectionDef.composite) {
                     this.applyCompositeCSS(sectionDef, key);
@@ -643,6 +698,13 @@ function registerStylePanel() {
             const colors = this.getByPath(section.settingsKey);
             if (!colors) return;
             for (const [name, data] of Object.entries(colors)) {
+                if (!data.enabled) {
+                    this.applyCSSVariable(`--${name}`, 'initial');
+                    for (const shade of this.getHueShades()) {
+                        this.applyCSSVariable(`--${name}-${shade.id}`, 'initial');
+                    }
+                    continue;
+                }
                 if (data.color) {
                     this.applyCSSVariable(`--${name}`, data.color);
                     this.applyColorHues(name, data.color);
@@ -664,6 +726,15 @@ function registerStylePanel() {
             const colors = this.getByPath(settingsKey);
             if (colors?.[colorName]) {
                 colors[colorName].enabled = enabled;
+                if (enabled && colors[colorName].color) {
+                    this.applyCSSVariable(`--${colorName}`, colors[colorName].color);
+                    this.applyColorHues(colorName, colors[colorName].color);
+                } else {
+                    this.applyCSSVariable(`--${colorName}`, 'initial');
+                    for (const shade of this.getHueShades()) {
+                        this.applyCSSVariable(`--${colorName}-${shade.id}`, 'initial');
+                    }
+                }
                 this.markChanged();
             }
         },
@@ -1144,7 +1215,7 @@ const getPanelHTML = () => `
                                         <div class="anti-recalc-notice"
                                             :class="{ 'is-visible': getByPath(getParentKey(section.settingsKey))?.customized }">
                                             Sizes have been manually edited.
-                                            <button @click="recalculateSizes(getParentKey(section.settingsKey))">Recalculate from scale</button>
+                                            <button @click="recalculateSizes(getParentKey(section.settingsKey), true)">Recalculate from scale</button>
                                         </div>
                                     </template>
 
