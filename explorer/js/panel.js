@@ -398,6 +398,10 @@ function registerStylePanel() {
             return `--${cssKey}`;
         },
 
+        getToggleField(section) {
+            return this.hasBaseScale(section) ? 'override' : 'enabled';
+        },
+
         getItemLabel(key) {
             if (key.length <= 3) return key.toUpperCase();
             return key.charAt(0).toUpperCase() + key.slice(1);
@@ -476,15 +480,15 @@ function registerStylePanel() {
 
             for (const [key, def] of Object.entries(items)) {
                 if (def.position !== undefined && settingsObj?.[key]) {
-                    if (!force && settingsObj[key].enabled) continue;
+                    if (!force && settingsObj[key].override) continue;
                     settingsObj[key].value = Math.round(baseSize * Math.pow(scale, def.position));
-                    if (force) settingsObj[key].enabled = false;
+                    if (force) settingsObj[key].override = false;
                 }
             }
 
             // Derive customized from whether any override is still active
             section.customized = Object.values(settingsObj).some(
-                s => typeof s === 'object' && s.enabled
+                s => typeof s === 'object' && s.override
             );
 
             this.applySectionCSS(overridesDef);
@@ -545,19 +549,24 @@ function registerStylePanel() {
             this.markChanged();
         },
 
-        toggleItem(settingsKey, itemKey, enabled) {
+        toggleItem(settingsKey, itemKey, toggled) {
             const items = this.getByPath(settingsKey);
             if (!items?.[itemKey]) return;
-
-            items[itemKey].enabled = enabled;
 
             const parentKey = this.getParentKey(settingsKey);
             const parent = this.getByPath(parentKey);
             const isScaleBased = parent?.baseSize !== undefined && parent?.scale !== undefined;
 
+            // Scale-based items use "override"; non-scale use "enabled"
+            if (isScaleBased) {
+                items[itemKey].override = toggled;
+            } else {
+                items[itemKey].enabled = toggled;
+            }
+
             if (isScaleBased) {
                 // Scale sections: recalculate when disabling, variable always stays
-                if (!enabled) {
+                if (!toggled) {
                     const sectionDef = this.findSectionBySettingsKey(settingsKey);
                     const itemDef = this.schema.sizes?.[sectionDef?.sizesArray]?.items?.[itemKey];
                     if (itemDef?.position !== undefined) {
@@ -568,7 +577,7 @@ function registerStylePanel() {
                         }
                     }
                     parent.customized = Object.values(items).some(
-                        s => typeof s === 'object' && s.enabled
+                        s => typeof s === 'object' && s.override
                     );
                 }
             } else {
@@ -1221,12 +1230,12 @@ const getPanelHTML = () => `
 
                                     <template x-for="itemKey in getSizeItemKeys(section.sizesArray)" :key="itemKey">
                                         <div class="anti-size-section"
-                                            :class="{ 'is-enabled': getByPath(section.settingsKey)?.[itemKey]?.enabled }">
+                                            :class="{ 'is-enabled': getByPath(section.settingsKey)?.[itemKey]?.[getToggleField(section)] }">
                                             <div class="anti-size-header">
                                                 <span class="anti-size-name" x-text="getItemLabel(itemKey)"></span>
                                                 <label class="anti-toggle">
                                                     <input type="checkbox"
-                                                        :checked="getByPath(section.settingsKey)?.[itemKey]?.enabled"
+                                                        :checked="getByPath(section.settingsKey)?.[itemKey]?.[getToggleField(section)]"
                                                         @change="toggleItem(section.settingsKey, itemKey, $event.target.checked)">
                                                     <span class="anti-toggle-slider"></span>
                                                 </label>

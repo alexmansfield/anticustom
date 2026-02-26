@@ -295,17 +295,18 @@ function registerComponentPanel() {
             return comp && comp.hasChildren;
         },
 
-        getEnabledTokens(feature) {
+        getAvailableTokens(feature) {
             const defaults = window.ANTI_DEFAULTS || {};
             let saved = {};
             try { saved = JSON.parse(localStorage.getItem('antiExplorer_data') || '{}'); } catch(e) {}
 
-            let source;
+            let source, scaleBased = false;
             if (feature === 'padding') {
                 const merged = { ...defaults.spacing?.sizes };
                 const over = saved.spacing?.sizes || {};
                 for (const k in over) merged[k] = { ...merged[k], ...over[k] };
                 source = merged;
+                scaleBased = true;
             } else if (feature === 'border') {
                 const merged = { ...defaults.borders?.sizes };
                 const over = saved.borders?.sizes || {};
@@ -325,8 +326,9 @@ function registerComponentPanel() {
                 return [];
             }
 
+            // Scale-based tokens always exist; non-scale require enabled
             return Object.entries(source || {})
-                .filter(([, v]) => v && v.enabled)
+                .filter(([, v]) => v && (scaleBased || v.enabled))
                 .map(([key]) => ({ value: key, label: key.toUpperCase() }));
         },
 
@@ -338,19 +340,31 @@ function registerComponentPanel() {
             const controls = [];
             for (const feature of comp.interface) {
                 if (feature === 'padding') {
-                    const opts = this.getEnabledTokens('padding');
+                    const opts = this.getAvailableTokens('padding');
                     if (opts.length) controls.push({ feature: 'padding', label: 'Padding', prop: 'padding', options: opts });
                 } else if (feature === 'border') {
-                    const widthOpts = this.getEnabledTokens('border');
+                    const widthOpts = this.getAvailableTokens('border');
                     if (widthOpts.length) controls.push({ feature: 'border', label: 'Border Width', prop: 'border_width', options: widthOpts });
-                    const radiusOpts = this.getEnabledTokens('radius');
+                    const radiusOpts = this.getAvailableTokens('radius');
                     if (radiusOpts.length) controls.push({ feature: 'radius', label: 'Border Radius', prop: 'border_radius', options: radiusOpts });
                 } else if (feature === 'shadow') {
-                    const opts = this.getEnabledTokens('shadow');
+                    const opts = this.getAvailableTokens('shadow');
                     if (opts.length) controls.push({ feature: 'shadow', label: 'Shadow', prop: 'shadow', options: opts });
                 }
             }
             return controls;
+        },
+
+        applyInterfaceStyles() {
+            const el = document.querySelector('.anti-playground__render [x-html] > :first-child');
+            if (!el) return;
+
+            const parts = [];
+            if (this.props.padding) parts.push(`padding: var(--space-${this.props.padding})`);
+            if (this.props.border_width) parts.push(`border: var(--border-${this.props.border_width}) solid var(--colorway-soft-contrast)`);
+            if (this.props.border_radius) parts.push(`border-radius: var(--radius-${this.props.border_radius})`);
+            if (this.props.shadow) parts.push(`box-shadow: var(--shadow-${this.props.shadow})`);
+            el.style.cssText = parts.join('; ');
         },
 
         scheduleRender() {
@@ -571,7 +585,7 @@ const getComponentPanelHTML = () => `
                                         <label class="anti-comp-field__checkbox">
                                             <input type="checkbox"
                                                    :checked="props[ctrl.prop] === ctrl.options[0].value"
-                                                   @change="props[ctrl.prop] = $event.target.checked ? ctrl.options[0].value : ''; scheduleRender()">
+                                                   @change="props[ctrl.prop] = $event.target.checked ? ctrl.options[0].value : ''; applyInterfaceStyles(); scheduleRender()">
                                             <span x-text="ctrl.options[0].label"></span>
                                         </label>
                                     </template>
@@ -584,7 +598,7 @@ const getComponentPanelHTML = () => `
                                                        :name="'iface_' + ctrl.prop"
                                                        value=""
                                                        :checked="!props[ctrl.prop]"
-                                                       @change="props[ctrl.prop] = ''; scheduleRender()">
+                                                       @change="props[ctrl.prop] = ''; applyInterfaceStyles(); scheduleRender()">
                                                 <span>None</span>
                                             </label>
                                             <template x-for="opt in ctrl.options" :key="opt.value">
@@ -593,7 +607,7 @@ const getComponentPanelHTML = () => `
                                                            :name="'iface_' + ctrl.prop"
                                                            :value="opt.value"
                                                            :checked="props[ctrl.prop] === opt.value"
-                                                           @change="props[ctrl.prop] = opt.value; scheduleRender()">
+                                                           @change="props[ctrl.prop] = opt.value; applyInterfaceStyles(); scheduleRender()">
                                                     <span x-text="opt.label"></span>
                                                 </label>
                                             </template>

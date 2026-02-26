@@ -137,7 +137,7 @@ $spacePositions = ['xxs' => -3, 'xs' => -2, 's' => -1, 'm' => 0, 'l' => 1, 'xl' 
 $rootVars[] = '    /* Spacing */';
 foreach ($spacePositions as $size => $pos) {
     $sizeData = $spacing['sizes'][$size] ?? [];
-    if (!empty($sizeData['enabled']) && isset($sizeData['value'])) {
+    if (!empty($sizeData['override']) && isset($sizeData['value'])) {
         $val = $sizeData['value'];
     } else {
         $val = round(scale_value($spaceBase, $spaceScale, $pos));
@@ -158,7 +158,7 @@ $rootVars[] = '';
 $rootVars[] = '    /* Text */';
 foreach ($textPositions as $size => $pos) {
     $sizeData = $text['sizes'][$size] ?? [];
-    if (!empty($sizeData['enabled']) && isset($sizeData['value'])) {
+    if (!empty($sizeData['override']) && isset($sizeData['value'])) {
         $val = $sizeData['value'];
     } else {
         $val = scale_value($textBase, $textScale, $pos);
@@ -166,7 +166,7 @@ foreach ($textPositions as $size => $pos) {
     $rootVars[] = "    --text-{$size}: {$val}px;";
 
     // Optional sub-properties from overrides
-    if (!empty($sizeData['enabled'])) {
+    if (!empty($sizeData['override'])) {
         if (isset($sizeData['lineHeight'])) {
             $rootVars[] = "    --text-{$size}-line-height: {$sizeData['lineHeight']};";
         }
@@ -191,7 +191,7 @@ $rootVars[] = '    /* Headings */';
 foreach ($headingPositions as $level => $pos) {
     $key = "h{$level}";
     $sizeData = $headings['sizes'][$key] ?? [];
-    if (!empty($sizeData['enabled']) && isset($sizeData['value'])) {
+    if (!empty($sizeData['override']) && isset($sizeData['value'])) {
         $val = $sizeData['value'];
     } else {
         $val = round(scale_value($headingBase, $headingScale, $pos));

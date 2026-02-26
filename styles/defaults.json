@@ -6,37 +6,37 @@
       "customized": false,
       "sizes": {
         "h1": {
-          "enabled": false,
+          "override": false,
           "lineHeight": 1.2,
           "letterSpacing": -0.02,
           "weight": 700
         },
         "h2": {
-          "enabled": false,
+          "override": false,
           "lineHeight": 1.25,
           "letterSpacing": -0.02,
           "weight": 700
         },
         "h3": {
-          "enabled": false,
+          "override": false,
           "lineHeight": 1.3,
           "letterSpacing": -0.01,
           "weight": 600
         },
         "h4": {
-          "enabled": false,
+          "override": false,
           "lineHeight": 1.35,
           "letterSpacing": -0.01,
           "weight": 600
         },
         "h5": {
-          "enabled": false,
+          "override": false,
           "lineHeight": 1.4,
           "letterSpacing": 0,
           "weight": 600
         },
         "h6": {
-          "enabled": false,
+          "override": false,
           "lineHeight": 1.4,
           "letterSpacing": 0,
           "weight": 600
@@ -49,31 +49,31 @@
       "customized": false,
       "sizes": {
         "xl": {
-          "enabled": false,
+          "override": false,
           "lineHeight": 1.5,
           "letterSpacing": 0,
           "weight": 400
         },
         "l": {
-          "enabled": false,
+          "override": false,
           "lineHeight": 1.5,
           "letterSpacing": 0,
           "weight": 400
         },
         "m": {
-          "enabled": true,
+          "override": true,
           "lineHeight": 1.5,
           "letterSpacing": 0,
           "weight": 400
         },
         "s": {
-          "enabled": false,
+          "override": false,
           "lineHeight": 1.5,
           "letterSpacing": 0,
           "weight": 400
         },
         "xs": {
-          "enabled": false,
+          "override": false,
           "lineHeight": 1.5,
           "letterSpacing": 0,
           "weight": 400
@@ -184,31 +184,31 @@
     "sizes": {
       "xxs": {
         "value": 4,
-        "enabled": false
+        "override": false
       },
       "xs": {
         "value": 7,
-        "enabled": false
+        "override": false
       },
       "s": {
         "value": 11,
-        "enabled": false
+        "override": false
       },
       "m": {
         "value": 16,
-        "enabled": false
+        "override": false
       },
       "l": {
         "value": 24,
-        "enabled": false
+        "override": false
       },
       "xl": {
         "value": 36,
-        "enabled": false
+        "override": false
       },
       "xxl": {
         "value": 54,
-        "enabled": false
+        "override": false
       }
     }
   },
