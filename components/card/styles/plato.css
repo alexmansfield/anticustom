@@ -11,6 +11,7 @@
    ========================================================================== */
 
 .anti-card {
+    --anti-padding: var(--space-l, 1.5rem);
     --anti-card-padding: var(--space-l, 1.5rem);
     --anti-card-title-gap: var(--space-s, 0.5rem);
     --anti-card-title-size: var(--heading-4, 1.25rem);
@@ -24,7 +25,6 @@
 
     background-color: var(--colorway-base, #ffffff);
     color: var(--colorway-hard-contrast, #0f172a);
-    border-radius: var(--radius-m);
     overflow: hidden;
 }
 
@@ -93,7 +93,7 @@
    ========================================================================== */
 
 @media (max-width: 768px) {
-    .anti-card__content {
-        padding: var(--space-m, 1rem);
+    .anti-card {
+        --anti-padding: var(--space-m, 1rem);
     }
 }

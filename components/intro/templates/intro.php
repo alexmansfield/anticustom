@@ -36,13 +36,18 @@ $attrs = anti_attrs([
 ]);
 
 // Interface styles (padding, border, shadow)
-$interfaceCss = anti_interface_css($props);
+$interfaceCss = anti_interface_css($props, $props['__interface'] ?? []);
 
 // Determine title tag: h2 if eyebrow is absent, p if eyebrow is present
 $title_tag = !empty($eyebrow) ? 'p' : 'h2';
+
+$classes = anti_classes([
+    'anti-intro' => true,
+    'anti-interface' => !empty($props['__interface']),
+]);
 ?>
 
-<div class="anti-intro" <?php echo $attrs; ?><?php echo $interfaceCss !== '' ? ' style="' . attr_escape($interfaceCss) . '"' : ''; ?><?php echo !empty($editable) ? ' ' . $editable : ''; ?>>
+<div class="<?php echo $classes; ?>" <?php echo $attrs; ?><?php echo $interfaceCss !== '' ? ' style="' . attr_escape($interfaceCss) . '"' : ''; ?><?php echo !empty($editable) ? ' ' . $editable : ''; ?>>
     <?php if (!empty($eyebrow)) : ?>
         <h2 class="anti-intro__eyebrow"><?php echo html_escape($eyebrow); ?></h2>
     <?php endif; ?>

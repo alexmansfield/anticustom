@@ -201,6 +201,11 @@ function registerStylePanel() {
                     this.closeColorwayDropdown();
                 }
             });
+
+            // Cross-panel notification support (e.g. from component panel)
+            window.addEventListener('anti-show-notification', (e) => {
+                this.showNotification(e.detail.message, e.detail.type || 'error');
+            });
         },
 
         /**

@@ -245,6 +245,12 @@ if (!function_exists('anti_component')) {
         $defaults = get_default_props($schema);
         $merged = array_merge($defaults, $props);
 
+        // Inject schema interface definition so templates can access it
+        $interface = $schema['interface'] ?? [];
+        if (is_array($interface) && !array_is_list($interface)) {
+            $merged['__interface'] = $interface;
+        }
+
         $componentDir = anti_components_dir() . '/' . $type;
         echo render_component($componentDir, $merged);
     }
@@ -298,34 +304,50 @@ if (!function_exists('render_components')) {
 
 if (!function_exists('anti_interface_css')) {
     /**
-     * Build inline CSS from interface props (padding, border, radius, shadow).
-     * Returns a CSS string for use in a style attribute, or empty string.
+     * Build inline CSS custom properties from interface props and schema defaults.
+     * Only emits variables for explicit user choices and "none" — defaults are
+     * handled by CSS-level variable definitions, so no inline override is needed.
      *
      * @param array $props Component props containing interface values
-     * @return string CSS declarations (e.g. "padding: var(--space-m); box-shadow: var(--shadow-l)")
+     * @param array $interface Schema interface definition (prop => default pairs)
+     * @return string CSS custom property declarations
      */
-    function anti_interface_css(array $props): string
+    function anti_interface_css(array $props, array $interface): string
     {
+        if (empty($interface)) {
+            return '';
+        }
+
+        // Maps: prop name → (CSS variable name, token prefix)
+        $mapping = [
+            'padding'       => ['--anti-padding', 'space'],
+            'border_width'  => ['--anti-border-width', 'border'],
+            'border_radius' => ['--anti-border-radius', 'radius'],
+            'shadow'        => ['--anti-shadow', 'shadow'],
+        ];
+
+        // "None" values per prop
+        $noneValues = [
+            'padding'       => '0',
+            'border_width'  => '0',
+            'border_radius' => '0',
+            'shadow'        => 'none',
+        ];
+
         $parts = [];
 
-        $padding = $props['padding'] ?? '';
-        if ($padding !== '') {
-            $parts[] = 'padding: var(--space-' . attr_escape($padding) . ')';
-        }
+        foreach ($interface as $prop => $default) {
+            if (!isset($mapping[$prop])) continue;
 
-        $borderWidth = $props['border_width'] ?? '';
-        if ($borderWidth !== '') {
-            $parts[] = 'border: var(--border-' . attr_escape($borderWidth) . ') solid var(--colorway-soft-contrast)';
-        }
+            [$varName, $prefix] = $mapping[$prop];
+            $value = $props[$prop] ?? '';
 
-        $borderRadius = $props['border_radius'] ?? '';
-        if ($borderRadius !== '') {
-            $parts[] = 'border-radius: var(--radius-' . attr_escape($borderRadius) . ')';
-        }
-
-        $shadow = $props['shadow'] ?? '';
-        if ($shadow !== '') {
-            $parts[] = 'box-shadow: var(--shadow-' . attr_escape($shadow) . ')';
+            if ($value === 'none') {
+                $parts[] = $varName . ': ' . $noneValues[$prop];
+            } elseif ($value !== '') {
+                $parts[] = $varName . ': var(--' . $prefix . '-' . attr_escape($value) . ')';
+            }
+            // empty = default → don't emit, CSS-level variable handles it
         }
 
         return implode('; ', $parts);

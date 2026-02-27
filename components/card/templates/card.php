@@ -46,9 +46,13 @@ $has_image = !empty($image);
 $has_icon  = !empty($icon) && !$has_image;
 $has_link  = !empty($link_url);
 
+// Interface styles (padding, border, shadow)
+$interfaceCss = anti_interface_css($props, $props['__interface'] ?? []);
+
 // Build CSS classes
 $classes = anti_classes([
     'anti-card'                        => true,
+    'anti-interface'                   => !empty($props['__interface']),
     "anti-card--img-{$image_position}" => $has_image,
     "anti-card--ratio-{$image_ratio}"  => $has_image && $image_ratio !== 'auto',
     'anti-card--has-icon'              => $has_icon,
@@ -60,7 +64,7 @@ $tag = $has_link ? 'a' : 'div';
 $link_attr = $has_link ? ' href="' . url_escape($link_url) . '"' : '';
 ?>
 
-<<?php echo $tag; ?> class="<?php echo attr_escape($classes); ?>"<?php echo $link_attr; ?><?php echo !empty($editable) ? ' ' . $editable : ''; ?>>
+<<?php echo $tag; ?> class="<?php echo attr_escape($classes); ?>"<?php echo $link_attr; ?><?php echo $interfaceCss !== '' ? ' style="' . attr_escape($interfaceCss) . '"' : ''; ?><?php echo !empty($editable) ? ' ' . $editable : ''; ?>>
     <?php if ($has_image) : ?>
         <div class="anti-card__image">
             <img

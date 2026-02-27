@@ -12,7 +12,10 @@
    ========================================================================== */
 
 .anti-card {
-    --anti-card-padding: var(--space-l, 1.5rem);
+    --anti-padding: var(--space-l, 1.5rem);
+    --anti-border-width: var(--border-s, 1px);
+    --anti-border-radius: var(--radius-l);
+    --anti-card-padding: var(--anti-padding);
     --anti-card-title-gap: var(--space-s, 0.5rem);
     --anti-card-title-size: var(--heading-4, 1.25rem);
     --anti-card-desc-size: var(--text-m, 1rem);
@@ -25,9 +28,8 @@
 
     background-color: var(--colorway-base, #ffffff);
     color: var(--colorway-hard-contrast, #0f172a);
-    border: var(--border-s, 1px) solid var(--colorway-soft-contrast, #e2e8f0);
-    border-radius: var(--radius-l);
     overflow: hidden;
+    padding: 0;
 }
 
 /* ==========================================================================
@@ -74,7 +76,7 @@
    ========================================================================== */
 
 @media (max-width: 768px) {
-    .anti-card__content {
-        padding: var(--space-m, 1rem);
+    .anti-card {
+        --anti-padding: var(--space-m, 1rem);
     }
 }
