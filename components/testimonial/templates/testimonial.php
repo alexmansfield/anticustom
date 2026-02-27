@@ -11,6 +11,7 @@
  * @var string $avatar       Avatar image URL
  * @var int    $rating       Star rating 1-5
  * @var string $show_rating  Whether to show stars: "true"|"false"
+ * @var string $colorway     Color scheme: inherit|default|base|primary|secondary
  */
 
 // Extract props with defaults
@@ -20,6 +21,7 @@ $author_role = $props['author_role'] ?? '';
 $avatar      = $props['avatar'] ?? '';
 $rating      = (int) ($props['rating'] ?? 5);
 $show_rating = ($props['show_rating'] ?? 'true') === 'true';
+$colorway    = $props['colorway'] ?? 'inherit';
 
 // Clamp rating between 1-5
 $rating = max(1, min(5, $rating));
@@ -29,9 +31,14 @@ $classes = anti_classes([
     'anti-testimonial'              => true,
     'anti-testimonial--has-avatar'  => !empty($avatar),
 ]);
+
+// Build colorway attribute (skip if 'inherit' - let it inherit from parent)
+$colorway_attr = (!empty($colorway) && $colorway !== 'inherit')
+    ? ' data-colorway="' . attr_escape($colorway) . '"'
+    : '';
 ?>
 
-<div class="<?php echo attr_escape($classes); ?>"<?php echo !empty($editable) ? ' ' . $editable : ''; ?>>
+<div class="<?php echo attr_escape($classes); ?>"<?php echo $colorway_attr; ?><?php echo !empty($editable) ? ' ' . $editable : ''; ?>>
     <?php if ($show_rating) : ?>
         <div class="anti-testimonial__rating" aria-label="<?php echo attr_escape($rating); ?> out of 5 stars">
             <?php for ($i = 1; $i <= 5; $i++) : ?>

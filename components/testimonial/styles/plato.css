@@ -8,10 +8,13 @@
 
 .anti-testimonial {
     --anti-testimonial-padding: var(--space-l, 1.5rem);
-    background-color: var(--colorway-base, #ffffff);
     color: var(--colorway-hard-contrast, #0f172a);
     border-radius: var(--radius-l);
     box-shadow: var(--shadow-m, 0 4px 6px rgba(0,0,0,0.1));
+}
+
+.anti-testimonial[data-colorway] {
+    background-color: var(--colorway-base, #ffffff);
 }
 
 /* ==========================================================================

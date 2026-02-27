@@ -7,6 +7,9 @@
  */
 
 .anti-section {
-    background-color: var(--colorway-base);
     color: var(--colorway-hard-contrast);
+}
+
+.anti-section[data-colorway] {
+    background-color: var(--colorway-base);
 }

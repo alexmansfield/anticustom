@@ -11,8 +11,11 @@
    ========================================================================== */
 
 .anti-table {
-    background-color: var(--colorway-base, #ffffff);
     color: var(--colorway-hard-contrast, #0f172a);
+}
+
+.anti-table-wrap[data-colorway] .anti-table {
+    background-color: var(--colorway-base, #ffffff);
 }
 
 /* ==========================================================================

@@ -102,6 +102,14 @@
       ],
       "default": "m",
       "tab": "settings"
+    },
+    {
+      "name": "colorway",
+      "type": "colorway",
+      "label": "Colorway",
+      "description": "Color scheme for this component",
+      "default": "inherit",
+      "tab": "settings"
     }
   ],
   "tokens_used": [

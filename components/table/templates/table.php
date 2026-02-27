@@ -19,6 +19,7 @@
  * @var string $empty_title    Heading when no data
  * @var string $empty_text     Description when no data
  * @var array  $empty_action   Button component for empty state
+ * @var string $colorway       Color scheme: inherit|default|base|primary|secondary
  */
 
 $columns        = $props['columns'] ?? [];
@@ -34,11 +35,17 @@ $empty_icon     = $props['empty_icon'] ?? '';
 $empty_title    = $props['empty_title'] ?? 'No items found';
 $empty_text     = $props['empty_text'] ?? '';
 $empty_action   = $props['empty_action'] ?? [];
+$colorway       = $props['colorway'] ?? 'inherit';
 
 $has_actions = !empty($actions);
+
+// Build colorway attribute (skip if 'inherit' - let it inherit from parent)
+$colorway_attr = (!empty($colorway) && $colorway !== 'inherit')
+    ? ' data-colorway="' . attr_escape($colorway) . '"'
+    : '';
 ?>
 
-<div class="anti-table-wrap">
+<div class="anti-table-wrap"<?php echo $colorway_attr; ?>>
 <table class="anti-table">
 <?php if (!empty($columns)) : ?>
     <thead class="anti-table__head">

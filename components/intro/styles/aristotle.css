@@ -9,8 +9,11 @@
 
 .anti-intro {
     --anti-padding: var(--space-l, 1.5rem);
-    background-color: var(--colorway-base, #ffffff);
     color: var(--colorway-hard-contrast, #0f172a);
+}
+
+.anti-intro[data-colorway] {
+    background-color: var(--colorway-base, #ffffff);
 }
 
 .anti-intro__eyebrow {

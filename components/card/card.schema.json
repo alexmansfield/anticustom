@@ -119,6 +119,13 @@
         }
       ],
       "default": "16:9"
+    },
+    {
+      "name": "colorway",
+      "type": "colorway",
+      "label": "Colorway",
+      "description": "Color scheme for this card",
+      "default": "inherit"
     }
   ],
   "tokens_used": [

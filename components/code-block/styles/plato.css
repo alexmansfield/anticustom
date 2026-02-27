@@ -12,8 +12,11 @@
 
 .anti-code-block {
     border-radius: var(--radius-m);
-    background-color: var(--colorway-base, #1e293b);
     color: var(--colorway-hard-contrast, #f1f5f9);
+}
+
+.anti-code-block[data-colorway] {
+    background-color: var(--colorway-base, #1e293b);
 }
 
 /* ==========================================================================

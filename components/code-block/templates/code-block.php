@@ -12,6 +12,7 @@
  * @var string $title        Optional title above the code block
  * @var bool   $line_numbers Show line numbers
  * @var string $max_height   Optional max height with scroll
+ * @var string $colorway     Color scheme: inherit|default|base|primary|secondary
  */
 
 $code         = $props['code'] ?? '';
@@ -19,6 +20,7 @@ $language     = $props['language'] ?? '';
 $title        = $props['title'] ?? '';
 $line_numbers = $props['line_numbers'] ?? false;
 $max_height   = $props['max_height'] ?? '';
+$colorway     = $props['colorway'] ?? 'inherit';
 
 if (empty($code)) {
     return;
@@ -35,7 +37,14 @@ $pre_style = !empty($max_height) ? "max-height: {$max_height}; overflow-y: auto;
 $lines = explode("\n", $code);
 ?>
 
-<div class="<?php echo attr_escape($classes); ?>"<?php echo !empty($language) ? ' data-language="' . attr_escape($language) . '"' : ''; ?>>
+<?php
+// Build colorway attribute (skip if 'inherit' - let it inherit from parent)
+$colorway_attr = (!empty($colorway) && $colorway !== 'inherit')
+    ? ' data-colorway="' . attr_escape($colorway) . '"'
+    : '';
+?>
+
+<div class="<?php echo attr_escape($classes); ?>"<?php echo $colorway_attr; ?><?php echo !empty($language) ? ' data-language="' . attr_escape($language) . '"' : ''; ?>>
     <?php if (!empty($title) || !empty($language)) : ?>
         <div class="anti-code-block__header">
             <?php if (!empty($title)) : ?>

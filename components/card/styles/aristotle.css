@@ -26,10 +26,13 @@
     --anti-card-link-size: var(--text-s, 0.875rem);
     --anti-card-grid-gap: var(--space-l, 1.5rem);
 
-    background-color: var(--colorway-base, #ffffff);
     color: var(--colorway-hard-contrast, #0f172a);
     overflow: hidden;
     padding: 0;
+}
+
+.anti-card[data-colorway] {
+    background-color: var(--colorway-base, #ffffff);
 }
 
 /* ==========================================================================

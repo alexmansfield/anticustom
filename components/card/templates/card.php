@@ -17,6 +17,7 @@
  * @var string $link_text      CTA link text
  * @var string $image_position Image placement: top|left|right
  * @var string $image_ratio    Aspect ratio: auto|16:9|4:3|square
+ * @var string $colorway       Color scheme: inherit|default|base|primary|secondary
  */
 
 // Extract props with defaults
@@ -29,6 +30,7 @@ $link_url       = $props['link_url'] ?? '';
 $link_text      = $props['link_text'] ?? 'Learn More';
 $image_position = $props['image_position'] ?? 'top';
 $image_ratio    = $props['image_ratio'] ?? '16:9';
+$colorway       = $props['colorway'] ?? 'inherit';
 
 // Fix icons that were saved as unicode escape sequences
 if (!empty($icon) && preg_match('/^u[0-9a-fA-F]{4,5}$/', $icon)) {
@@ -59,12 +61,17 @@ $classes = anti_classes([
     'anti-card--clickable'             => $has_link,
 ]);
 
+// Build colorway attribute (skip if 'inherit' - let it inherit from parent)
+$colorway_attr = (!empty($colorway) && $colorway !== 'inherit')
+    ? ' data-colorway="' . attr_escape($colorway) . '"'
+    : '';
+
 // Wrapper element based on whether it's a link
 $tag = $has_link ? 'a' : 'div';
 $link_attr = $has_link ? ' href="' . url_escape($link_url) . '"' : '';
 ?>
 
-<<?php echo $tag; ?> class="<?php echo attr_escape($classes); ?>"<?php echo $link_attr; ?><?php echo $interfaceCss !== '' ? ' style="' . attr_escape($interfaceCss) . '"' : ''; ?><?php echo !empty($editable) ? ' ' . $editable : ''; ?>>
+<<?php echo $tag; ?> class="<?php echo attr_escape($classes); ?>"<?php echo $link_attr; ?><?php echo $colorway_attr; ?><?php echo $interfaceCss !== '' ? ' style="' . attr_escape($interfaceCss) . '"' : ''; ?><?php echo !empty($editable) ? ' ' . $editable : ''; ?>>
     <?php if ($has_image) : ?>
         <div class="anti-card__image">
             <img

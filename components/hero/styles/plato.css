@@ -7,6 +7,9 @@
  */
 
 .anti-hero {
-    background-color: var(--colorway-base, #f8fafc);
     color: var(--colorway-hard-contrast, #0f172a);
+}
+
+.anti-hero[data-colorway] {
+    background-color: var(--colorway-base, #f8fafc);
 }
