@@ -174,10 +174,10 @@
               "label": "Brand Colors",
               "settingsKey": "color.sections.brand.colors",
               "colors": [
+                "base",
                 "primary",
                 "secondary",
-                "tertiary",
-                "base"
+                "tertiary"
               ]
             },
             {

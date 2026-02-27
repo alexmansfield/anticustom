@@ -538,6 +538,9 @@
     border-bottom: 1px solid var(--anti-border, #e5e7eb);
     background: var(--anti-bg, #ffffff);
     flex-shrink: 0;
+    position: sticky;
+    top: 48px;
+    z-index: 10;
 }
 
 .anti-playground__preview-title {
@@ -643,6 +646,9 @@
     border-bottom: 1px solid #333;
     padding: 0 12px;
     flex-shrink: 0;
+    position: sticky;
+    top: 89px;
+    z-index: 9;
 }
 
 .anti-playground__css-tab {
