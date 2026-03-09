@@ -120,8 +120,6 @@ function registerStylePanel() {
         activeTab: null,
 
         // Data state
-        isSaving: false,
-        hasChanges: false,
         notificationVisible: false,
         notificationText: '',
         notificationType: 'success',
@@ -138,7 +136,6 @@ function registerStylePanel() {
         schema: null,
         settings: {},
         defaultSettings: {},
-        originalSettings: {},
 
         // ============================================
         // Initialization
@@ -174,8 +171,6 @@ function registerStylePanel() {
                 }
             }
 
-            this.originalSettings = JSON.parse(JSON.stringify(this.settings));
-
             // Event listeners
             window.addEventListener('antiTogglePanel', () => this.togglePanel());
             window.addEventListener('antiOpenPanel', () => {
@@ -205,6 +200,11 @@ function registerStylePanel() {
                 if (this.colorwayDropdownId && !e.target.closest('.anti-colorway-picker') && !e.target.closest('.clr-picker')) {
                     this.closeColorwayDropdown();
                 }
+            });
+
+            // Cross-panel notification support (e.g. from component panel)
+            window.addEventListener('anti-show-notification', (e) => {
+                this.showNotification(e.detail.message, e.detail.type || 'error');
             });
         },
 
@@ -977,7 +977,6 @@ function registerStylePanel() {
         // ============================================
 
         markChanged() {
-            this.hasChanges = true;
             this.settings._version = SETTINGS_VERSION;
             localStorage.setItem('antiExplorer_data', JSON.stringify(this.settings));
             window.__antiSettings = this.settings;
@@ -985,24 +984,12 @@ function registerStylePanel() {
         },
 
         // ============================================
-        // Save / Reset Methods
+        // Reset Methods
         // ============================================
-
-        saveSettings() {
-            this.isSaving = true;
-            this.settings._version = SETTINGS_VERSION;
-            localStorage.setItem('antiExplorer_data', JSON.stringify(this.settings));
-            this.originalSettings = JSON.parse(JSON.stringify(this.settings));
-            this.hasChanges = false;
-            this.isSaving = false;
-            this.showNotification('Settings saved', 'success');
-        },
 
         discardChanges() {
             localStorage.removeItem('antiExplorer_data');
             this.settings = JSON.parse(JSON.stringify(this.defaultSettings));
-            this.originalSettings = JSON.parse(JSON.stringify(this.settings));
-            this.hasChanges = false;
             this.applyAllSettings();
             window.__antiSettings = this.settings;
             window.dispatchEvent(new CustomEvent('anti-settings-changed'));
@@ -1508,10 +1495,6 @@ const getPanelHTML = () => `
                 <div class="anti-settings__actions">
                     <button class="anti-btn anti-btn--secondary" @click="resetSettings">
                         Reset All
-                    </button>
-                    <button class="anti-btn anti-btn--primary" @click="saveSettings" :disabled="!hasChanges || isSaving">
-                        <span x-show="!isSaving">Save</span>
-                        <span x-show="isSaving">Saving...</span>
                     </button>
                 </div>
             </footer>

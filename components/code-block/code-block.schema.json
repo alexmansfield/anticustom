@@ -55,6 +55,14 @@
       "description": "Maximum height with scroll (e.g., '400px', '50vh'). Leave empty for no limit.",
       "default": "",
       "tab": "settings"
+    },
+    {
+      "name": "colorway",
+      "type": "colorway",
+      "label": "Colorway",
+      "description": "Color scheme for this component",
+      "default": "inherit",
+      "tab": "settings"
     }
   ],
   "tokens_used": [

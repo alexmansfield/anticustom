@@ -37,8 +37,8 @@
 }
 
 .anti-button--solid:hover {
-    background-color: var(--colorway-contrast, #475569);
-    border-color: var(--colorway-contrast, #475569);
+    background-color: var(--colorway-hard-contrast-hover);
+    border-color: var(--colorway-hard-contrast-hover);
 }
 
 .anti-button--solid:active {

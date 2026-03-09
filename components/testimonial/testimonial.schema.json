@@ -77,6 +77,13 @@
         }
       ],
       "default": "true"
+    },
+    {
+      "name": "colorway",
+      "type": "colorway",
+      "label": "Colorway",
+      "description": "Color scheme for this component",
+      "default": "inherit"
     }
   ],
   "tokens_used": [

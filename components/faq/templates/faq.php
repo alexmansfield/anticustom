@@ -9,20 +9,27 @@
  * @var string $question       The FAQ question (required)
  * @var string $answer         The answer text (required)
  * @var string $initially_open Whether expanded by default: "true"|"false"
+ * @var string $colorway       Color scheme: inherit|default|base|primary|secondary
  */
 
 // Extract props with defaults
 $question       = $props['question'] ?? 'What is your return policy?';
 $answer         = $props['answer'] ?? 'We offer a 30-day money-back guarantee on all purchases.';
 $initially_open = ($props['initially_open'] ?? 'false') === 'true';
+$colorway       = $props['colorway'] ?? 'inherit';
 
 // Build CSS classes
 $classes = anti_classes([
     'anti-faq' => true,
 ]);
+
+// Build colorway attribute (skip if 'inherit' - let it inherit from parent)
+$colorway_attr = (!empty($colorway) && $colorway !== 'inherit')
+    ? ' data-colorway="' . attr_escape($colorway) . '"'
+    : '';
 ?>
 
-<details class="<?php echo attr_escape($classes); ?>"<?php echo !empty($editable) ? ' ' . $editable : ''; ?><?php echo $initially_open ? ' open' : ''; ?>>
+<details class="<?php echo attr_escape($classes); ?>"<?php echo $colorway_attr; ?><?php echo !empty($editable) ? ' ' . $editable : ''; ?><?php echo $initially_open ? ' open' : ''; ?>>
     <summary class="anti-faq__question">
         <span class="anti-faq__question-text"><?php echo html_escape($question); ?></span>
         <svg class="anti-faq__icon" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">

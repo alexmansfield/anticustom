@@ -52,7 +52,8 @@
 }
 
 .anti-button--solid:hover {
-    filter: brightness(0.9);
+    background-color: var(--colorway-hard-contrast-hover);
+    border-color: var(--colorway-hard-contrast-hover);
 }
 
 .anti-button--solid:active {
@@ -89,7 +90,7 @@
 }
 
 .anti-button--ghost:hover {
-    background-color: rgba(0, 0, 0, 0.05);
+    background-color: var(--colorway-base-hover);
 }
 
 .anti-button--ghost:active {

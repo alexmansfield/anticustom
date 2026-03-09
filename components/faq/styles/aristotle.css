@@ -18,9 +18,12 @@
     --anti-faq-padding-mobile: var(--space-s, 0.5rem) 0;
     --anti-faq-answer-padding-mobile: 0 0 var(--space-m, 1rem);
 
-    background-color: var(--colorway-base, #ffffff);
     color: var(--colorway-hard-contrast, #0f172a);
     border-bottom: var(--border-m, 2px) solid var(--colorway-soft-contrast, #e2e8f0);
+}
+
+.anti-faq[data-colorway] {
+    background-color: var(--colorway-base, #ffffff);
 }
 
 .anti-faq:first-child {

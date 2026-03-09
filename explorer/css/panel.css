@@ -820,6 +820,11 @@
     color: #ffffff;
 }
 
+.anti-panel .anti-notification--warning {
+    background: #f59e0b;
+    color: #ffffff;
+}
+
 .anti-notification-enter,
 .anti-notification-leave {
     transition: opacity 0.3s ease, transform 0.3s ease;
