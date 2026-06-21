@@ -12,8 +12,11 @@
    ========================================================================== */
 
 .anti-table {
-    background-color: var(--colorway-base, #ffffff);
     color: var(--colorway-hard-contrast, #0f172a);
+}
+
+.anti-table-wrap[data-colorway] .anti-table {
+    background-color: var(--colorway-base, #ffffff);
 }
 
 /* ==========================================================================
@@ -91,10 +94,13 @@
    ========================================================================== */
 
 .anti-table-wrap {
-    background-color: var(--colorway-base, #ffffff);
     color: var(--colorway-hard-contrast, #0f172a);
     border-radius: var(--radius-l);
     border: var(--border-s, 1px) solid var(--colorway-soft-contrast, #e2e8f0);
+}
+
+.anti-table-wrap[data-colorway] {
+    background-color: var(--colorway-base, #ffffff);
 }
 
 .anti-table__body .anti-table__row:last-child .anti-table__td {

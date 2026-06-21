@@ -15,6 +15,7 @@
  * @var string $subtitle  Supporting text below the title
  * @var string $align     Text alignment: inherit|left|center|right
  * @var string $size      Size variant: s|m|l
+ * @var string $colorway  Color scheme: inherit|default|base|primary|secondary
  */
 
 // Extract props with defaults
@@ -23,6 +24,7 @@ $title    = $props['title'] ?? '';
 $subtitle = $props['subtitle'] ?? '';
 $align    = $props['align'] ?? 'center';
 $size     = $props['size'] ?? 'm';
+$colorway = $props['colorway'] ?? 'inherit';
 
 // Nothing to render if all fields are empty
 if (empty($eyebrow) && empty($title) && empty($subtitle)) {
@@ -31,18 +33,24 @@ if (empty($eyebrow) && empty($title) && empty($subtitle)) {
 
 // Build data attributes (omit data-align for "inherit" so it inherits from parent)
 $attrs = anti_attrs([
-    'data-align' => $align !== 'inherit' ? $align : null,
-    'data-size'  => $size,
+    'data-colorway' => (!empty($colorway) && $colorway !== 'inherit') ? $colorway : false,
+    'data-align'    => $align !== 'inherit' ? $align : null,
+    'data-size'     => $size,
 ]);
 
 // Interface styles (padding, border, shadow)
-$interfaceCss = anti_interface_css($props);
+$interfaceCss = anti_interface_css($props, $props['__interface'] ?? []);
 
 // Determine title tag: h2 if eyebrow is absent, p if eyebrow is present
 $title_tag = !empty($eyebrow) ? 'p' : 'h2';
+
+$classes = anti_classes([
+    'anti-intro' => true,
+    'anti-interface' => !empty($props['__interface']),
+]);
 ?>
 
-<div class="anti-intro" <?php echo $attrs; ?><?php echo $interfaceCss !== '' ? ' style="' . attr_escape($interfaceCss) . '"' : ''; ?><?php echo !empty($editable) ? ' ' . $editable : ''; ?>>
+<div class="<?php echo $classes; ?>" <?php echo $attrs; ?><?php echo $interfaceCss !== '' ? ' style="' . attr_escape($interfaceCss) . '"' : ''; ?><?php echo !empty($editable) ? ' ' . $editable : ''; ?>>
     <?php if (!empty($eyebrow)) : ?>
         <h2 class="anti-intro__eyebrow"><?php echo html_escape($eyebrow); ?></h2>
     <?php endif; ?>

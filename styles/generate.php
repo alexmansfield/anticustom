@@ -107,6 +107,63 @@ function color_shade(string $hex, float $targetLightness): string {
 }
 
 // ============================================================================
+// Interaction state helpers (hover/active)
+// ============================================================================
+
+const HOVER_LOWER_BOUND = 25;
+const HOVER_UPPER_BOUND = 75;
+const HOVER_SHIFT = 5;
+const ACTIVE_SHIFT = 10;
+
+/**
+ * Compute hover and active hex variants for a given color.
+ *
+ * Shift direction depends on lightness band:
+ *   0–25%  (dark)       → toward center (+)
+ *   25–50% (mid-dark)   → toward edge (−)
+ *   50–75% (mid-light)  → toward edge (+)
+ *   75–100% (light)     → toward center (−)
+ */
+function color_interaction_shifts(string $hex): array {
+    [$h, $s, $l] = hex_to_hsl($hex);
+
+    if ($l <= HOVER_LOWER_BOUND) {
+        $dir = 1;   // lighten
+    } elseif ($l <= 50) {
+        $dir = -1;  // darken
+    } elseif ($l <= HOVER_UPPER_BOUND) {
+        $dir = 1;   // lighten
+    } else {
+        $dir = -1;  // darken
+    }
+
+    $hoverL = max(0, min(100, $l + $dir * HOVER_SHIFT));
+    $activeL = max(0, min(100, $l + $dir * ACTIVE_SHIFT));
+
+    return [
+        'hover'  => hsl_to_hex($h, $s, $hoverL),
+        'active' => hsl_to_hex($h, $s, $activeL),
+    ];
+}
+
+/**
+ * Derive a hover/active value from a colorway token value.
+ *
+ * If the value is a var() reference, append -hover/-active to the variable name.
+ * If the value is a raw hex, compute the shift directly.
+ */
+function colorway_derive_state(string $value, string $state): string {
+    if (preg_match('/^var\(--(.+)\)$/', $value, $m)) {
+        return "var(--{$m[1]}-{$state})";
+    }
+    if (preg_match('/^#[0-9a-fA-F]{6}$/', $value)) {
+        $shifts = color_interaction_shifts($value);
+        return $shifts[$state];
+    }
+    return $value;
+}
+
+// ============================================================================
 // Scale calculation helper
 // ============================================================================
 
@@ -298,13 +355,19 @@ foreach ($colorSections as $sectionId => $section) {
 
 foreach ($enabledColors as $name => $hex) {
     $rootVars[] = "    --{$name}: {$hex};";
+    $shifts = color_interaction_shifts($hex);
+    $rootVars[] = "    --{$name}-hover: {$shifts['hover']};";
+    $rootVars[] = "    --{$name}-active: {$shifts['active']};";
 
-    // Generate hue variants
+    // Generate hue variants + their hover/active
     foreach ($hues as $hueName => $hueData) {
         if (!isset($hueData['value'])) continue;
         if (isset($hueData['enabled']) && !$hueData['enabled']) continue;
         $shade = color_shade($hex, $hueData['value']);
         $rootVars[] = "    --{$name}-{$hueName}: {$shade};";
+        $shadeShifts = color_interaction_shifts($shade);
+        $rootVars[] = "    --{$name}-{$hueName}-hover: {$shadeShifts['hover']};";
+        $rootVars[] = "    --{$name}-{$hueName}-active: {$shadeShifts['active']};";
     }
 }
 
@@ -335,8 +398,18 @@ foreach ($colorways as $wayName => $wayData) {
 
     foreach ($colorwayTokens as $token) {
         $val = $wayData[$token] ?? null;
-        if ($val !== null) {
-            $lines[] = "    --colorway-{$token}: {$val};";
+        if ($val === null) continue;
+
+        $lines[] = "    --colorway-{$token}: {$val};";
+
+        // Auto-derive hover/active (allow explicit override)
+        foreach (['hover', 'active'] as $state) {
+            $overrideKey = "{$token}-{$state}";
+            if (isset($wayData[$overrideKey])) {
+                $lines[] = "    --colorway-{$overrideKey}: {$wayData[$overrideKey]};";
+            } else {
+                $lines[] = "    --colorway-{$overrideKey}: " . colorway_derive_state($val, $state) . ";";
+            }
         }
     }
 
@@ -368,6 +441,14 @@ $output .= " */\n\n";
 
 $output .= ":root {\n";
 $output .= implode("\n", $rootVars) . "\n";
+$output .= "}\n";
+
+$output .= "\n/* Interface — centralized application of interface properties */\n";
+$output .= ".anti-interface {\n";
+$output .= "    padding: var(--anti-padding);\n";
+$output .= "    border: var(--anti-border-width) solid var(--colorway-soft-contrast, currentColor);\n";
+$output .= "    border-radius: var(--anti-border-radius);\n";
+$output .= "    box-shadow: var(--anti-shadow);\n";
 $output .= "}\n";
 
 if (!empty($colorwayBlocks)) {

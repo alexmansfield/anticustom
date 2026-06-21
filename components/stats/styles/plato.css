@@ -8,10 +8,13 @@
 
 .anti-stats {
     --anti-stats-padding: var(--space-l, 1.5rem);
-    background-color: var(--colorway-base, #ffffff);
     color: var(--colorway-hard-contrast, #0f172a);
     border: var(--border-m, 2px) solid transparent;
     border-radius: var(--radius-m);
+}
+
+.anti-stats[data-colorway] {
+    background-color: var(--colorway-base, #ffffff);
 }
 
 /* ==========================================================================

@@ -14,7 +14,7 @@
 const COMP_ICONS = {
     close: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`,
 
-    chevronLeft: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>`,
+    chevronRight: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>`,
 
     components: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>`,
 
@@ -191,12 +191,13 @@ function registerComponentPanel() {
             const sample = comp.sampleProps || {};
             this.props = { ...defaults, ...sample };
 
-            // Initialize interface props
-            if (comp.interface && comp.interface.length) {
-                if (!('padding' in this.props)) this.props.padding = '';
-                if (!('border_width' in this.props)) this.props.border_width = '';
-                if (!('border_radius' in this.props)) this.props.border_radius = '';
-                if (!('shadow' in this.props)) this.props.shadow = '';
+            // Initialize interface props from object-format schema
+            const iface = comp.interface;
+            if (iface && typeof iface === 'object' && !Array.isArray(iface)) {
+                for (const prop of Object.keys(iface)) {
+                    if (!(prop in this.props)) this.props[prop] = '';
+                }
+                this.validateInterfaceDefaults();
             }
 
             // Handle children separately
@@ -342,22 +343,29 @@ function registerComponentPanel() {
             void this._settingsVersion; // reactive dependency on token changes
             if (!this.selected) return [];
             const comp = this.components[this.selected];
-            if (!comp || !comp.interface || !comp.interface.length) return [];
+            const iface = comp?.interface;
+            if (!iface || Array.isArray(iface) || typeof iface !== 'object') return [];
+
+            // Map prop names to labels and token features
+            const propMeta = {
+                padding:       { label: 'Padding',       feature: 'padding' },
+                border_width:  { label: 'Border Width',  feature: 'border' },
+                border_radius: { label: 'Border Radius', feature: 'radius' },
+                shadow:        { label: 'Shadow',        feature: 'shadow' },
+            };
 
             const controls = [];
-            for (const feature of comp.interface) {
-                if (feature === 'padding') {
-                    const opts = this.getAvailableTokens('padding');
-                    if (opts.length) controls.push({ feature: 'padding', label: 'Padding', prop: 'padding', options: opts });
-                } else if (feature === 'border') {
-                    const widthOpts = this.getAvailableTokens('border');
-                    if (widthOpts.length) controls.push({ feature: 'border', label: 'Border Width', prop: 'border_width', options: widthOpts });
-                    const radiusOpts = this.getAvailableTokens('radius');
-                    if (radiusOpts.length) controls.push({ feature: 'radius', label: 'Border Radius', prop: 'border_radius', options: radiusOpts });
-                } else if (feature === 'shadow') {
-                    const opts = this.getAvailableTokens('shadow');
-                    if (opts.length) controls.push({ feature: 'shadow', label: 'Shadow', prop: 'shadow', options: opts });
-                }
+            for (const [prop, defaultValue] of Object.entries(iface)) {
+                const meta = propMeta[prop];
+                if (!meta) continue;
+                const opts = this.getAvailableTokens(meta.feature);
+                controls.push({
+                    feature: meta.feature,
+                    label: meta.label,
+                    prop,
+                    default: defaultValue,
+                    options: [{ value: 'none', label: 'None' }, ...opts],
+                });
             }
             return controls;
         },
@@ -366,12 +374,78 @@ function registerComponentPanel() {
             const el = document.querySelector('.anti-playground__render [x-html] > :first-child');
             if (!el) return;
 
+            const comp = this.components[this.selected];
+            const iface = comp?.interface;
+            if (!iface || Array.isArray(iface) || typeof iface !== 'object') {
+                el.style.cssText = '';
+                el.classList.remove('anti-interface');
+                return;
+            }
+
+            const prefixMap = {
+                padding: 'space',
+                border_width: 'border',
+                border_radius: 'radius',
+                shadow: 'shadow',
+            };
+            const noneMap = {
+                padding: '0',
+                border_width: '0',
+                border_radius: '0',
+                shadow: 'none',
+            };
+            const varMap = {
+                padding: '--anti-padding',
+                border_width: '--anti-border-width',
+                border_radius: '--anti-border-radius',
+                shadow: '--anti-shadow',
+            };
+
             const parts = [];
-            if (this.props.padding) parts.push(`padding: var(--space-${this.props.padding})`);
-            if (this.props.border_width) parts.push(`border: var(--border-${this.props.border_width}) solid var(--colorway-soft-contrast)`);
-            if (this.props.border_radius) parts.push(`border-radius: var(--radius-${this.props.border_radius})`);
-            if (this.props.shadow) parts.push(`box-shadow: var(--shadow-${this.props.shadow})`);
+            for (const [prop, defaultValue] of Object.entries(iface)) {
+                const varName = varMap[prop];
+                const prefix = prefixMap[prop];
+                if (!varName || !prefix) continue;
+
+                const value = this.props[prop] || '';
+                if (value === 'none') {
+                    parts.push(`${varName}: ${noneMap[prop]}`);
+                } else if (value !== '') {
+                    parts.push(`${varName}: var(--${prefix}-${value})`);
+                }
+                // empty = default → don't emit inline, CSS-level variable handles it
+            }
             el.style.cssText = parts.join('; ');
+            el.classList.add('anti-interface');
+        },
+
+        validateInterfaceDefaults() {
+            if (!this.selected) return;
+            const comp = this.components[this.selected];
+            const iface = comp?.interface;
+            if (!iface || Array.isArray(iface) || typeof iface !== 'object') return;
+
+            const featureMap = {
+                padding: 'padding',
+                border_width: 'border',
+                border_radius: 'radius',
+                shadow: 'shadow',
+            };
+
+            for (const [prop, defaultValue] of Object.entries(iface)) {
+                const feature = featureMap[prop];
+                if (!feature) continue;
+                const available = this.getAvailableTokens(feature);
+                const exists = available.some(t => t.value === defaultValue);
+                if (!exists) {
+                    window.dispatchEvent(new CustomEvent('anti-show-notification', {
+                        detail: {
+                            message: `Warning: ${comp.label}'s default "${defaultValue}" for ${prop} is not available in current token settings.`,
+                            type: 'warning'
+                        }
+                    }));
+                }
+            }
         },
 
         scheduleRender() {
@@ -438,7 +512,7 @@ const getComponentPanelHTML = () => `
                     @click="closeSettings()"
                     aria-label="Back to components"
                     title="Back">
-                    ${COMP_ICONS.chevronLeft}
+                    ${COMP_ICONS.chevronRight}
                 </button>
             </header>
 
@@ -591,8 +665,22 @@ const getComponentPanelHTML = () => `
                                     <div class="anti-select__btngroup">
                                         <template x-for="opt in ctrl.options" :key="opt.value">
                                             <button class="anti-select__btn"
-                                                    :class="{ 'is-active': props[ctrl.prop] === opt.value }"
-                                                    @click="props[ctrl.prop] = props[ctrl.prop] === opt.value ? '' : opt.value; applyInterfaceStyles(); scheduleRender()"
+                                                    :class="{
+                                                        'is-active': props[ctrl.prop] === opt.value || (props[ctrl.prop] === '' && opt.value === ctrl.default),
+                                                        'is-default': props[ctrl.prop] === '' && opt.value === ctrl.default
+                                                    }"
+                                                    @click="(() => {
+                                                        const current = props[ctrl.prop];
+                                                        if (current === opt.value) {
+                                                            props[ctrl.prop] = '';
+                                                        } else if (current === '' && opt.value === ctrl.default) {
+                                                            /* clicking the default when already on default — no-op */
+                                                        } else {
+                                                            props[ctrl.prop] = opt.value;
+                                                        }
+                                                        applyInterfaceStyles();
+                                                        scheduleRender();
+                                                    })()"
                                                     x-text="opt.label">
                                             </button>
                                         </template>
