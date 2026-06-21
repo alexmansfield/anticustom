@@ -1,0 +1,81 @@
+/**
+ * Textarea Component - Base Styles
+ *
+ * Structure and behavior only. Requires a style file (e.g., plato.css).
+ *
+ * @package Anticustom
+ */
+
+/* ==========================================================================
+   Structure
+   ========================================================================== */
+
+.anti-textarea {
+    display: flex;
+    flex-direction: column;
+    gap: var(--anti-textarea-label-gap, 0.25rem);
+    width: 100%;
+}
+
+.anti-textarea__label {
+    font-weight: var(--anti-textarea-label-weight, 500);
+    font-size: var(--anti-textarea-label-font, 0.875rem);
+}
+
+.anti-textarea__control {
+    width: 100%;
+    font-family: inherit;
+    border: none;
+    background: none;
+    color: inherit;
+    transition:
+        border-color 150ms ease,
+        box-shadow 150ms ease;
+}
+
+/* ==========================================================================
+   States
+   ========================================================================== */
+
+.anti-textarea__control:focus {
+    outline: none;
+}
+
+.anti-textarea--disabled .anti-textarea__label,
+.anti-textarea--disabled .anti-textarea__helper {
+    opacity: 0.5;
+}
+
+.anti-textarea--disabled .anti-textarea__control {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+/* ==========================================================================
+   Size Structure
+   ========================================================================== */
+
+.anti-textarea--s .anti-textarea__control {
+    padding: var(--anti-textarea-padding-s, 0.25rem 0.5rem);
+    font-size: var(--anti-textarea-font-s, 0.875rem);
+}
+
+.anti-textarea--m .anti-textarea__control {
+    padding: var(--anti-textarea-padding-m, 0.5rem 0.75rem);
+    font-size: var(--anti-textarea-font-m, 1rem);
+}
+
+.anti-textarea--l .anti-textarea__control {
+    padding: var(--anti-textarea-padding-l, 0.75rem 1rem);
+    font-size: var(--anti-textarea-font-l, 1.125rem);
+}
+
+/* ==========================================================================
+   Helper & Error Text
+   ========================================================================== */
+
+.anti-textarea__helper,
+.anti-textarea__error {
+    margin: 0;
+    font-size: var(--anti-textarea-hint-font, 0.8125rem);
+}

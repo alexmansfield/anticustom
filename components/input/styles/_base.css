@@ -1,0 +1,81 @@
+/**
+ * Input Component - Base Styles
+ *
+ * Structure and behavior only. Requires a style file (e.g., plato.css).
+ *
+ * @package Anticustom
+ */
+
+/* ==========================================================================
+   Structure
+   ========================================================================== */
+
+.anti-input {
+    display: flex;
+    flex-direction: column;
+    gap: var(--anti-input-label-gap, 0.25rem);
+    width: 100%;
+}
+
+.anti-input__label {
+    font-weight: var(--anti-input-label-weight, 500);
+    font-size: var(--anti-input-label-font, 0.875rem);
+}
+
+.anti-input__control {
+    width: 100%;
+    font-family: inherit;
+    border: none;
+    background: none;
+    color: inherit;
+    transition:
+        border-color 150ms ease,
+        box-shadow 150ms ease;
+}
+
+/* ==========================================================================
+   States
+   ========================================================================== */
+
+.anti-input__control:focus {
+    outline: none;
+}
+
+.anti-input--disabled .anti-input__label,
+.anti-input--disabled .anti-input__helper {
+    opacity: 0.5;
+}
+
+.anti-input--disabled .anti-input__control {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+/* ==========================================================================
+   Size Structure
+   ========================================================================== */
+
+.anti-input--s .anti-input__control {
+    padding: var(--anti-input-padding-s, 0.25rem 0.5rem);
+    font-size: var(--anti-input-font-s, 0.875rem);
+}
+
+.anti-input--m .anti-input__control {
+    padding: var(--anti-input-padding-m, 0.5rem 0.75rem);
+    font-size: var(--anti-input-font-m, 1rem);
+}
+
+.anti-input--l .anti-input__control {
+    padding: var(--anti-input-padding-l, 0.75rem 1rem);
+    font-size: var(--anti-input-font-l, 1.125rem);
+}
+
+/* ==========================================================================
+   Helper & Error Text
+   ========================================================================== */
+
+.anti-input__helper,
+.anti-input__error {
+    margin: 0;
+    font-size: var(--anti-input-hint-font, 0.8125rem);
+}

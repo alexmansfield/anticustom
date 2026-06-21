@@ -1,0 +1,89 @@
+/**
+ * Input Style: Aristotle
+ *
+ * Border-driven inputs. No shadows or transforms.
+ * All states use visible border changes for clarity.
+ *
+ * @package Anticustom
+ */
+
+/* ==========================================================================
+   Configuration
+   ========================================================================== */
+
+.anti-input {
+    --anti-input-label-gap: var(--space-xs, 0.25rem);
+    --anti-input-label-weight: var(--font-weight-medium, 500);
+    --anti-input-label-font: var(--text-s, 0.875rem);
+    --anti-input-padding-s: var(--space-xs, 0.25rem) var(--space-s, 0.5rem);
+    --anti-input-padding-m: var(--space-s, 0.5rem) var(--space-m, 0.75rem);
+    --anti-input-padding-l: var(--space-m, 0.75rem) var(--space-l, 1rem);
+    --anti-input-font-s: var(--text-s, 0.875rem);
+    --anti-input-font-m: var(--text-m, 1rem);
+    --anti-input-font-l: var(--text-l, 1.125rem);
+    --anti-input-hint-font: var(--text-s, 0.8125rem);
+
+    background-color: var(--colorway-base, #ffffff);
+    color: var(--colorway-hard-contrast, #0f172a);
+}
+
+/* ==========================================================================
+   Label
+   ========================================================================== */
+
+.anti-input__label {
+    color: var(--colorway-hard-contrast, #0f172a);
+}
+
+.anti-input__required {
+    color: var(--danger, #ef4444);
+}
+
+/* ==========================================================================
+   Control
+   ========================================================================== */
+
+.anti-input__control {
+    border: var(--border-m, 2px) solid var(--colorway-soft-contrast, #cbd5e1);
+    background-color: var(--colorway-base, #ffffff);
+    color: var(--colorway-hard-contrast, #0f172a);
+    border-radius: var(--radius-l);
+}
+
+.anti-input__control::placeholder {
+    color: var(--colorway-soft-contrast, #94a3b8);
+}
+
+/* ==========================================================================
+   Focus
+   ========================================================================== */
+
+.anti-input__control:focus {
+    border-color: var(--colorway-hard-contrast, #0f172a);
+}
+
+/* Aristotle does not use box-shadow for focus — border-color change only */
+
+/* ==========================================================================
+   Error State
+   ========================================================================== */
+
+.anti-input--error .anti-input__control {
+    border-color: var(--danger, #ef4444);
+}
+
+.anti-input--error .anti-input__control:focus {
+    border-color: var(--danger, #ef4444);
+}
+
+/* ==========================================================================
+   Helper & Error Text
+   ========================================================================== */
+
+.anti-input__helper {
+    color: var(--colorway-soft-contrast, #64748b);
+}
+
+.anti-input__error {
+    color: var(--danger, #ef4444);
+}

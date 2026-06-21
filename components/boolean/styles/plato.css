@@ -1,0 +1,95 @@
+/**
+ * Boolean Style: Plato
+ *
+ * Clean checkbox and switch with focus rings and smooth transitions.
+ * Uses design tokens from the colorway system.
+ *
+ * @package Anticustom
+ */
+
+/* ==========================================================================
+   Configuration
+   ========================================================================== */
+
+.anti-boolean {
+    --anti-boolean-gap: var(--space-xs, 0.25rem);
+    --anti-boolean-field-gap: var(--space-s, 0.5rem);
+    --anti-boolean-label-font: var(--text-m, 1rem);
+    --anti-boolean-hint-font: var(--text-s, 0.8125rem);
+
+    background-color: var(--colorway-base, #ffffff);
+    color: var(--colorway-hard-contrast, #0f172a);
+}
+
+/* ==========================================================================
+   Label
+   ========================================================================== */
+
+.anti-boolean__label {
+    color: var(--colorway-hard-contrast, #0f172a);
+}
+
+/* ==========================================================================
+   Checkbox indicator
+   ========================================================================== */
+
+.anti-boolean--checkbox .anti-boolean__indicator {
+    border: var(--border-m, 2px) solid var(--colorway-soft-contrast, #cbd5e1);
+    background-color: var(--colorway-base, #ffffff);
+    border-radius: var(--radius-s);
+}
+
+.anti-boolean--checkbox .anti-boolean__indicator::after {
+    border-color: var(--colorway-base, #ffffff);
+}
+
+.anti-boolean--checkbox .anti-boolean__control:checked ~ .anti-boolean__indicator {
+    background-color: var(--colorway-hard-contrast, #3b82f6);
+    border-color: var(--colorway-hard-contrast, #3b82f6);
+}
+
+/* ==========================================================================
+   Switch indicator
+   ========================================================================== */
+
+.anti-boolean--switch .anti-boolean__indicator {
+    background-color: var(--colorway-soft-contrast, #cbd5e1);
+}
+
+.anti-boolean--switch .anti-boolean__indicator::after {
+    background-color: var(--colorway-base, #ffffff);
+}
+
+.anti-boolean--switch .anti-boolean__control:checked ~ .anti-boolean__indicator {
+    background-color: var(--colorway-hard-contrast, #3b82f6);
+}
+
+/* ==========================================================================
+   Focus
+   ========================================================================== */
+
+.anti-boolean__control:focus-visible ~ .anti-boolean__indicator {
+    outline: 2px solid var(--colorway-hard-contrast, #3b82f6);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+/* ==========================================================================
+   Error State
+   ========================================================================== */
+
+.anti-boolean--error .anti-boolean__indicator {
+    border-color: var(--danger, #ef4444);
+}
+
+/* ==========================================================================
+   Helper & Error Text
+   ========================================================================== */
+
+.anti-boolean__helper {
+    color: var(--colorway-soft-contrast, #64748b);
+}
+
+.anti-boolean__error {
+    color: var(--danger, #ef4444);
+}

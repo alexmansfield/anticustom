@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Form Definition Schema",
+  "description": "Defines the structure of form definition files. This is a meta-schema — it describes how forms are configured, not a component schema.",
+  "type": "object",
+  "required": ["name", "label", "fields"],
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Unique form identifier (kebab-case)"
+    },
+    "label": {
+      "type": "string",
+      "description": "Human-readable form title"
+    },
+    "version": {
+      "type": "string",
+      "description": "Form definition version",
+      "default": "1.0.0"
+    },
+    "action": {
+      "type": "string",
+      "description": "Form submission URL"
+    },
+    "method": {
+      "type": "string",
+      "enum": ["GET", "POST"],
+      "default": "POST",
+      "description": "HTTP method for submission"
+    },
+    "fields": {
+      "type": "array",
+      "description": "Ordered list of form fields",
+      "items": {
+        "type": "object",
+        "required": ["id", "component"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique field identifier within this form"
+          },
+          "component": {
+            "type": "object",
+            "required": ["name"],
+            "description": "Component reference — same { name, props } pattern used by table column composition",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Component type name (e.g., input, select, textarea, boolean)"
+              },
+              "props": {
+                "type": "object",
+                "description": "Props passed to the component"
+              }
+            }
+          },
+          "validation": {
+            "type": "object",
+            "description": "Contextual validation rules (owned by the form, not the component)",
+            "properties": {
+              "required": {
+                "type": "boolean",
+                "description": "Whether the field must have a value"
+              },
+              "minLength": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "Minimum string length"
+              },
+              "maxLength": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "Maximum string length"
+              },
+              "pattern": {
+                "type": "string",
+                "description": "Regex pattern the value must match"
+              },
+              "matches": {
+                "type": "string",
+                "description": "ID of another field this value must match (e.g., password confirmation)"
+              }
+            }
+          },
+          "conditions": {
+            "type": "array",
+            "description": "Visibility conditions — all must be true (AND logic). Field is shown when all conditions pass, hidden otherwise.",
+            "items": {
+              "type": "object",
+              "required": ["field", "operator"],
+              "properties": {
+                "field": {
+                  "type": "string",
+                  "description": "ID of the field to evaluate"
+                },
+                "operator": {
+                  "type": "string",
+                  "enum": ["equals", "not_equals", "contains", "not_empty", "empty"],
+                  "description": "Comparison operator"
+                },
+                "value": {
+                  "description": "Value to compare against (not used with empty/not_empty)"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

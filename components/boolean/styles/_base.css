@@ -1,0 +1,134 @@
+/**
+ * Boolean Component - Base Styles
+ *
+ * Structure for checkbox and switch display modes.
+ * Uses a visually-hidden native checkbox with a custom indicator.
+ * Requires a style file (e.g., plato.css).
+ *
+ * @package Anticustom
+ */
+
+/* ==========================================================================
+   Structure
+   ========================================================================== */
+
+.anti-boolean {
+    display: flex;
+    flex-direction: column;
+    gap: var(--anti-boolean-gap, 0.25rem);
+}
+
+.anti-boolean__field {
+    display: flex;
+    align-items: center;
+    gap: var(--anti-boolean-field-gap, 0.5rem);
+    cursor: pointer;
+}
+
+/* Visually hide the native checkbox */
+.anti-boolean__control {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.anti-boolean__label {
+    font-size: var(--anti-boolean-label-font, 1rem);
+    user-select: none;
+}
+
+/* ==========================================================================
+   Checkbox indicator structure
+   ========================================================================== */
+
+.anti-boolean--checkbox .anti-boolean__indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--anti-boolean-checkbox-size, 1.25rem);
+    height: var(--anti-boolean-checkbox-size, 1.25rem);
+    flex-shrink: 0;
+    border: none;
+    background: none;
+    transition:
+        background-color 150ms ease,
+        border-color 150ms ease;
+}
+
+/* Checkmark via ::after */
+.anti-boolean--checkbox .anti-boolean__indicator::after {
+    content: '';
+    display: block;
+    width: 0.35rem;
+    height: 0.6rem;
+    border-width: 0 2px 2px 0;
+    border-style: solid;
+    transform: rotate(45deg) translate(-1px, -1px);
+    opacity: 0;
+    transition: opacity 150ms ease;
+}
+
+.anti-boolean--checkbox .anti-boolean__control:checked ~ .anti-boolean__indicator::after {
+    opacity: 1;
+}
+
+/* ==========================================================================
+   Switch indicator structure (track + thumb)
+   ========================================================================== */
+
+.anti-boolean--switch .anti-boolean__indicator {
+    position: relative;
+    width: var(--anti-boolean-switch-width, 2.5rem);
+    height: var(--anti-boolean-switch-height, 1.5rem);
+    flex-shrink: 0;
+    border-radius: var(--anti-boolean-switch-height, 1.5rem);
+    transition: background-color 150ms ease;
+}
+
+/* Thumb knob */
+.anti-boolean--switch .anti-boolean__indicator::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: var(--anti-boolean-thumb-offset, 0.2rem);
+    width: var(--anti-boolean-thumb-size, 1.1rem);
+    height: var(--anti-boolean-thumb-size, 1.1rem);
+    border-radius: 50%;
+    transform: translateY(-50%);
+    transition: transform 150ms ease;
+}
+
+.anti-boolean--switch .anti-boolean__control:checked ~ .anti-boolean__indicator::after {
+    transform: translateY(-50%) translateX(calc(var(--anti-boolean-switch-width, 2.5rem) - var(--anti-boolean-thumb-size, 1.1rem) - var(--anti-boolean-thumb-offset, 0.2rem) * 2));
+}
+
+/* ==========================================================================
+   States
+   ========================================================================== */
+
+.anti-boolean--disabled .anti-boolean__field {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+/* ==========================================================================
+   Helper & Error Text
+   ========================================================================== */
+
+.anti-boolean__helper,
+.anti-boolean__error {
+    margin: 0;
+    margin-left: calc(var(--anti-boolean-checkbox-size, 1.25rem) + var(--anti-boolean-field-gap, 0.5rem));
+    font-size: var(--anti-boolean-hint-font, 0.8125rem);
+}
+
+.anti-boolean--switch .anti-boolean__helper,
+.anti-boolean--switch .anti-boolean__error {
+    margin-left: calc(var(--anti-boolean-switch-width, 2.5rem) + var(--anti-boolean-field-gap, 0.5rem));
+}

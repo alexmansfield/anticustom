@@ -1,0 +1,89 @@
+/**
+ * Textarea Style: Aristotle
+ *
+ * Border-driven textareas. No shadows or transforms.
+ * All states use visible border changes for clarity.
+ *
+ * @package Anticustom
+ */
+
+/* ==========================================================================
+   Configuration
+   ========================================================================== */
+
+.anti-textarea {
+    --anti-textarea-label-gap: var(--space-xs, 0.25rem);
+    --anti-textarea-label-weight: var(--font-weight-medium, 500);
+    --anti-textarea-label-font: var(--text-s, 0.875rem);
+    --anti-textarea-padding-s: var(--space-xs, 0.25rem) var(--space-s, 0.5rem);
+    --anti-textarea-padding-m: var(--space-s, 0.5rem) var(--space-m, 0.75rem);
+    --anti-textarea-padding-l: var(--space-m, 0.75rem) var(--space-l, 1rem);
+    --anti-textarea-font-s: var(--text-s, 0.875rem);
+    --anti-textarea-font-m: var(--text-m, 1rem);
+    --anti-textarea-font-l: var(--text-l, 1.125rem);
+    --anti-textarea-hint-font: var(--text-s, 0.8125rem);
+
+    background-color: var(--colorway-base, #ffffff);
+    color: var(--colorway-hard-contrast, #0f172a);
+}
+
+/* ==========================================================================
+   Label
+   ========================================================================== */
+
+.anti-textarea__label {
+    color: var(--colorway-hard-contrast, #0f172a);
+}
+
+.anti-textarea__required {
+    color: var(--danger, #ef4444);
+}
+
+/* ==========================================================================
+   Control
+   ========================================================================== */
+
+.anti-textarea__control {
+    border: var(--border-m, 2px) solid var(--colorway-soft-contrast, #cbd5e1);
+    background-color: var(--colorway-base, #ffffff);
+    color: var(--colorway-hard-contrast, #0f172a);
+    border-radius: var(--radius-l);
+}
+
+.anti-textarea__control::placeholder {
+    color: var(--colorway-soft-contrast, #94a3b8);
+}
+
+/* ==========================================================================
+   Focus
+   ========================================================================== */
+
+.anti-textarea__control:focus {
+    border-color: var(--colorway-hard-contrast, #0f172a);
+}
+
+/* Aristotle does not use box-shadow for focus — border-color change only */
+
+/* ==========================================================================
+   Error State
+   ========================================================================== */
+
+.anti-textarea--error .anti-textarea__control {
+    border-color: var(--danger, #ef4444);
+}
+
+.anti-textarea--error .anti-textarea__control:focus {
+    border-color: var(--danger, #ef4444);
+}
+
+/* ==========================================================================
+   Helper & Error Text
+   ========================================================================== */
+
+.anti-textarea__helper {
+    color: var(--colorway-soft-contrast, #64748b);
+}
+
+.anti-textarea__error {
+    color: var(--danger, #ef4444);
+}

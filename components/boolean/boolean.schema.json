@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "name": "boolean",
+  "label": "Boolean",
+  "version": "1.0.0",
+  "category": "form",
+  "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"1\" y=\"6\" width=\"22\" height=\"12\" rx=\"6\"></rect><circle cx=\"16\" cy=\"12\" r=\"4\"></circle></svg>",
+  "tabs": [
+    {
+      "id": "content",
+      "label": "Content"
+    },
+    {
+      "id": "settings",
+      "label": "Settings"
+    }
+  ],
+  "fields": [
+    {
+      "name": "display",
+      "type": "select",
+      "label": "Display Mode",
+      "description": "Visual style of the toggle",
+      "options": [
+        { "value": "checkbox", "label": "Checkbox" },
+        { "value": "switch", "label": "Switch" }
+      ],
+      "default": "checkbox",
+      "tab": "settings"
+    },
+    {
+      "name": "label",
+      "type": "text",
+      "label": "Label",
+      "description": "Label text shown beside the control",
+      "default": "Label",
+      "required": true,
+      "tab": "content"
+    },
+    {
+      "name": "name",
+      "type": "text",
+      "label": "Name",
+      "description": "Form field name attribute",
+      "default": "",
+      "required": true,
+      "tab": "content"
+    },
+    {
+      "name": "value",
+      "type": "boolean",
+      "label": "Checked",
+      "description": "Whether the control is checked (runtime)",
+      "default": false,
+      "tab": "content"
+    },
+    {
+      "name": "helper_text",
+      "type": "text",
+      "label": "Helper Text",
+      "description": "Hint text shown below the control",
+      "default": "",
+      "tab": "content"
+    },
+    {
+      "name": "error_text",
+      "type": "text",
+      "label": "Error Text",
+      "description": "Error message shown when invalid (runtime)",
+      "default": "",
+      "tab": "content"
+    },
+    {
+      "name": "disabled",
+      "type": "boolean",
+      "label": "Disabled",
+      "description": "Whether the field is disabled",
+      "default": false,
+      "tab": "settings"
+    },
+    {
+      "name": "colorway",
+      "type": "colorway",
+      "label": "Colorway",
+      "description": "Color scheme for this boolean",
+      "default": "inherit",
+      "tab": "settings"
+    },
+    {
+      "name": "class",
+      "type": "text",
+      "label": "Custom Class",
+      "description": "Additional CSS class(es) to apply",
+      "default": "",
+      "tab": "settings"
+    }
+  ],
+  "tokens_used": [
+    "space-xs",
+    "space-s",
+    "space-m",
+    "colorway-base",
+    "colorway-hard-contrast",
+    "colorway-soft-contrast"
+  ]
+}

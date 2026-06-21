@@ -1,0 +1,152 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "name": "textarea",
+  "label": "Textarea",
+  "version": "1.0.0",
+  "category": "form",
+  "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"4\" width=\"18\" height=\"16\" rx=\"2\"></rect><line x1=\"7\" y1=\"8\" x2=\"17\" y2=\"8\"></line><line x1=\"7\" y1=\"12\" x2=\"17\" y2=\"12\"></line><line x1=\"7\" y1=\"16\" x2=\"13\" y2=\"16\"></line></svg>",
+  "tabs": [
+    {
+      "id": "content",
+      "label": "Content"
+    },
+    {
+      "id": "settings",
+      "label": "Settings"
+    }
+  ],
+  "fields": [
+    {
+      "name": "label",
+      "type": "text",
+      "label": "Label",
+      "description": "Label text shown above the textarea",
+      "default": "Label",
+      "required": true,
+      "tab": "content"
+    },
+    {
+      "name": "name",
+      "type": "text",
+      "label": "Name",
+      "description": "Form field name attribute",
+      "default": "",
+      "required": true,
+      "tab": "content"
+    },
+    {
+      "name": "placeholder",
+      "type": "text",
+      "label": "Placeholder",
+      "description": "Placeholder text when empty",
+      "default": "",
+      "tab": "content"
+    },
+    {
+      "name": "value",
+      "type": "text",
+      "label": "Value",
+      "description": "Current textarea content (runtime)",
+      "default": "",
+      "tab": "content"
+    },
+    {
+      "name": "helper_text",
+      "type": "text",
+      "label": "Helper Text",
+      "description": "Hint text shown below the textarea",
+      "default": "",
+      "tab": "content"
+    },
+    {
+      "name": "error_text",
+      "type": "text",
+      "label": "Error Text",
+      "description": "Error message shown when invalid (runtime)",
+      "default": "",
+      "tab": "content"
+    },
+    {
+      "name": "rows",
+      "type": "number",
+      "label": "Rows",
+      "description": "Number of visible text rows",
+      "default": 4,
+      "tab": "settings"
+    },
+    {
+      "name": "resize",
+      "type": "select",
+      "label": "Resize",
+      "description": "How the textarea can be resized",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "vertical", "label": "Vertical" },
+        { "value": "horizontal", "label": "Horizontal" },
+        { "value": "both", "label": "Both" }
+      ],
+      "default": "vertical",
+      "tab": "settings"
+    },
+    {
+      "name": "required",
+      "type": "boolean",
+      "label": "Required",
+      "description": "Whether the field is required",
+      "default": false,
+      "tab": "settings"
+    },
+    {
+      "name": "disabled",
+      "type": "boolean",
+      "label": "Disabled",
+      "description": "Whether the field is disabled",
+      "default": false,
+      "tab": "settings"
+    },
+    {
+      "name": "size",
+      "type": "select",
+      "label": "Size",
+      "description": "Textarea size",
+      "options": [
+        { "value": "s", "label": "Small" },
+        { "value": "m", "label": "Medium" },
+        { "value": "l", "label": "Large" }
+      ],
+      "default": "m",
+      "tab": "settings"
+    },
+    {
+      "name": "colorway",
+      "type": "colorway",
+      "label": "Colorway",
+      "description": "Color scheme for this textarea",
+      "default": "inherit",
+      "tab": "settings"
+    },
+    {
+      "name": "class",
+      "type": "text",
+      "label": "Custom Class",
+      "description": "Additional CSS class(es) to apply",
+      "default": "",
+      "tab": "settings"
+    }
+  ],
+  "tokens_used": [
+    "space-xs",
+    "space-s",
+    "space-m",
+    "space-l",
+    "text-s",
+    "text-m",
+    "text-l",
+    "radius-s",
+    "radius-m",
+    "radius-l",
+    "colorway-base",
+    "colorway-hard-contrast",
+    "colorway-soft-contrast"
+  ]
+}

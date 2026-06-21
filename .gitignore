@@ -1,1 +1,4 @@
 .mcp.json
+
+# Generated token CSS export (regenerate with: php styles/generate.php)
+explorer/css/tokens.css
