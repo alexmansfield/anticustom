@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "name": "hero",
   "label": "Hero",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "category": "layout",
   "icon": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"2\" y=\"4\" width=\"20\" height=\"16\" rx=\"2\"></rect><line x1=\"6\" y1=\"10\" x2=\"18\" y2=\"10\"></line><line x1=\"8\" y1=\"14\" x2=\"16\" y2=\"14\"></line></svg>",
   "tabs": [
@@ -15,52 +15,70 @@
       "label": "Settings"
     }
   ],
-  "children": {
-    "allowed": [
-      "intro",
-      "button"
-    ],
-    "slots": [
-      {
-        "name": "intro",
-        "label": "Intro",
-        "type": "intro",
-        "fixed": true,
-        "defaults": {
-          "title": "Welcome to Our Site",
-          "eyebrow": "",
-          "subtitle": "",
-          "align": "inherit",
-          "size": "l"
-        }
-      },
-      {
-        "name": "primary_cta",
-        "label": "Primary Button",
-        "type": "button",
-        "fixed": true,
-        "defaults": {
-          "text": "Get Started",
-          "url": "#",
-          "variant": "solid",
-          "colorway": "primary"
-        }
-      },
-      {
-        "name": "secondary_cta",
-        "label": "Secondary Button",
-        "type": "button",
-        "fixed": true,
-        "defaults": {
-          "text": "",
-          "url": "",
-          "variant": "outline",
-          "colorway": "primary"
-        }
-      }
-    ]
-  },
   "fields": [
+    {
+      "name": "eyebrow",
+      "type": "text",
+      "label": "Eyebrow",
+      "description": "Optional short label above the title",
+      "default": "",
+      "required": false,
+      "tab": "content"
+    },
+    {
+      "name": "title",
+      "type": "text",
+      "label": "Title",
+      "description": "Main headline",
+      "default": "Welcome to Our Site",
+      "required": false,
+      "tab": "content"
+    },
+    {
+      "name": "subtitle",
+      "type": "textarea",
+      "label": "Subtitle",
+      "description": "Supporting text below the title",
+      "default": "",
+      "required": false,
+      "tab": "content"
+    },
+    {
+      "name": "primary_cta_text",
+      "type": "text",
+      "label": "Primary Button Text",
+      "description": "Label for the primary call to action (empty hides the button)",
+      "default": "Get Started",
+      "required": false,
+      "tab": "content"
+    },
+    {
+      "name": "primary_cta_url",
+      "type": "url",
+      "label": "Primary Button URL",
+      "description": "Where the primary call to action links",
+      "default": "#",
+      "required": false,
+      "tab": "content"
+    },
+    {
+      "name": "secondary_cta_text",
+      "type": "text",
+      "label": "Secondary Button Text",
+      "description": "Label for the secondary call to action (empty hides the button)",
+      "default": "",
+      "required": false,
+      "tab": "content"
+    },
+    {
+      "name": "secondary_cta_url",
+      "type": "url",
+      "label": "Secondary Button URL",
+      "description": "Where the secondary call to action links",
+      "default": "",
+      "required": false,
+      "tab": "content"
+    },
     {
       "name": "alignment",
       "type": "select",
@@ -109,6 +127,56 @@
       "tab": "settings"
     },
     {
+      "name": "primary_cta_variant",
+      "type": "select",
+      "label": "Primary Button Variant",
+      "description": "Visual style of the primary call to action",
+      "options": [
+        {
+          "value": "solid",
+          "label": "Solid",
+          "description": "Filled button style"
+        },
+        {
+          "value": "outline",
+          "label": "Outline",
+          "description": "Subtle, bordered style"
+        },
+        {
+          "value": "ghost",
+          "label": "Ghost",
+          "description": "Minimal, no border style"
+        }
+      ],
+      "default": "solid",
+      "tab": "settings"
+    },
+    {
+      "name": "secondary_cta_variant",
+      "type": "select",
+      "label": "Secondary Button Variant",
+      "description": "Visual style of the secondary call to action",
+      "options": [
+        {
+          "value": "solid",
+          "label": "Solid",
+          "description": "Filled button style"
+        },
+        {
+          "value": "outline",
+          "label": "Outline",
+          "description": "Subtle, bordered style"
+        },
+        {
+          "value": "ghost",
+          "label": "Ghost",
+          "description": "Minimal, no border style"
+        }
+      ],
+      "default": "outline",
+      "tab": "settings"
+    },
+    {
       "name": "background_image",
       "type": "image",
       "label": "Background Image",
@@ -125,6 +193,10 @@
       "default": "inherit",
       "tab": "settings"
     }
+  ],
+  "components_used": [
+    "intro",
+    "button"
   ],
   "tokens_used": [
     "space-m",
