@@ -82,6 +82,9 @@ verify_rt('style not opted in unwrapped', '<span class="anti-rt-accent">x</span>
 verify_rt('link kept with safe href', '<a href="https://example.com">x</a>', $tier4, '<a href="https://example.com" rel="noopener">x</a>');
 verify_rt('javascript href rejected', '<a href="javascript:alert(1)">x</a>', $tier4, 'x');
 verify_rt('data href rejected', '<a href="data:text/html,x">x</a>', $tier4, 'x');
+verify_rt('tab-injected scheme rejected', '<a href="java&#9;script:alert(1)">x</a>', $tier4, 'x');
+verify_rt('newline-injected scheme rejected', '<a href="java&#10;script:alert(1)">x</a>', $tier4, 'x');
+verify_rt('leading-control scheme rejected', '<a href="&#1;javascript:alert(1)">x</a>', $tier4, 'x');
 verify_rt('mailto href kept', '<a href="mailto:a@b.co">x</a>', $tier4, '<a href="mailto:a@b.co" rel="noopener">x</a>');
 verify_rt('relative href kept', '<a href="/about">x</a>', $tier4, '<a href="/about" rel="noopener">x</a>');
 verify_rt('list kept when blocks allow', '<ul><li>a</li></ul>', $tier4, '<ul><li>a</li></ul>');
