@@ -28,6 +28,36 @@
       }
     },
     {
+      "name": "variant",
+      "type": "select",
+      "label": "Variant",
+      "description": "Semantic colorway for status display",
+      "options": [
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "info",
+          "label": "Info"
+        },
+        {
+          "value": "success",
+          "label": "Success"
+        },
+        {
+          "value": "warning",
+          "label": "Warning"
+        },
+        {
+          "value": "danger",
+          "label": "Danger"
+        }
+      ],
+      "default": "default",
+      "tab": "settings"
+    },
+    {
       "name": "class",
       "type": "text",
       "label": "Custom Class",
