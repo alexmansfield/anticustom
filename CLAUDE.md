@@ -6,8 +6,9 @@ Anticustom is a monorepo containing three tools plus an explorer:
 
 - **styles/** — Design token system: schema, defaults, and CSS variable generator
 - **components/** — Component library: schemas, CSS styles, PHP templates, and shared helpers
+- **richtext/** — Graduated rich text system: style registry, PHP sanitizer, contenteditable engine, toolbar chrome (see ADR 0013)
 - **forms/** — Form builder (placeholder, not yet implemented)
-- **explorer/** — Component preview tool (placeholder, not yet implemented)
+- **explorer/** — Component preview tool (playground with rich text editing in the sidebar panel)
 
 ## Design Principles
 
@@ -28,6 +29,13 @@ anticustom/
 │   │   ├── styles/_base.css
 │   │   ├── styles/{style}.css    # e.g. plato.css, aristotle.css
 │   │   └── templates/{name}.php
+├── richtext/
+│   ├── styles.json           # Global named-style registry (.anti-rt-* classes)
+│   ├── sanitize.php          # Allowlist sanitizer + anti_rt_* helpers
+│   ├── engine.js             # AntiRT contenteditable engine (segment model)
+│   ├── toolbar.js            # AntiRTToolbar (bubble mount + future mounts)
+│   ├── editor.css            # Editing chrome (explorer-only)
+│   └── verify.php            # Sanitizer assertions: php richtext/verify.php
 ├── forms/                    # Placeholder
 └── explorer/                 # Placeholder
 ```

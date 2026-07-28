@@ -1,0 +1,21 @@
+{
+  "$comment": "Global named-style registry for rich text (tier 3). Each style becomes one CSS class: .anti-rt-<name>. Component schemas opt in per field via richtext.styles. CSS values should reference design tokens (colorway vars respond to data-colorway).",
+  "styles": {
+    "highlight": {
+      "label": "Highlight",
+      "css": {
+        "background": "var(--colorway-soft-contrast)",
+        "color": "var(--colorway-hard-contrast)",
+        "border-radius": "var(--radius-s, 0.25rem)",
+        "padding": "0 0.15em"
+      }
+    },
+    "accent": {
+      "label": "Accent",
+      "css": {
+        "color": "var(--colorway-accent)",
+        "font-weight": "var(--font-weight-medium)"
+      }
+    }
+  }
+}

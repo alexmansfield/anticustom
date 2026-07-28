@@ -52,14 +52,14 @@ $classes = anti_classes([
 
 <div class="<?php echo $classes; ?>" <?php echo $attrs; ?><?php echo $interfaceCss !== '' ? ' style="' . attr_escape($interfaceCss) . '"' : ''; ?><?php echo !empty($editable) ? ' ' . $editable : ''; ?>>
     <?php if (!empty($eyebrow)) : ?>
-        <h2 class="anti-intro__eyebrow"><?php echo html_escape($eyebrow); ?></h2>
+        <h2 class="anti-intro__eyebrow"><?php echo anti_rich($props, 'eyebrow'); ?></h2>
     <?php endif; ?>
 
     <?php if (!empty($title)) : ?>
-        <<?php echo $title_tag; ?> class="anti-intro__title"><?php echo html_escape($title); ?></<?php echo $title_tag; ?>>
+        <<?php echo $title_tag; ?> class="anti-intro__title"><?php echo anti_rich($props, 'title'); ?></<?php echo $title_tag; ?>>
     <?php endif; ?>
 
     <?php if (!empty($subtitle)) : ?>
-        <p class="anti-intro__subtitle"><?php echo html_escape($subtitle); ?></p>
+        <p class="anti-intro__subtitle"><?php echo anti_rich($props, 'subtitle'); ?></p>
     <?php endif; ?>
 </div>
