@@ -260,6 +260,14 @@ if (!function_exists('anti_rt_safe_href')) {
         if ($href === '') {
             return false;
         }
+        // Browsers strip TAB/LF/CR (and treat other C0 controls as garbage) from
+        // anywhere in a URL before parsing the scheme, so "java\tscript:" would
+        // execute as "javascript:" and slip past the scheme check below. A
+        // legitimate href never contains raw control characters — reject rather
+        // than guess what a browser will collapse the value down to.
+        if (preg_match('/[\x00-\x1F\x7F]/', $href)) {
+            return false;
+        }
         if (preg_match('/^([a-z][a-z0-9+.-]*):/i', $href, $m)) {
             return in_array(strtolower($m[1]), ['http', 'https', 'mailto', 'tel'], true);
         }
