@@ -10,21 +10,23 @@
  * Props:
  * @var string $text       Button text content (required)
  * @var string $url        Optional link URL - renders as <a> if provided
+ * @var string $type       HTML button type: button|submit|reset (ignored when URL is set)
  * @var string $variant    Visual style: solid|outline|ghost
  * @var string $size       Button size: s|m|l
  * @var bool   $full_width Whether button should span full width
- * @var bool   $shadow     Whether to add shadow effect
  * @var string $colorway   Color scheme override
+ * @var string $class      Additional CSS class(es)
  */
 
 // Extract props with defaults
 $text       = $props['text'] ?? 'Click me';
 $url        = $props['url'] ?? '';
+$type       = $props['type'] ?? 'button';
 $variant    = $props['variant'] ?? 'solid';
 $size       = $props['size'] ?? 'm';
 $full_width = $props['full_width'] ?? false;
-$shadow     = $props['shadow'] ?? false;
 $colorway   = $props['colorway'] ?? 'inherit';
+$class      = $props['class'] ?? '';
 
 // Build colorway attribute (skip if 'inherit' - let it inherit from parent)
 $colorway_attr = (!empty($colorway) && $colorway !== 'inherit')
@@ -37,7 +39,7 @@ $classes = anti_classes([
     "anti-button--{$variant}"  => true,
     "anti-button--{$size}"     => $size !== 'm',
     'anti-button--full-width'  => $full_width,
-    'anti-button--shadow'      => $shadow,
+    $class                     => !empty($class),
 ]);
 
 // Render as link or button based on URL presence
@@ -47,7 +49,7 @@ if (!empty($url)) :
         <?php echo html_escape($text); ?>
     </a>
 <?php else : ?>
-    <button type="button" class="<?php echo attr_escape($classes); ?>"<?php echo $colorway_attr; ?><?php echo !empty($editable) ? ' ' . $editable : ''; ?>>
+    <button type="<?php echo attr_escape($type); ?>" class="<?php echo attr_escape($classes); ?>"<?php echo $colorway_attr; ?><?php echo !empty($editable) ? ' ' . $editable : ''; ?>>
         <?php echo html_escape($text); ?>
     </button>
 <?php endif; ?>
