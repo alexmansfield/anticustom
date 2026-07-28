@@ -13,11 +13,14 @@
   "fields": [
     {
       "name": "title",
-      "type": "text",
+      "type": "richtext",
       "label": "Title",
       "description": "Card title or heading",
       "default": "Card Title",
       "required": true,
+      "richtext": {
+        "marks": ["bold", "italic"]
+      },
       "validation": {
         "minLength": 1,
         "maxLength": 100
@@ -25,11 +28,16 @@
     },
     {
       "name": "description",
-      "type": "textarea",
+      "type": "richtext",
       "label": "Description",
       "description": "Card body text",
       "default": "",
       "required": false,
+      "richtext": {
+        "marks": ["bold", "italic"],
+        "styles": ["highlight", "accent"],
+        "multiline": true
+      },
       "validation": {
         "maxLength": 500
       }

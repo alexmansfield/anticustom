@@ -49,7 +49,7 @@ $samples = [
     ],
     'card' => [
         'title' => 'Sample Card',
-        'description' => 'This card demonstrates the elevated variant with icon, description text, and a call-to-action link.',
+        'description' => 'This card demonstrates <strong>bold</strong>, <em>italic</em>, and <span class="anti-rt-highlight">highlighted</span> rich text with a call-to-action link.',
         'icon' => 'A',
         'variant' => 'elevated',
         'link_text' => 'View Details',
@@ -105,7 +105,7 @@ $samples = [
     'intro' => [
         'eyebrow' => 'Section Eyebrow',
         'title' => 'Intro Component',
-        'subtitle' => 'Used as the heading block for sections. Supports eyebrow text, title, subtitle, and configurable alignment.',
+        'subtitle' => 'Used as the heading block for sections. Supports <strong>inline marks</strong> and <span class="anti-rt-accent">named styles</span> — select some text to try them.',
         'align' => 'center',
         'size' => 'm',
     ],
@@ -267,6 +267,7 @@ window.__antiInitialPreview = {
 window.__antiStyles = <?php echo json_encode($allStyleNames); ?>;
 window.__antiActiveStyle = <?php echo json_encode($activeStyle); ?>;
 window.__antiColorways = <?php echo json_encode($colorwayNames); ?>;
+window.__antiRTStyles = <?php echo json_encode(anti_rt_registry()['styles'], JSON_UNESCAPED_UNICODE); ?>;
 // Merge user-created colorways from localStorage so the selector is complete on first render
 try {
     var _saved = JSON.parse(localStorage.getItem('antiExplorer_data') || '{}');

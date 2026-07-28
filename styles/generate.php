@@ -456,6 +456,12 @@ if (!empty($colorwayBlocks)) {
     $output .= implode("\n", $colorwayBlocks) . "\n";
 }
 
+// Rich text named-style classes (richtext/styles.json) — appended here so
+// production stylesheets carry the same .anti-rt-* classes as the explorer
+// (explorer_get_token_css() buffers this script's output)
+require_once dirname(__DIR__) . '/richtext/sanitize.php';
+$output .= "\n" . anti_rt_css();
+
 if ($outputPath) {
     file_put_contents($outputPath, $output);
     fprintf(STDERR, "Written to %s\n", $outputPath);

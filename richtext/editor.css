@@ -1,0 +1,187 @@
+/**
+ * AntiRT editor chrome — loaded only where editing happens (explorer).
+ * Content styles (.anti-rt-*) live in the generated token CSS instead,
+ * so they apply in production too.
+ */
+
+/* ─── Sidebar rich text field (dual-view widget) ───────────────── */
+
+.anti-comp-field__label-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.anti-comp-field__rt-toggle {
+    padding: 0 5px;
+    margin-bottom: 4px;
+    border: none;
+    border-radius: 4px;
+    background: transparent;
+    color: var(--anti-text-secondary, #6b7280);
+    font-family: ui-monospace, 'SF Mono', monospace;
+    font-size: 10px;
+    line-height: 18px;
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity 100ms ease, background 100ms ease;
+}
+
+.anti-comp-field__rt-toggle:hover {
+    opacity: 1;
+    background: var(--anti-control-border, #d1d5db);
+}
+
+.anti-comp-field__rt-toggle.is-active {
+    opacity: 1;
+    background: var(--anti-control-border, #d1d5db);
+    color: var(--anti-text, #1f2937);
+}
+
+/* Matches .anti-comp-field__input, but holds rendered rich text */
+.anti-comp-field__rich {
+    width: 100%;
+    padding: 6px 10px;
+    border: 1px solid var(--anti-control-border, #d1d5db);
+    border-radius: 5px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--anti-text, #1f2937);
+    background: var(--anti-bg, #ffffff);
+    outline: none;
+    cursor: text;
+    overflow-wrap: break-word;
+}
+
+.anti-comp-field__rich:focus {
+    border-color: var(--anti-accent, #3b82f6);
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+}
+
+/* Multiline fields get textarea-like height */
+.anti-comp-field__rich[aria-multiline="true"] {
+    min-height: 60px;
+}
+
+/* Empty fields show the field description/label as a placeholder */
+.anti-comp-field__rich:empty::before {
+    content: attr(data-placeholder);
+    color: var(--anti-text-secondary, #6b7280);
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* ─── Bubble toolbar (anchored to the active field) ────────────── */
+
+.anti-rt-bubble {
+    position: fixed;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 4px;
+    background: #1a1a1a;
+    border-radius: var(--radius-m, 8px);
+    box-shadow: var(--shadow-l, 0 8px 24px rgba(0, 0, 0, 0.25)), 0 0 0 1px rgba(255, 255, 255, 0.06);
+    opacity: 0;
+    transform: translateY(4px);
+    pointer-events: none;
+    transition: opacity 120ms ease, transform 120ms ease;
+}
+
+.anti-rt-bubble.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+/* Arrow pointing at the field */
+.anti-rt-bubble::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: -5px;
+    width: 10px;
+    height: 10px;
+    background: #1a1a1a;
+    transform: translateX(-50%) rotate(45deg);
+    border-radius: 2px;
+}
+
+.anti-rt-bubble--below::after {
+    bottom: auto;
+    top: -5px;
+}
+
+.anti-rt-bubble__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: none;
+    border-radius: calc(var(--radius-m, 8px) - 3px);
+    background: transparent;
+    color: rgba(255, 255, 255, 0.85);
+    font-family: inherit;
+    font-size: 0.875rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: background 100ms ease, color 100ms ease;
+}
+
+.anti-rt-bubble__button:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+}
+
+.anti-rt-bubble__button[aria-pressed="true"] {
+    background: rgba(255, 255, 255, 0.22);
+    color: #ffffff;
+}
+
+.anti-rt-bubble__button--bold {
+    font-weight: 700;
+}
+
+.anti-rt-bubble__button--italic {
+    font-style: italic;
+    font-family: Georgia, "Times New Roman", serif;
+}
+
+/* Style chips render with their own .anti-rt-* class as a live swatch */
+.anti-rt-bubble__button--style {
+    width: auto;
+    min-width: 32px;
+    padding: 0 8px;
+}
+
+.anti-rt-bubble__button--style .anti-rt-chip {
+    font-size: 0.8125rem;
+    line-height: 1.4;
+}
+
+/* Collapsed-caret bubble: one chip that removes the whole styled run */
+.anti-rt-bubble__button--remove {
+    gap: 6px;
+}
+
+.anti-rt-bubble__button--remove .anti-rt-bubble__remove-x {
+    color: rgba(255, 255, 255, 0.55);
+    font-size: 1rem;
+    line-height: 1;
+    transition: color 100ms ease;
+}
+
+.anti-rt-bubble__button--remove:hover .anti-rt-bubble__remove-x {
+    color: #ffffff;
+}
+
+.anti-rt-bubble__divider {
+    width: 1px;
+    height: 20px;
+    margin: 0 3px;
+    background: rgba(255, 255, 255, 0.15);
+    flex: none;
+}

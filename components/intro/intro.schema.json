@@ -21,36 +21,45 @@
   "fields": [
     {
       "name": "eyebrow",
-      "type": "text",
+      "type": "richtext",
       "label": "Eyebrow",
       "description": "Short introductory label above the title",
       "default": "",
       "required": false,
       "tab": "content",
+      "richtext": {},
       "validation": {
         "maxLength": 100
       }
     },
     {
       "name": "title",
-      "type": "text",
+      "type": "richtext",
       "label": "Title",
       "description": "Main title text",
       "default": "",
       "required": false,
       "tab": "content",
+      "richtext": {
+        "marks": ["bold", "italic"]
+      },
       "validation": {
         "maxLength": 200
       }
     },
     {
       "name": "subtitle",
-      "type": "textarea",
+      "type": "richtext",
       "label": "Subtitle",
       "description": "Supporting text below the title",
       "default": "",
       "required": false,
       "tab": "content",
+      "richtext": {
+        "marks": ["bold", "italic"],
+        "styles": ["highlight", "accent"],
+        "multiline": true
+      },
       "validation": {
         "maxLength": 500
       }
