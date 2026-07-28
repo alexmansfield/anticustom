@@ -89,10 +89,10 @@ $link_attr = $has_link ? ' href="' . url_escape($link_url) . '"' : '';
             </div>
         <?php endif; ?>
 
-        <h3 class="anti-card__title"><?php echo anti_rich($props, 'title'); ?></h3>
+        <h3 class="anti-card__title"><?php echo anti_field_html($props, 'title'); ?></h3>
 
         <?php if (!empty($description)) : ?>
-            <p class="anti-card__description"><?php echo anti_rich($props, 'description'); ?></p>
+            <p class="anti-card__description"><?php echo anti_field_html($props, 'description'); ?></p>
         <?php endif; ?>
 
         <?php if ($has_link && !empty($link_text)) : ?>

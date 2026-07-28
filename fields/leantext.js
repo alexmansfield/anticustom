@@ -1,10 +1,11 @@
 /**
- * AntiRT — Anticustom rich text engine
+ * AntiLeantext — the leantext field editor
  *
- * Hand-rolled contenteditable engine for graduated, schema-driven rich text.
- * Inline-only content model: text with bold/italic marks, named styled spans
- * (one style per range), and <br> when the field is multiline. The allowed
- * feature set comes from the field's schema (see anti_rt_features in PHP).
+ * Hand-rolled contenteditable engine for the inline-only leantext type
+ * (ADR 0014, amending 0013): text with bold/italic marks, named styled spans
+ * (one style per range), and <br> when the field is multiline. The resolved
+ * feature set comes from PHP (anti_field_features) — the client never
+ * re-derives it; see featuresFromField below.
  *
  * Architecture: instead of mutating the DOM with Range surgery, every command
  * parses the field into a flat segment model (one entry per UTF-16 code unit,
@@ -12,11 +13,13 @@
  * canonical DOM from it. Rendering from the model IS normalization: adjacent
  * identical marks merge, empty elements never exist, disallowed nodes are
  * dropped at parse time. Selection round-trips through flat text indexes.
+ * The flat model is deliberately block-free — blocks belong to the reserved
+ * richtext type and its own (future) editor.
  *
  * Public surface (the future engine-swap line — see ADR 0013):
- *   AntiRT.createEditor({root, features, onChange, onSelectionChange, ...})
+ *   AntiLeantext.createEditor({root, features, onChange, onSelectionChange, ...})
  *     → { exec(cmd, arg), getHTML(), setHTML(html), destroy(), root }
- *   AntiRT.mount(container, {fieldConfig, onChange, onBlurCommit, ...})
+ *   AntiLeantext.mount(container, {fieldConfig, onChange, onBlurCommit, ...})
  *     → { editors, destroy() }
  */
 (function () {
@@ -61,7 +64,7 @@
             if (tag === 'STRONG' || tag === 'B') next.bold = true;
             else if (tag === 'EM' || tag === 'I') next.italic = true;
             else if (tag === 'SPAN') {
-                var m = (child.getAttribute('class') || '').match(/anti-rt-([a-z0-9-]+)/);
+                var m = (child.getAttribute('class') || '').match(/anti-style-([a-z0-9-]+)/);
                 if (m) next.style = m[1];
             }
             parseNode(child, next, out);
@@ -97,7 +100,7 @@
 
     /**
      * Render segments to a DocumentFragment with canonical nesting:
-     * span.anti-rt-* > strong > em. Adjacent identical formatting merges by
+     * span.anti-style-* > strong > em. Adjacent identical formatting merges by
      * construction — this is the normalization pass.
      */
     function renderModel(segments) {
@@ -119,7 +122,7 @@
             var container = frag;
             if (style) {
                 container = document.createElement('span');
-                container.className = 'anti-rt-' + style;
+                container.className = 'anti-style-' + style;
                 frag.appendChild(container);
             }
 
@@ -784,21 +787,20 @@
         };
     }
 
-    // ─── Feature resolution (mirrors PHP anti_rt_features) ──────────
+    // ─── Feature access ─────────────────────────────────────────────
 
-    function featuresFromField(fieldDef, registry) {
-        var options = (fieldDef && fieldDef.richtext) || {};
-        var registered = Object.keys(registry || {});
-        var styles = options.styles === true ? registered : (options.styles || []);
-
+    /**
+     * Features are resolved solely in PHP (anti_field_features: field options
+     * → fields/defaults.json → floor) and attached to the field definition as
+     * `features` when schemas are served. The client never re-derives them —
+     * re-derivation is how the editor and sanitizer drift apart.
+     */
+    function featuresFromField(fieldDef) {
+        var features = (fieldDef && fieldDef.features) || {};
         return {
-            marks: (options.marks || []).filter(function (m) {
-                return m === 'bold' || m === 'italic';
-            }),
-            styles: styles.filter(function (s) {
-                return registered.indexOf(s) !== -1;
-            }),
-            multiline: !!options.multiline,
+            marks: features.marks || [],
+            styles: features.styles || [],
+            multiline: !!features.multiline,
         };
     }
 
@@ -809,7 +811,7 @@
      * each [data-anti-field] region inside them.
      *
      * options.fieldConfig(component, field) → schema field definition
-     * options.styleRegistry → {name: {label}} (window.__antiRTStyles)
+     *   (carrying PHP-resolved `features`)
      * options.onChange(field, html), options.onFocus/onBlur(field, event),
      * options.onBlurCommit(field), options.onSelectionChange(editor, state)
      */
@@ -824,7 +826,7 @@
 
             var editor = createEditor({
                 root: region,
-                features: featuresFromField(fieldDef, options.styleRegistry),
+                features: featuresFromField(fieldDef),
                 onChange: function (html) {
                     if (options.onChange) options.onChange(field, html);
                 },
@@ -853,7 +855,7 @@
         };
     }
 
-    window.AntiRT = {
+    window.AntiLeantext = {
         createEditor: createEditor,
         mount: mount,
         featuresFromField: featuresFromField,

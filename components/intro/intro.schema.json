@@ -21,42 +21,37 @@
   "fields": [
     {
       "name": "eyebrow",
-      "type": "richtext",
+      "type": "text",
       "label": "Eyebrow",
       "description": "Short introductory label above the title",
       "default": "",
       "required": false,
       "tab": "content",
-      "richtext": {},
       "validation": {
         "maxLength": 100
       }
     },
     {
       "name": "title",
-      "type": "richtext",
+      "type": "leantext",
       "label": "Title",
       "description": "Main title text",
       "default": "",
       "required": false,
       "tab": "content",
-      "richtext": {
-        "marks": ["bold", "italic"]
-      },
       "validation": {
         "maxLength": 200
       }
     },
     {
       "name": "subtitle",
-      "type": "richtext",
+      "type": "leantext",
       "label": "Subtitle",
       "description": "Supporting text below the title",
       "default": "",
       "required": false,
       "tab": "content",
-      "richtext": {
-        "marks": ["bold", "italic"],
+      "leantext": {
         "styles": ["highlight", "accent"],
         "multiline": true
       },

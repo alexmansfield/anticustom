@@ -16,14 +16,18 @@ _Avoid_: validation level, check type
 The two severity tiers of a failure state that must never blur. An **advisory** finding (the `warning` threshold) is dismissible and tuned for human editors; it informs. An **enforced** finding (the `gated` threshold) is blocking, stricter, and tuned for AI agents and the publish gate; it prevents shipping.
 _Avoid_: soft/hard error, warning/blocker (as the canonical names)
 
-**Richtext field**:
-A schema field of type `richtext` whose options (`marks`, `styles`, `multiline`, `blocks`, `links`) declare its editing *capabilities*; the tier (plain → marks → styled spans → blocks/links) is derived from those options, never named in the schema. The same options drive the editor, the toolbar, and the output sanitizer (see ADR 0013).
-_Avoid_: WYSIWYG field, HTML field, tier numbers in schemas
+**Input palette**:
+The five field types component/form creators offer end users: `text`, `textarea` (strictly plain, always escaped), `leantext` (inline WYSIWYG: marks + named styles + `<br>`), `richtext` (block-capable WYSIWYG, editor TBD), `html` (raw source, sanitized on output). Richness rides on the type; graduation lives inside each type (see ADR 0014).
+_Avoid_: four-type palette, input types (as the canonical name)
+
+**Leantext**:
+The inline-only formatted field type: bold/italic marks (implied by the type), named `.anti-style-*` styles (per-field opt-in), optional `<br>` multiline. Flat segment editor (`fields/leantext.js`), buildless and first-party; options resolve per-key against `fields/defaults.json`, then a built-in floor. What ADR 0013 called "richtext".
+_Avoid_: richtext (for the inline system), WYSIWYG field, tier numbers in schemas
 
 **Named style**:
-A developer-defined inline text treatment registered globally in `richtext/styles.json` and opted into per field by name. Compiles to exactly one token-backed class (`.anti-rt-<name>`); editors see its label ("Highlight"), never the class.
+A developer-defined inline text treatment registered globally in `fields/styles.json` and opted into per field by name. Compiles to exactly one token-backed class (`.anti-style-<name>`); editors see its label ("Highlight"), never the class.
 _Avoid_: span class, format, custom style (per component)
 
 **Mount** (toolbar):
-A presentation host for the rich text toolbar implementing `{show, hide, destroy}`. The toolbar core builds buttons from an editor's capabilities; the mount decides where they appear — today, a bubble anchored to the active sidebar field, shown while a selection exists; attached-row and inline-preview mounts are possible later.
+A presentation host for the field toolbar implementing `{show, hide, destroy}`. The toolbar core builds buttons from an editor's capabilities; the mount decides where they appear — today, a bubble anchored to the active sidebar field, shown while a selection exists; attached-row and inline-preview mounts are possible later.
 _Avoid_: toolbar variant, chrome position

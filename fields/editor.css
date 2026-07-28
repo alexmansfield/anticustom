@@ -1,10 +1,10 @@
 /**
- * AntiRT editor chrome — loaded only where editing happens (explorer).
- * Content styles (.anti-rt-*) live in the generated token CSS instead,
- * so they apply in production too.
+ * Field editor chrome (AntiLeantext + AntiFieldToolbar) — loaded only where
+ * editing happens (explorer). Content styles (.anti-style-*) live in the
+ * generated token CSS instead, so they apply in production too.
  */
 
-/* ─── Sidebar rich text field (dual-view widget) ───────────────── */
+/* ─── Sidebar leantext field (dual-view widget) ────────────────── */
 
 .anti-comp-field__label-row {
     display: flex;
@@ -12,7 +12,7 @@
     justify-content: space-between;
 }
 
-.anti-comp-field__rt-toggle {
+.anti-comp-field__raw-toggle {
     padding: 0 5px;
     margin-bottom: 4px;
     border: none;
@@ -27,12 +27,12 @@
     transition: opacity 100ms ease, background 100ms ease;
 }
 
-.anti-comp-field__rt-toggle:hover {
+.anti-comp-field__raw-toggle:hover {
     opacity: 1;
     background: var(--anti-control-border, #d1d5db);
 }
 
-.anti-comp-field__rt-toggle.is-active {
+.anti-comp-field__raw-toggle.is-active {
     opacity: 1;
     background: var(--anti-control-border, #d1d5db);
     color: var(--anti-text, #1f2937);
@@ -73,7 +73,7 @@
 
 /* ─── Bubble toolbar (anchored to the active field) ────────────── */
 
-.anti-rt-bubble {
+.anti-field-bubble {
     position: fixed;
     z-index: 9999;
     display: flex;
@@ -89,14 +89,14 @@
     transition: opacity 120ms ease, transform 120ms ease;
 }
 
-.anti-rt-bubble.is-visible {
+.anti-field-bubble.is-visible {
     opacity: 1;
     transform: translateY(0);
     pointer-events: auto;
 }
 
 /* Arrow pointing at the field */
-.anti-rt-bubble::after {
+.anti-field-bubble::after {
     content: "";
     position: absolute;
     left: 50%;
@@ -108,12 +108,12 @@
     border-radius: 2px;
 }
 
-.anti-rt-bubble--below::after {
+.anti-field-bubble--below::after {
     bottom: auto;
     top: -5px;
 }
 
-.anti-rt-bubble__button {
+.anti-field-bubble__button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -131,54 +131,54 @@
     transition: background 100ms ease, color 100ms ease;
 }
 
-.anti-rt-bubble__button:hover {
+.anti-field-bubble__button:hover {
     background: rgba(255, 255, 255, 0.12);
     color: #ffffff;
 }
 
-.anti-rt-bubble__button[aria-pressed="true"] {
+.anti-field-bubble__button[aria-pressed="true"] {
     background: rgba(255, 255, 255, 0.22);
     color: #ffffff;
 }
 
-.anti-rt-bubble__button--bold {
+.anti-field-bubble__button--bold {
     font-weight: 700;
 }
 
-.anti-rt-bubble__button--italic {
+.anti-field-bubble__button--italic {
     font-style: italic;
     font-family: Georgia, "Times New Roman", serif;
 }
 
-/* Style chips render with their own .anti-rt-* class as a live swatch */
-.anti-rt-bubble__button--style {
+/* Style chips render with their own .anti-style-* class as a live swatch */
+.anti-field-bubble__button--style {
     width: auto;
     min-width: 32px;
     padding: 0 8px;
 }
 
-.anti-rt-bubble__button--style .anti-rt-chip {
+.anti-field-bubble__button--style .anti-field-chip {
     font-size: 0.8125rem;
     line-height: 1.4;
 }
 
 /* Collapsed-caret bubble: one chip that removes the whole styled run */
-.anti-rt-bubble__button--remove {
+.anti-field-bubble__button--remove {
     gap: 6px;
 }
 
-.anti-rt-bubble__button--remove .anti-rt-bubble__remove-x {
+.anti-field-bubble__button--remove .anti-field-bubble__remove-x {
     color: rgba(255, 255, 255, 0.55);
     font-size: 1rem;
     line-height: 1;
     transition: color 100ms ease;
 }
 
-.anti-rt-bubble__button--remove:hover .anti-rt-bubble__remove-x {
+.anti-field-bubble__button--remove:hover .anti-field-bubble__remove-x {
     color: #ffffff;
 }
 
-.anti-rt-bubble__divider {
+.anti-field-bubble__divider {
     width: 1px;
     height: 20px;
     margin: 0 3px;

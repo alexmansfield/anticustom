@@ -1,9 +1,12 @@
 ---
 status: accepted
 thread: 01kwwmh13pzrrc1c6xnxj3vt13
+amended-by: 0014
 ---
 
 # Rich text is a graduated, schema-driven field type edited in the sidebar
+
+> **Amended by [ADR 0014](0014-input-palette-five-field-types.md):** the field type this ADR calls `richtext` is now named **leantext**; the name `richtext` is reserved for a block-capable WYSIWYG type. The machinery decided here survives under new names in `fields/`.
 
 Components opt fields into rich text via a new `richtext` field type whose options declare *capabilities*, never tiers: `marks` (bold/italic), `styles` (named styled spans), `multiline` (`<br>`), and — designed but deferred — `blocks`/`links`. The editor, toolbar, and sanitizer all derive what they permit from the same field options, so a field's schema is simultaneously its editor configuration and its security boundary. Editing happens in the explorer's sidebar component panel; the preview stays a render-only surface. Nothing off the shelf offered this (Sanity's Portable Text is the closest concept, but lives inside Sanity Studio), so the system is first-party.
 

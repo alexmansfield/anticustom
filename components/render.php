@@ -6,7 +6,7 @@
  * Merged from anticustom-components/explorer.php and antisloth/app/Helpers/anti.php.
  */
 
-require_once dirname(__DIR__) . '/richtext/sanitize.php';
+require_once dirname(__DIR__) . '/fields/sanitize.php';
 
 // === Class & Attribute Helpers ===
 
@@ -253,7 +253,7 @@ if (!function_exists('anti_component')) {
             $merged['__interface'] = $interface;
         }
 
-        // Inject component name so field-aware helpers (anti_rich) can
+        // Inject component name so field-aware helpers (anti_field_html) can
         // resolve the field's schema definition
         $merged['__component'] = $type;
 
@@ -421,9 +421,9 @@ if (!function_exists('anti_interpolate_props')) {
     }
 }
 
-// === Rich Text ===
+// === Formatted Fields ===
 
-if (!function_exists('anti_rich_field_def')) {
+if (!function_exists('anti_field_def')) {
     /**
      * Look up a field's schema definition via the __component prop.
      *
@@ -431,7 +431,7 @@ if (!function_exists('anti_rich_field_def')) {
      * @param string $field Field name
      * @return array|null Field definition or null
      */
-    function anti_rich_field_def(array $props, string $field): ?array
+    function anti_field_def(array $props, string $field): ?array
     {
         $component = $props['__component'] ?? '';
         if ($component === '') {
@@ -449,28 +449,29 @@ if (!function_exists('anti_rich_field_def')) {
     }
 }
 
-if (!function_exists('anti_rich')) {
+if (!function_exists('anti_field_html')) {
     /**
-     * Output a field value for templates. Richtext fields are sanitized
-     * against their schema-derived allowlist (sanitize-on-output is the
-     * security boundary); all other fields fall back to html_escape().
+     * Output a field value for templates, dispatching on the field's type.
+     * Formatted types (leantext; richtext/html when they land) are sanitized
+     * against their resolved allowlist (sanitize-on-output is the security
+     * boundary); plain types always fall back to html_escape().
      *
      * @param array $props Component props
      * @param string $field Field name
      * @return string Safe HTML
      */
-    function anti_rich(array $props, string $field): string
+    function anti_field_html(array $props, string $field): string
     {
         $value = $props[$field] ?? '';
         if (!is_string($value)) {
             return '';
         }
 
-        $def = anti_rich_field_def($props, $field);
-        if (($def['type'] ?? '') !== 'richtext') {
+        $def = anti_field_def($props, $field);
+        if (!in_array($def['type'] ?? '', ['leantext'], true)) {
             return html_escape($value);
         }
 
-        return anti_rt_sanitize($value, anti_rt_features($def));
+        return anti_field_sanitize($value, anti_field_features($def));
     }
 }
