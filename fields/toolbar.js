@@ -1,5 +1,6 @@
 /**
- * AntiRTToolbar — detachable chrome for AntiRT editors
+ * AntiFieldToolbar — detachable chrome for formatted-field editors
+ * (AntiLeantext today; the richtext type's editor later)
  *
  * The toolbar core is mount-agnostic: it turns an editor's allowed features
  * into a button list and dispatches commands; a mount decides where and how
@@ -8,7 +9,7 @@
  * inside a styled run it shows a single remove-the-run chip instead. Future
  * mounts (attached-to-input, sidebar, bottom bar) implement the same
  * contract: { show(context), hide(), destroy() } where context is
- * { state, buttons, exec }. See ADR 0013.
+ * { state, buttons, exec }. See ADR 0013 / ADR 0014.
  */
 (function () {
     'use strict';
@@ -90,7 +91,7 @@
         function ensureElement() {
             if (element) return element;
             element = document.createElement('div');
-            element.className = 'anti-rt-bubble';
+            element.className = 'anti-field-bubble';
             element.setAttribute('role', 'toolbar');
             element.setAttribute('aria-label', 'Text formatting');
             document.body.appendChild(element);
@@ -104,20 +105,20 @@
             context.buttons.forEach(function (button) {
                 if (button.kind === 'divider') {
                     var divider = document.createElement('span');
-                    divider.className = 'anti-rt-bubble__divider';
+                    divider.className = 'anti-field-bubble__divider';
                     el.appendChild(divider);
                     return;
                 }
 
                 var btn = document.createElement('button');
                 btn.type = 'button';
-                btn.className = 'anti-rt-bubble__button anti-rt-bubble__button--' + button.kind;
+                btn.className = 'anti-field-bubble__button anti-field-bubble__button--' + button.kind;
                 btn.title = button.title;
                 btn.setAttribute('aria-pressed', button.isActive(context.state) ? 'true' : 'false');
 
                 if (button.kind === 'style') {
                     var chip = document.createElement('span');
-                    chip.className = 'anti-rt-chip anti-rt-' + button.style;
+                    chip.className = 'anti-field-chip anti-style-' + button.style;
                     chip.textContent = button.text;
                     btn.appendChild(chip);
                 } else {
@@ -125,9 +126,9 @@
                 }
 
                 if (button.remove) {
-                    btn.classList.add('anti-rt-bubble__button--remove');
+                    btn.classList.add('anti-field-bubble__button--remove');
                     var x = document.createElement('span');
-                    x.className = 'anti-rt-bubble__remove-x';
+                    x.className = 'anti-field-bubble__remove-x';
                     x.setAttribute('aria-hidden', 'true');
                     x.textContent = '×';
                     btn.appendChild(x);
@@ -163,7 +164,7 @@
 
             el.style.top = top + 'px';
             el.style.left = left + 'px';
-            el.classList.toggle('anti-rt-bubble--below', below);
+            el.classList.toggle('anti-field-bubble--below', below);
         }
 
         function anchorRect() {
@@ -222,7 +223,7 @@
 
     function create(options) {
         var mounts = (options && options.mounts) || [bubbleMount()];
-        var styleRegistry = (options && options.styleRegistry) || window.__antiRTStyles || {};
+        var styleRegistry = (options && options.styleRegistry) || window.__antiFieldStyles || {};
         var activeEditor = null;
 
         function hideAll() {
@@ -268,10 +269,10 @@
 
     /** True if an element belongs to toolbar chrome (for blur/relatedTarget checks). */
     function ownsElement(el) {
-        return !!(el && el.closest && el.closest('.anti-rt-bubble'));
+        return !!(el && el.closest && el.closest('.anti-field-bubble'));
     }
 
-    window.AntiRTToolbar = {
+    window.AntiFieldToolbar = {
         create: create,
         bubbleMount: bubbleMount,
         buildButtons: buildButtons,

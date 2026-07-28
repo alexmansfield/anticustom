@@ -1,5 +1,5 @@
 {
-  "$comment": "Global named-style registry for rich text (tier 3). Each style becomes one CSS class: .anti-rt-<name>. Component schemas opt in per field via richtext.styles. CSS values should reference design tokens (colorway vars respond to data-colorway).",
+  "$comment": "Global named-style registry for formatted fields (ADR 0014). Each style becomes one CSS class: .anti-style-<name>. Component schemas opt in per field via leantext.styles. CSS values should reference design tokens (colorway vars respond to data-colorway).",
   "styles": {
     "highlight": {
       "label": "Highlight",

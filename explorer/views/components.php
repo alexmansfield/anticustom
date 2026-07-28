@@ -49,7 +49,7 @@ $samples = [
     ],
     'card' => [
         'title' => 'Sample Card',
-        'description' => 'This card demonstrates <strong>bold</strong>, <em>italic</em>, and <span class="anti-rt-highlight">highlighted</span> rich text with a call-to-action link.',
+        'description' => 'This card demonstrates <strong>bold</strong>, <em>italic</em>, and <span class="anti-style-highlight">highlighted</span> leantext with a call-to-action link.',
         'icon' => 'A',
         'variant' => 'elevated',
         'link_text' => 'View Details',
@@ -105,7 +105,7 @@ $samples = [
     'intro' => [
         'eyebrow' => 'Section Eyebrow',
         'title' => 'Intro Component',
-        'subtitle' => 'Used as the heading block for sections. Supports <strong>inline marks</strong> and <span class="anti-rt-accent">named styles</span> — select some text to try them.',
+        'subtitle' => 'Used as the heading block for sections. Supports <strong>inline marks</strong> and <span class="anti-style-accent">named styles</span> — select some text to try them.',
         'align' => 'center',
         'size' => 'm',
     ],
@@ -199,10 +199,21 @@ foreach ($components as $name => $comp) {
     $schema = $comp['schema'];
     $hasChildren = isset($schema['children']);
 
+    // Attach PHP-resolved features to formatted fields: resolution (field
+    // options → fields/defaults.json → floor) lives solely in
+    // anti_field_features(); the client consumes the result, never re-derives
+    $fields = $schema['fields'] ?? [];
+    foreach ($fields as &$field) {
+        if (($field['type'] ?? '') === 'leantext') {
+            $field['features'] = anti_field_features($field);
+        }
+    }
+    unset($field);
+
     $componentData[$name] = [
         'label'       => $comp['label'],
         'category'    => $schema['category'] ?? 'other',
-        'fields'      => $schema['fields'] ?? [],
+        'fields'      => $fields,
         'hasChildren' => $hasChildren,
         'sampleProps' => $samples[$name] ?? [],
         'styles'      => $comp['styles'],
@@ -267,7 +278,7 @@ window.__antiInitialPreview = {
 window.__antiStyles = <?php echo json_encode($allStyleNames); ?>;
 window.__antiActiveStyle = <?php echo json_encode($activeStyle); ?>;
 window.__antiColorways = <?php echo json_encode($colorwayNames); ?>;
-window.__antiRTStyles = <?php echo json_encode(anti_rt_registry()['styles'], JSON_UNESCAPED_UNICODE); ?>;
+window.__antiFieldStyles = <?php echo json_encode(anti_field_registry()['styles'], JSON_UNESCAPED_UNICODE); ?>;
 // Merge user-created colorways from localStorage so the selector is complete on first render
 try {
     var _saved = JSON.parse(localStorage.getItem('antiExplorer_data') || '{}');

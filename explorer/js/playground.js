@@ -22,17 +22,17 @@ const COMP_ICONS = {
 };
 
 // ============================================
-// Rich text toolbar session (shared by all richtext fields)
+// Field toolbar session (shared by all leantext fields)
 // ============================================
 
-let _rtToolbar = null;
-function rtToolbarSession() {
-    if (!_rtToolbar && window.AntiRTToolbar) {
-        _rtToolbar = AntiRTToolbar.create({
-            styleRegistry: window.__antiRTStyles || {},
+let _fieldToolbar = null;
+function fieldToolbarSession() {
+    if (!_fieldToolbar && window.AntiFieldToolbar) {
+        _fieldToolbar = AntiFieldToolbar.create({
+            styleRegistry: window.__antiFieldStyles || {},
         });
     }
-    return _rtToolbar;
+    return _fieldToolbar;
 }
 
 // ============================================
@@ -72,10 +72,10 @@ function registerComponentPanel() {
         },
     });
 
-    // Dual-view rich text field: WYSIWYG contenteditable (default) with a
+    // Dual-view leantext field: WYSIWYG contenteditable (default) with a
     // toggle to raw HTML. Nested inside componentPanel, so `props` and
     // `scheduleRender` resolve through the Alpine scope chain.
-    Alpine.data('richtextField', (field) => ({
+    Alpine.data('leantextField', (field) => ({
         raw: false,
         _editor: null,
 
@@ -93,28 +93,28 @@ function registerComponentPanel() {
         },
 
         attachEditor() {
-            if (this._editor || !window.AntiRT || !this.$refs.rich) return;
+            if (this._editor || !window.AntiLeantext || !this.$refs.rich) return;
 
-            this._editor = AntiRT.createEditor({
+            this._editor = AntiLeantext.createEditor({
                 root: this.$refs.rich,
-                features: AntiRT.featuresFromField(field, window.__antiRTStyles || {}),
+                features: AntiLeantext.featuresFromField(field),
                 onChange: (html) => {
                     this.props[field.name] = html;
                     this.scheduleRender();
                 },
                 onSelectionChange: (state) => {
-                    const toolbar = rtToolbarSession();
+                    const toolbar = fieldToolbarSession();
                     if (toolbar) toolbar.updateSelection(state);
                 },
                 onFocus: () => {
-                    const toolbar = rtToolbarSession();
+                    const toolbar = fieldToolbarSession();
                     if (toolbar) toolbar.setActiveEditor(this._editor);
                 },
                 onBlur: (e) => {
-                    if (window.AntiRTToolbar && AntiRTToolbar.ownsElement(e.relatedTarget)) {
+                    if (window.AntiFieldToolbar && AntiFieldToolbar.ownsElement(e.relatedTarget)) {
                         return; // focus moved into the toolbar — still editing
                     }
-                    const toolbar = rtToolbarSession();
+                    const toolbar = fieldToolbarSession();
                     if (toolbar) toolbar.setActiveEditor(null);
                 },
             });
@@ -673,13 +673,13 @@ const getComponentPanelHTML = () => `
                                 </div>
                             </template>
 
-                            <!-- Rich text: WYSIWYG by default, raw HTML on toggle -->
-                            <template x-if="field.type === 'richtext'">
-                                <div x-data="richtextField(field)">
+                            <!-- Leantext: WYSIWYG by default, raw HTML on toggle -->
+                            <template x-if="field.type === 'leantext'">
+                                <div x-data="leantextField(field)">
                                     <div class="anti-comp-field__label-row">
                                         <label class="anti-comp-field__label" x-text="field.label"></label>
                                         <button type="button"
-                                                class="anti-comp-field__rt-toggle"
+                                                class="anti-comp-field__raw-toggle"
                                                 :class="{ 'is-active': raw }"
                                                 :aria-pressed="raw"
                                                 @click="toggleRaw()"

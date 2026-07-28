@@ -1,0 +1,8 @@
+{
+  "$comment": "Project-level defaults for input-palette field types (ADR 0014). Resolution is per-key: a key omitted from a field's options inherits the project default here; a key present replaces it wholesale (explicit empty narrows). This file is optional — absent, fields resolve against the built-in floor. Future keys: textarea (paragraph semantics), richtext, html.",
+  "leantext": {
+    "marks": ["bold", "italic"],
+    "styles": [],
+    "multiline": false
+  }
+}

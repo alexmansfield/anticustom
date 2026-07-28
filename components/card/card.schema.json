@@ -13,14 +13,11 @@
   "fields": [
     {
       "name": "title",
-      "type": "richtext",
+      "type": "leantext",
       "label": "Title",
       "description": "Card title or heading",
       "default": "Card Title",
       "required": true,
-      "richtext": {
-        "marks": ["bold", "italic"]
-      },
       "validation": {
         "minLength": 1,
         "maxLength": 100
@@ -28,13 +25,12 @@
     },
     {
       "name": "description",
-      "type": "richtext",
+      "type": "leantext",
       "label": "Description",
       "description": "Card body text",
       "default": "",
       "required": false,
-      "richtext": {
-        "marks": ["bold", "italic"],
+      "leantext": {
         "styles": ["highlight", "accent"],
         "multiline": true
       },

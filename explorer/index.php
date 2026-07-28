@@ -54,10 +54,10 @@ $navItems = [
     <script>Coloris({ alpha: false, format: 'hex', themeMode: 'light', margin: 8, swatches: [] });</script>
     <?php if ($tool === 'components') : ?>
         <script defer src="js/playground.js"></script>
-        <!-- Rich text runtime inlined (richtext/ is outside document root) -->
-        <style id="anti-rt-editor"><?php echo file_get_contents(__DIR__ . '/../richtext/editor.css'); ?></style>
-        <script><?php echo file_get_contents(__DIR__ . '/../richtext/engine.js'); ?></script>
-        <script><?php echo file_get_contents(__DIR__ . '/../richtext/toolbar.js'); ?></script>
+        <!-- Field editor runtime inlined (fields/ is outside document root) -->
+        <style id="anti-field-editor"><?php echo file_get_contents(__DIR__ . '/../fields/editor.css'); ?></style>
+        <script><?php echo file_get_contents(__DIR__ . '/../fields/leantext.js'); ?></script>
+        <script><?php echo file_get_contents(__DIR__ . '/../fields/toolbar.js'); ?></script>
     <?php endif; ?>
     <script defer src="vendor/alpine.min.js"></script>
 </head>
