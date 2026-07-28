@@ -17,7 +17,6 @@
  * @var string $resize      Resize mode: none|vertical|horizontal|both
  * @var bool   $required    Whether field is required
  * @var bool   $disabled    Whether field is disabled
- * @var string $size        Size: s|m|l
  * @var string $colorway    Color scheme override
  * @var string $class       Additional CSS classes
  */
@@ -33,7 +32,6 @@ $rows        = (int) ($props['rows'] ?? 4);
 $resize      = $props['resize'] ?? 'vertical';
 $required    = $props['required'] ?? false;
 $disabled    = $props['disabled'] ?? false;
-$size        = $props['size'] ?? 'm';
 $colorway    = $props['colorway'] ?? 'inherit';
 $class       = $props['class'] ?? '';
 
@@ -49,7 +47,6 @@ $colorway_attr = (!empty($colorway) && $colorway !== 'inherit')
 // Build CSS classes
 $classes = anti_classes([
     'anti-textarea'              => true,
-    "anti-textarea--{$size}"     => true,
     'anti-textarea--error'       => $has_error,
     'anti-textarea--disabled'    => $disabled,
     $class                       => !empty($class),

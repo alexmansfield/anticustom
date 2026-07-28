@@ -194,11 +194,13 @@ $resolved = anti_interpolate_props(
 Handles layout, positioning, and responsive behavior. Uses CSS custom properties with fallbacks as hooks for the theme layer:
 
 ```css
-.anti-badge--s {
-    padding: var(--anti-badge-padding-s, 0.125rem 0.5rem);
-    font-size: var(--anti-badge-font-s, 0.75rem);
+.anti-badge {
+    padding: var(--anti-badge-padding, 0.25rem 0.625rem);
+    font-size: var(--anti-badge-font, 0.875rem);
 }
 ```
+
+The bare block class must render complete — a component with no modifiers applied is the default state, not a broken one. Modifier classes (`--s`, `--l`) express deviations only, and templates emit them only when a non-default value is chosen. Per-instance `size` props exist only where instances genuinely vary within a page (button, hero, intro); everywhere else, sizing is a project-level decision made through tokens (`--anti-input-padding`, `--anti-input-font`).
 
 ### `{style}.css` — Aesthetics (named styles)
 
@@ -207,8 +209,8 @@ Each named style file (e.g. `plato.css`, `aristotle.css`) maps design tokens to 
 ```css
 /* plato.css */
 .anti-badge {
-    --anti-badge-padding-s: var(--space-xs, 0.25rem) var(--space-s, 0.5rem);
-    --anti-badge-font-s: var(--text-xs, 0.75rem);
+    --anti-badge-padding: var(--space-xs, 0.25rem) var(--space-s, 0.5rem);
+    --anti-badge-font: var(--text-xs, 0.75rem);
     border-radius: var(--radius-full, 9999px);
 }
 ```

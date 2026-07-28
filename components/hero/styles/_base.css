@@ -16,6 +16,8 @@
     background-position: center;
     background-repeat: no-repeat;
     overflow: hidden;
+    min-height: var(--anti-hero-min-height, 600px);
+    padding: var(--anti-hero-padding, calc(var(--space-xl, 3rem) * 2) 0);
 }
 
 .anti-hero__container {
@@ -84,22 +86,17 @@
 }
 
 /* ==========================================================================
-   Sizes
+   Size Modifiers (base class is the default size, large)
    ========================================================================== */
 
-.anti-hero--s {
-    min-height: 300px;
-    padding: var(--space-xl, 3rem) 0;
+.anti-hero--sm {
+    --anti-hero-min-height: 300px;
+    --anti-hero-padding: var(--space-xl, 3rem) 0;
 }
 
-.anti-hero--m {
-    min-height: 450px;
-    padding: var(--space-xl, 3rem) 0;
-}
-
-.anti-hero--l {
-    min-height: 600px;
-    padding: calc(var(--space-xl, 3rem) * 2) 0;
+.anti-hero--md {
+    --anti-hero-min-height: 450px;
+    --anti-hero-padding: var(--space-xl, 3rem) 0;
 }
 
 /* ==========================================================================
@@ -107,9 +104,10 @@
    ========================================================================== */
 
 @media (max-width: 768px) {
-    .anti-hero--l {
-        min-height: 450px;
-        padding: var(--space-xl, 3rem) 0;
+    /* Cap default (large) heroes; sm/md set their own vars and are unaffected */
+    .anti-hero {
+        min-height: min(var(--anti-hero-min-height, 600px), 450px);
+        padding: var(--anti-hero-padding, var(--space-xl, 3rem) 0);
     }
 
     .anti-hero__actions {

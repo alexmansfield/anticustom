@@ -52,22 +52,12 @@
 }
 
 /* ==========================================================================
-   Size Structure
+   Control Sizing (project-tunable via tokens)
    ========================================================================== */
 
-.anti-textarea--s .anti-textarea__control {
-    padding: var(--anti-textarea-padding-s, 0.25rem 0.5rem);
-    font-size: var(--anti-textarea-font-s, 0.875rem);
-}
-
-.anti-textarea--m .anti-textarea__control {
-    padding: var(--anti-textarea-padding-m, 0.5rem 0.75rem);
-    font-size: var(--anti-textarea-font-m, 1rem);
-}
-
-.anti-textarea--l .anti-textarea__control {
-    padding: var(--anti-textarea-padding-l, 0.75rem 1rem);
-    font-size: var(--anti-textarea-font-l, 1.125rem);
+.anti-textarea__control {
+    padding: var(--anti-textarea-padding, 0.5rem 0.75rem);
+    font-size: var(--anti-textarea-font, 1rem);
 }
 
 /* ==========================================================================

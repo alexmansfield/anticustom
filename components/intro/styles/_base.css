@@ -9,6 +9,7 @@
 .anti-intro {
     display: flex;
     flex-direction: column;
+    gap: var(--space-s, 0.5rem);
 }
 
 /* ==========================================================================
@@ -27,20 +28,23 @@
     margin: 0;
     text-transform: uppercase;
     letter-spacing: 0.05em;
+    font-size: var(--text-s, 0.875rem);
 }
 
 .anti-intro__title {
     margin: 0;
     line-height: 1.2;
+    font-size: var(--heading-2, 2rem);
 }
 
 .anti-intro__subtitle {
     margin: 0;
     line-height: 1.6;
+    font-size: var(--text-l, 1.125rem);
 }
 
 /* ==========================================================================
-   Size: Small
+   Size: Small (base styles above are the default, medium)
    ========================================================================== */
 
 .anti-intro[data-size="s"] {
@@ -57,26 +61,6 @@
 
 .anti-intro[data-size="s"] .anti-intro__subtitle {
     font-size: var(--text-s, 0.875rem);
-}
-
-/* ==========================================================================
-   Size: Medium
-   ========================================================================== */
-
-.anti-intro[data-size="m"] {
-    gap: var(--space-s, 0.5rem);
-}
-
-.anti-intro[data-size="m"] .anti-intro__eyebrow {
-    font-size: var(--text-s, 0.875rem);
-}
-
-.anti-intro[data-size="m"] .anti-intro__title {
-    font-size: var(--heading-2, 2rem);
-}
-
-.anti-intro[data-size="m"] .anti-intro__subtitle {
-    font-size: var(--text-l, 1.125rem);
 }
 
 /* ==========================================================================

@@ -52,22 +52,12 @@
 }
 
 /* ==========================================================================
-   Size Structure
+   Control Sizing (project-tunable via tokens)
    ========================================================================== */
 
-.anti-input--s .anti-input__control {
-    padding: var(--anti-input-padding-s, 0.25rem 0.5rem);
-    font-size: var(--anti-input-font-s, 0.875rem);
-}
-
-.anti-input--m .anti-input__control {
-    padding: var(--anti-input-padding-m, 0.5rem 0.75rem);
-    font-size: var(--anti-input-font-m, 1rem);
-}
-
-.anti-input--l .anti-input__control {
-    padding: var(--anti-input-padding-l, 0.75rem 1rem);
-    font-size: var(--anti-input-font-l, 1.125rem);
+.anti-input__control {
+    padding: var(--anti-input-padding, 0.5rem 0.75rem);
+    font-size: var(--anti-input-font, 1rem);
 }
 
 /* ==========================================================================

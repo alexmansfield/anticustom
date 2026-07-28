@@ -53,20 +53,20 @@ $cta_size = $size === 'sm' ? 'm' : 'l';
 $classes = anti_classes([
     'anti-hero'                    => true,
     "anti-hero--{$alignment}"      => true,
-    "anti-hero--{$size}"           => true,
+    "anti-hero--{$size}"           => $size !== 'lg',
 ]);
 
 $primary_classes = anti_classes([
     'anti-button'                          => true,
     "anti-button--{$primary_cta_variant}"  => true,
-    "anti-button--{$cta_size}"             => true,
+    "anti-button--{$cta_size}"             => $cta_size !== 'm',
     'anti-button--shadow'                  => true,
 ]);
 
 $secondary_classes = anti_classes([
     'anti-button'                           => true,
     "anti-button--{$secondary_cta_variant}" => true,
-    "anti-button--{$cta_size}"              => true,
+    "anti-button--{$cta_size}"              => $cta_size !== 'm',
 ]);
 
 // Build data attributes (skip if 'inherit' - let it inherit from parent)

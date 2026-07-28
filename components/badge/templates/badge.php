@@ -6,12 +6,10 @@
  *
  * Props:
  * @var string $text     Badge text content (required)
- * @var string $size     Badge size: s|m
  * @var string $class    Additional CSS class(es)
  */
 
 $text  = $props['text'] ?? '';
-$size  = $props['size'] ?? 'm';
 $class = $props['class'] ?? '';
 
 if (empty($text)) {
@@ -20,7 +18,6 @@ if (empty($text)) {
 
 $classes = anti_classes([
     'anti-badge'             => true,
-    "anti-badge--{$size}"    => true,
     $class                   => !empty($class),
 ]);
 ?>

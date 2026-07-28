@@ -47,26 +47,11 @@
     border: var(--border-m, 2px) solid var(--colorway-soft-contrast, #cbd5e1);
     background-color: var(--colorway-base, #ffffff);
     color: var(--colorway-hard-contrast, #0f172a);
+    border-radius: var(--radius-m);
 }
 
 .anti-textarea__control::placeholder {
     color: var(--colorway-soft-contrast, #94a3b8);
-}
-
-/* ==========================================================================
-   Sizes (aesthetic)
-   ========================================================================== */
-
-.anti-textarea--s .anti-textarea__control {
-    border-radius: var(--radius-s);
-}
-
-.anti-textarea--m .anti-textarea__control {
-    border-radius: var(--radius-m);
-}
-
-.anti-textarea--l .anti-textarea__control {
-    border-radius: var(--radius-l);
 }
 
 /* ==========================================================================

@@ -17,7 +17,6 @@
  * @var string $error_text  Error message (runtime)
  * @var bool   $required    Whether field is required
  * @var bool   $disabled    Whether field is disabled
- * @var string $size        Input size: s|m|l
  * @var string $colorway    Color scheme override
  * @var string $class       Additional CSS classes
  */
@@ -32,7 +31,6 @@ $helper_text = $props['helper_text'] ?? '';
 $error_text  = $props['error_text'] ?? '';
 $required    = $props['required'] ?? false;
 $disabled    = $props['disabled'] ?? false;
-$size        = $props['size'] ?? 'm';
 $colorway    = $props['colorway'] ?? 'inherit';
 $class       = $props['class'] ?? '';
 
@@ -48,7 +46,6 @@ $colorway_attr = (!empty($colorway) && $colorway !== 'inherit')
 // Build CSS classes
 $classes = anti_classes([
     'anti-input'              => true,
-    "anti-input--{$size}"     => true,
     'anti-input--error'       => $has_error,
     'anti-input--disabled'    => $disabled,
     $class                    => !empty($class),

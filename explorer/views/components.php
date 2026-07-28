@@ -39,7 +39,6 @@ $samples = [
     'badge' => [
         'text' => 'Active',
         'variant' => 'success',
-        'size' => 'm',
     ],
     'button' => [
         'text' => 'Click Me',

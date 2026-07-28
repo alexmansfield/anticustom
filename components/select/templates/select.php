@@ -18,7 +18,6 @@
  * @var string $error_text  Error message (runtime)
  * @var bool   $required    Whether field is required
  * @var bool   $disabled    Whether field is disabled
- * @var string $size        Size: s|m|l
  * @var string $colorway    Color scheme override
  * @var string $class       Additional CSS classes
  */
@@ -34,7 +33,6 @@ $helper_text = $props['helper_text'] ?? '';
 $error_text  = $props['error_text'] ?? '';
 $required    = $props['required'] ?? false;
 $disabled    = $props['disabled'] ?? false;
-$size        = $props['size'] ?? 'm';
 $colorway    = $props['colorway'] ?? 'inherit';
 $class       = $props['class'] ?? '';
 
@@ -51,7 +49,6 @@ $colorway_attr = (!empty($colorway) && $colorway !== 'inherit')
 $classes = anti_classes([
     'anti-select'                 => true,
     "anti-select--{$display}"     => true,
-    "anti-select--{$size}"        => true,
     'anti-select--error'          => $has_error,
     'anti-select--disabled'       => $disabled,
     $class                        => !empty($class),

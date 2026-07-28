@@ -13,28 +13,25 @@
 
 .anti-button {
     --anti-button-gap: var(--space-s, 0.5rem);
+    --anti-button-padding: var(--space-s, 0.5rem) var(--space-l, 1.5rem);
     --anti-button-padding-s: var(--space-xs, 0.25rem) var(--space-m, 1rem);
-    --anti-button-padding-m: var(--space-s, 0.5rem) var(--space-l, 1.5rem);
     --anti-button-padding-l: var(--space-m, 1rem) var(--space-xl, 3rem);
+    --anti-button-font: var(--text-m, 1rem);
     --anti-button-font-s: var(--text-s, 0.875rem);
-    --anti-button-font-m: var(--text-m, 1rem);
     --anti-button-font-l: var(--text-l, 1.125rem);
 
     background-color: var(--colorway-base, #ffffff);
     color: var(--colorway-hard-contrast, #0f172a);
     font-weight: var(--font-weight-medium, 500);
+    border-radius: var(--radius-m);
 }
 
 /* ==========================================================================
-   Sizes (aesthetic)
+   Sizes (aesthetic; base class is the default size)
    ========================================================================== */
 
 .anti-button--s {
     border-radius: var(--radius-s);
-}
-
-.anti-button--m {
-    border-radius: var(--radius-m);
 }
 
 .anti-button--l {

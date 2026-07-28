@@ -28,24 +28,6 @@
       }
     },
     {
-      "name": "size",
-      "type": "select",
-      "label": "Size",
-      "description": "Badge size",
-      "options": [
-        {
-          "value": "s",
-          "label": "Small"
-        },
-        {
-          "value": "m",
-          "label": "Medium"
-        }
-      ],
-      "default": "m",
-      "tab": "settings"
-    },
-    {
       "name": "class",
       "type": "text",
       "label": "Custom Class",

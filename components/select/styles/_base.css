@@ -151,22 +151,12 @@
 }
 
 /* ==========================================================================
-   Size Structure (dropdown)
+   Control Sizing (dropdown; project-tunable via tokens)
    ========================================================================== */
 
-.anti-select--s .anti-select__control {
-    padding: var(--anti-select-padding-s, 0.25rem 0.5rem);
-    font-size: var(--anti-select-font-s, 0.875rem);
-}
-
-.anti-select--m .anti-select__control {
-    padding: var(--anti-select-padding-m, 0.5rem 0.75rem);
-    font-size: var(--anti-select-font-m, 1rem);
-}
-
-.anti-select--l .anti-select__control {
-    padding: var(--anti-select-padding-l, 0.75rem 1rem);
-    font-size: var(--anti-select-font-l, 1.125rem);
+.anti-select__control {
+    padding: var(--anti-select-padding, 0.5rem 0.75rem);
+    font-size: var(--anti-select-font, 1rem);
 }
 
 /* ==========================================================================

@@ -35,7 +35,7 @@ if (empty($eyebrow) && empty($title) && empty($subtitle)) {
 $attrs = anti_attrs([
     'data-colorway' => (!empty($colorway) && $colorway !== 'inherit') ? $colorway : false,
     'data-align'    => $align !== 'inherit' ? $align : null,
-    'data-size'     => $size,
+    'data-size'     => $size !== 'm' ? $size : null,
 ]);
 
 // Interface styles (padding, border, shadow)

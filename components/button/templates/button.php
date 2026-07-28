@@ -35,7 +35,7 @@ $colorway_attr = (!empty($colorway) && $colorway !== 'inherit')
 $classes = anti_classes([
     'anti-button'              => true,
     "anti-button--{$variant}"  => true,
-    "anti-button--{$size}"     => true,
+    "anti-button--{$size}"     => $size !== 'm',
     'anti-button--full-width'  => $full_width,
     'anti-button--shadow'      => $shadow,
 ]);

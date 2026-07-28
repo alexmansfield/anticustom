@@ -99,19 +99,6 @@
       "tab": "settings"
     },
     {
-      "name": "size",
-      "type": "select",
-      "label": "Size",
-      "description": "Input size",
-      "options": [
-        { "value": "s", "label": "Small" },
-        { "value": "m", "label": "Medium" },
-        { "value": "l", "label": "Large" }
-      ],
-      "default": "m",
-      "tab": "settings"
-    },
-    {
       "name": "colorway",
       "type": "colorway",
       "label": "Colorway",
@@ -136,7 +123,6 @@
     "text-s",
     "text-m",
     "text-l",
-    "radius-s",
     "radius-m",
     "radius-l",
     "colorway-base",

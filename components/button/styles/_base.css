@@ -22,6 +22,8 @@
     white-space: nowrap;
     border: none;
     background: none;
+    padding: var(--anti-button-padding, 0.5rem 1rem);
+    font-size: var(--anti-button-font, 1rem);
     transition:
         background-color 150ms ease,
         border-color 150ms ease,
@@ -48,17 +50,12 @@
 }
 
 /* ==========================================================================
-   Size Structure
+   Size Modifiers (base class is the default size)
    ========================================================================== */
 
 .anti-button--s {
     padding: var(--anti-button-padding-s, 0.25rem 0.75rem);
     font-size: var(--anti-button-font-s, 0.875rem);
-}
-
-.anti-button--m {
-    padding: var(--anti-button-padding-m, 0.5rem 1rem);
-    font-size: var(--anti-button-font-m, 1rem);
 }
 
 .anti-button--l {
