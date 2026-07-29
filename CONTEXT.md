@@ -31,3 +31,11 @@ _Avoid_: span class, format, custom style (per component)
 **Mount** (toolbar):
 A presentation host for the field toolbar implementing `{show, hide, destroy}`. The toolbar core builds buttons from an editor's capabilities; the mount decides where they appear — today, a bubble anchored to the active sidebar field, shown while a selection exists; attached-row and inline-preview mounts are possible later.
 _Avoid_: toolbar variant, chrome position
+
+**Contrast scale**:
+The surface-anchored, open set of neutral-emphasis steps a palette wires, named by contrast (soft↔hard) not lightness so component CSS survives a light→dark palette flip. Default steps: `ultra-soft-contrast`, `soft-contrast`, `hard-contrast`, `ultra-hard-contrast`; no default middle step; all step names are editable data keys.
+_Avoid_: role list, light/dark steps, fixed slots
+
+**Intent**:
+A hued, meaning-bearing palette token — `accent` plus the statuses (`success`, `warning`, `danger`, `info`) — separate from the contrast scale because contrast alone can't express hue meaning. An intent is a color plus its auto-derived, overridable `-on` foreground (the legibility contract collapsed to one step, for elements that bring their own background) — not a sub-palette; more slots (e.g. `success-soft`) are data-edit extensions. Statuses inherit from the default palette via the cascade unless a palette redefines them.
+_Avoid_: semantic colorway, status colorway, variant color, fill (as a token name)
