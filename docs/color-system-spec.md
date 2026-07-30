@@ -94,15 +94,18 @@ hover — Material's `on-` model (`primary`/`on-primary`).
 
 - `accent` → `accent-on`, each status → `{status}-on`, `surface`'s foreground is
   the contrast scale itself.
-- **Auto-derived** per colorway by luminance: `-on` = whichever of {near-white,
-  near-black} (or `surface` vs `ultra-hard-contrast`) has the higher contrast
-  ratio against the fill. Because the pick is against *that colorway's* fill, it
-  comes out right per colorway with zero hand-authoring.
-- **Overridable** via explicit `{slot}-on` (same hybrid pattern as ADR 0012).
+- **Authored, not auto-derived** (ADR 0020): `{slot}-on` is an ordinary optional
+  palette key. The default palette ships a value for every intent; other
+  palettes inherit through the cascade and override by defining the key. No
+  luminance pick exists.
+- **Verify-warned:** the WCAG contrast matrix backs an advisory warning when a
+  resolved pair falls below 4.5:1 at rest or at the fill's derived
+  hover/active — see §4.
 
 A minimal colorway definition therefore is roughly:
 `{ surface, soft→family, hard→family, accent→family }` + "inherit statuses",
-with `-on` colors and the full ramp expanded by the generator.
+with statuses and their `-on` pairs inherited from the default palette and the
+full ramp expanded by the generator.
 
 ### 2d. Generation rules (names + sparseness)
 
@@ -217,6 +220,13 @@ ADR 0004):
 The "blacker black" failure is invariant (2) failing; the "hover ate my text"
 failure is invariant (1) failing. Both are deterministic and harness-checkable.
 
+Invariant (1) is enforced as **advisory verify warnings** over each palette's
+resolved pairs (ADR 0020): intents/`accent` vs their `-on`, and `surface` vs an
+explicit list of text-bearing contrast steps (default `hard-contrast`,
+`ultra-hard-contrast` — the soft side of the scale is sub-legible by design and
+exempt). Nothing is checked at the ramp tier; per-component checks are an
+editor concern.
+
 ---
 
 ## 5. Open questions / to validate before coding
@@ -233,8 +243,6 @@ failure is invariant (1) failing. Both are deterministic and harness-checkable.
   per colorway. Fine for a few hand-authored colorways; gate ramp generation
   (or emit fewer steps) before auto-generating a colorway per enabled color, or
   `tokens.css` balloons.
-- **`-on` derivation target:** decide the two candidate poles for auto-pick —
-  literal `white`/`black`, or `surface`/`ultra-hard-contrast`.
 - **OKLCH migration:** moving `color_shade`/`hsl_to_hex` from HSL to OKLCH is a
   generator change with its own validation (gamut handling, output format).
   Sequence it as its own step, not bundled with the vocabulary changes.
@@ -250,7 +258,8 @@ failure is invariant (1) failing. Both are deterministic and harness-checkable.
 3. **All token names are editable** (sane-default keys, data-driven). Generation
    is **sparse** — unset tokens don't exist; components must carry `var()`
    fallbacks.
-4. Every fill-capable slot has an auto-derived, overridable `-on` foreground.
+4. Every fill-capable slot has an authored, cascade-inherited `-on` foreground;
+   verify warns on illegible pairs (ADR 0020).
 5. Statuses inherit from default unless doing light/dark inversion.
 6. State derivation: **surface-anchored** (primitive-level, band, default) vs
    **label-anchored** (interface-level, pair-aware) for interactive fills.
@@ -282,9 +291,9 @@ Both "more contrast levels" and "extra intent" should be **edits to
   in. This is the payoff of an *open* scale over a fixed role list.
 - **Extra intent beyond `accent`** → add a color with `enabled: true` and
   register it in the intents list. It auto-gets a ramp + states at the primitive
-  tier (already happens) and, at tier 2, `--colorway-{intent}` + an auto-derived
-  `--colorway-{intent}-on` pair + states. The `-on` luminance pick works for any
-  new color, so the designer never hand-specifies the label color.
+  tier (already happens); at tier 2 the designer authors the
+  `--colorway-{intent}` + `--colorway-{intent}-on` pair in the default palette
+  (ADR 0020), and verify warns if the pair is illegible.
 
 **Required enabling change:** the colorway slot enumeration must be
 **data-driven**. Today `generate.php` has

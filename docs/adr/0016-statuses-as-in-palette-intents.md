@@ -17,5 +17,9 @@ The `-on` suffix (Material's `on-primary` pattern) is the contrast contract coll
 ## Consequences
 Badge and any future status consumer change from `data-colorway` to `data-intent`; the verify assertion follows. A deliberately status-themed *region* is still possible by hand-authoring a full status palette in data — it just isn't manufactured automatically.
 
+## Amendment (2026-07-29): `-on` is authored, not auto-derived
+
+[ADR 0020](0020-authored-on-pairs-verify-warned-legibility.md) drops the luminance pick: `-on` is an ordinary optional palette key, shipped in the default palette's data, inherited through the cascade, overridden by defining the key. Legibility becomes an advisory verify warning backed by the WCAG contrast matrix, not a generation-time guarantee. Everything else here — two-token intents, `data-intent` binding, cascade inheritance, the deleted semantic colorways — stands.
+
 ---
 *Deliberation: [grill thread →](https://decisionrecords.localhost:8453/s/01kypkrk2b2apdt7wej95rm7qe)*
