@@ -44,6 +44,10 @@ _Avoid_: size scale (for pick-one families), default size token (as the alias na
 The two authoring modes of a scale-family axis (`mode: scale | custom`) — systematic (base + scale per device) or hand-authored (per-size mobile/desktop value pairs), never mixed; per-size pins do not exist for sizes (see the ADR 0012 amendment). Both stores persist in data; `mode` points at the one the generator reads; the inactive store is invisible in both directions — never surfaced, never a fallback. Switching to custom seeds missing keys from the current scale computation; an incomplete custom store under `mode: custom` is invalid data, not a fallback case. See ADR 0018.
 _Avoid_: override toggle (for sizes), pinned size, mixed/hybrid mode, customized flag
 
+**Pin**:
+A per-shade absolute override inside a generated ramp: the stop key's presence in a color's `pins` map (stop name → bare hex) *is* the pin; clearing is deleting the key, falling back to the generated shade. Pins survive source-color changes and regeneration; states (`-hover`/`-active`) derive from the pinned value through the normal band logic. Colors-only — sizes deliberately have no pins (see the ADR 0012 amendment and ADR 0019).
+_Avoid_: override toggle (for shades), frozen/custom shade, pinned size
+
 **Intent**:
 A hued, meaning-bearing palette token — `accent` plus the statuses (`success`, `warning`, `danger`, `info`) — separate from the contrast scale because contrast alone can't express hue meaning. An intent is a color plus its auto-derived, overridable `-on` foreground (the legibility contract collapsed to one step, for elements that bring their own background) — not a sub-palette; more slots (e.g. `success-soft`) are data-edit extensions. Statuses inherit from the default palette via the cascade unless a palette redefines them.
 _Avoid_: semantic colorway, status colorway, variant color, fill (as a token name)
