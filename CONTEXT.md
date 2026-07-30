@@ -40,6 +40,10 @@ _Avoid_: role list, light/dark steps, fixed slots
 The two kinds of size-token family, split by consumption. A **pick-one family** (borders, radius, shadows) supplies one value per element property, so it has a designated default, a bare always-emitted alias (`--border`), and freeform editor-facing option names that chain-fall back to the alias (`var(--border-s, var(--border))`, never a literal). A **scale family** (spacing, type sizes) is consumed several steps at once; its names are structural (position math), its ramp is always fully emitted, and the alias model does not apply. See ADR 0017.
 _Avoid_: size scale (for pick-one families), default size token (as the alias name)
 
+**Scale mode** vs **Custom mode**:
+The two authoring modes of a scale-family axis (`mode: scale | custom`) — systematic (base + scale per device) or hand-authored (per-size mobile/desktop value pairs), never mixed; per-size pins do not exist for sizes (see the ADR 0012 amendment). Both stores persist in data; `mode` points at the one the generator reads; the inactive store is invisible in both directions — never surfaced, never a fallback. Switching to custom seeds missing keys from the current scale computation; an incomplete custom store under `mode: custom` is invalid data, not a fallback case. See ADR 0018.
+_Avoid_: override toggle (for sizes), pinned size, mixed/hybrid mode, customized flag
+
 **Intent**:
 A hued, meaning-bearing palette token — `accent` plus the statuses (`success`, `warning`, `danger`, `info`) — separate from the contrast scale because contrast alone can't express hue meaning. An intent is a color plus its auto-derived, overridable `-on` foreground (the legibility contract collapsed to one step, for elements that bring their own background) — not a sub-palette; more slots (e.g. `success-soft`) are data-edit extensions. Statuses inherit from the default palette via the cascade unless a palette redefines them.
 _Avoid_: semantic colorway, status colorway, variant color, fill (as a token name)

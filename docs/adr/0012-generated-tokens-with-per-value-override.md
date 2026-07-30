@@ -17,5 +17,9 @@ thread: 01kvme6fqvmva8r8azmdfdf4cp
 ## Consequences
 Designers get consistency for free and exactness on demand, from one source of truth. The cost is a build step and a dual-mode value model (computed vs overridden) that both the generator and the editor must honour.
 
+## Amendment (2026-07-29): the hybrid pattern is no longer uniform across token kinds
+
+The per-value override is deliberately asymmetric. **Colors keep and deepen it** (per-shade pins, ADR 0015): a pinned shade sits inside a ramp that stays generated around it, so the pin costs nothing structurally. **Sizes drop it** (ADR 0018): under the responsive per-device model a per-size pin becomes override × device × mode complexity, and pins are invisible drift against the scale. Spacing and typography move to an all-or-nothing `mode: scale | custom` switch; the "ride the scale, tweak one" workflow survives via per-key seeding on the switch to custom, trading live re-derivation for a deliberate fork.
+
 ---
 *Deliberation: [grill thread →](https://decisionrecords.localhost:8453/s/01kvme4qx32wvvg0h1a5rmwy4b)*
