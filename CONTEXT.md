@@ -36,6 +36,10 @@ _Avoid_: toolbar variant, chrome position
 The surface-anchored, open set of neutral-emphasis steps a palette wires, named by contrast (soft↔hard) not lightness so component CSS survives a light→dark palette flip. Default steps: `ultra-soft-contrast`, `soft-contrast`, `hard-contrast`, `ultra-hard-contrast`; no default middle step; all step names are editable data keys.
 _Avoid_: role list, light/dark steps, fixed slots
 
+**Pick-one family** vs **Scale family**:
+The two kinds of size-token family, split by consumption. A **pick-one family** (borders, radius, shadows) supplies one value per element property, so it has a designated default, a bare always-emitted alias (`--border`), and freeform editor-facing option names that chain-fall back to the alias (`var(--border-s, var(--border))`, never a literal). A **scale family** (spacing, type sizes) is consumed several steps at once; its names are structural (position math), its ramp is always fully emitted, and the alias model does not apply. See ADR 0017.
+_Avoid_: size scale (for pick-one families), default size token (as the alias name)
+
 **Intent**:
 A hued, meaning-bearing palette token — `accent` plus the statuses (`success`, `warning`, `danger`, `info`) — separate from the contrast scale because contrast alone can't express hue meaning. An intent is a color plus its auto-derived, overridable `-on` foreground (the legibility contract collapsed to one step, for elements that bring their own background) — not a sub-palette; more slots (e.g. `success-soft`) are data-edit extensions. Statuses inherit from the default palette via the cascade unless a palette redefines them.
 _Avoid_: semantic colorway, status colorway, variant color, fill (as a token name)
