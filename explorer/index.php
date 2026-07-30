@@ -12,7 +12,7 @@
 
 // Routing
 $tool = $_GET['tool'] ?? 'styles';
-$validTools = ['styles', 'components', 'forms'];
+$validTools = ['styles', 'components', 'forms', 'prototype-headings' /* THROWAWAY — wayfinder #34 */];
 if (!in_array($tool, $validTools)) {
     $tool = 'styles';
 }
