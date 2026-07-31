@@ -19,6 +19,10 @@ The editor follows the option count with no CSS branching: one enabled option re
 ## Consequences
 `generate.php` reads the (currently unread) `defaultSize` and emits the bare alias; radius and shadows gain equivalent default designations. Component styles get a fallback sweep: every `var(--border-*/--radius-*/--shadow-*, <literal>)` retargets to the family alias — low-risk but visually observable once token values diverge from the old literals, so it warrants an explorer pass. The verify fallback check extends from palette slots to size references. Shared styles referencing project-specific option names degrade to the default elsewhere — the correct degradation, by contract.
 
+## Amendment (2026-07-31): scale families are no longer excluded
+
+[ADR 0024](0024-open-scale-families-single-anchor.md) withdraws the scale-family exclusion above. Spacing, text, and headings become open ordered sets like the pick-one families — freeform names, a bare alias (`--space` / `--text`; headings emit rank-numbered `--heading-{n}`), and chained fallbacks (`var(--space-gutter, var(--space))`) — the reasoning that scale names are "structural, position math" no longer holds once ordering lives in ADR 0021's integer `position`, decoupled from the key. The pick-one vs scale split survives only as *how values are produced* (authored per option vs computed along a ramp), not as open-vs-structural naming. Everything else here stands.
+
 ## Amendment (2026-07-29): radius `full` is an ordinary option
 
 [ADR 0021](0021-open-curated-size-sets.md) drops the fixed-name carve-out: `full` is an editable, renamable, deletable member of the radius options set like any other — a guaranteed-but-invisible constant reads in the editor as a size that doesn't exist, and users would recreate it. `fixed: true` leaves the schema; references follow the standard chained fallback (`var(--radius-full, var(--radius))`). Everything else here stands, including the single-field editor collapse.
