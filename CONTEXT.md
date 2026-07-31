@@ -33,7 +33,7 @@ A presentation host for the field toolbar implementing `{show, hide, destroy}`. 
 _Avoid_: toolbar variant, chrome position
 
 **Contrast scale**:
-The surface-anchored, open set of neutral-emphasis steps a palette wires, named by contrast (soft↔hard) not lightness so component CSS survives a light→dark palette flip. Default steps: `ultra-soft-contrast`, `soft-contrast`, `hard-contrast`, `ultra-hard-contrast`; no default middle step; all step names are editable data keys.
+The surface-anchored, open set of neutral-emphasis steps a palette wires, named by contrast (soft↔hard) not lightness so component CSS survives a light→dark palette flip. Default steps: `ultra-soft-contrast`, `soft-contrast`, `hard-contrast`, `ultra-hard-contrast`; no default middle step; all step names are editable data keys. The step set's count and names are a **spec choice**, not hardcoded (ADR 0025); what each step points at (`surface = var(--neutral-ultra-light)`) is skin-provided wiring, not spec.
 _Avoid_: role list, light/dark steps, fixed slots
 
 **Pick-one family** vs **Scale family**:
@@ -53,7 +53,7 @@ A per-shade absolute override inside a generated ramp: the stop key's presence i
 _Avoid_: override toggle (for shades), frozen/custom shade, pinned size
 
 **Intent**:
-A hued, meaning-bearing palette token — `accent` plus the statuses (`success`, `warning`, `danger`, `info`) — separate from the contrast scale because contrast alone can't express hue meaning. An intent is a color plus its `-on` foreground — an ordinary authored palette key (the legibility contract collapsed to one step, for elements that bring their own background), never auto-derived: the default palette ships it, other palettes inherit via the cascade, defining the key is the override, and verify warns below 4.5:1 (ADR 0020) — not a sub-palette; more slots (e.g. `success-soft`) are data-edit extensions. Statuses inherit from the default palette via the cascade unless a palette redefines them.
+A hued, meaning-bearing palette token — `accent` plus the statuses (`success`, `warning`, `danger`, `info`) — separate from the contrast scale because contrast alone can't express hue meaning. An intent is a color plus its `-on` foreground — an ordinary authored palette key (the legibility contract collapsed to one step, for elements that bring their own background), never auto-derived: the default palette ships it, other palettes inherit via the cascade, defining the key is the override, and verify warns below 4.5:1 (ADR 0020) — not a sub-palette; more slots (e.g. `success-soft`) are data-edit extensions. Statuses inherit from the default palette via the cascade unless a palette redefines them. The intent set (which intents exist, each with its `-on` partner) is **spec-declared** palette shape, a spec choice like the contrast-scale step set (ADR 0025); the source colors intents wire to are the ramp tier, referenced by skin-provided value.
 _Avoid_: semantic colorway, status colorway, variant color, fill (as a token name), auto-derived/computed `-on`
 
 **Spec**:
@@ -63,6 +63,10 @@ _Avoid_: contract, standard, mint/minting, guarantee/slot/role (for spec items),
 **Spec token** vs **Custom token**:
 The two kinds of token a site holds. A **spec token** is defined by the followed spec: its name and variable are the spec's; its value and display **label** are the site's (labels are free and default to the spec name — relabeling touches nothing, ever). It exists in the editor as a non-deletable row while the spec is followed — deleting means going out of spec — and is **missing** when its value doesn't resolve. A lean site satisfies a wide spec by **aliasing** one spec token to another (`xxl` uses `xl`'s value). A **custom token** is project vocabulary beyond the spec: freely created, renamed (its slug is its variable), deleted; skins reference it only via chained fallback. Palette keys and intents (ADRs 0015/0016) are this system's original spec tokens.
 _Avoid_: slot, mapped/unmapped token, backing, required token (as a canonical name — "defined by the spec" in copy)
+
+**Ramp**:
+The color tier — an open set of **source colors** (a base hue, e.g. `primary`, `neutral`, custom `magenta`) crossed with an open ordered **stop scale** (an L-ranked position, e.g. `ultra-light`…`ultra-dark`), emitting `--{color}` and `--{color}-{stop}`. Source colors are one **flat** open set (ADR 0024's base-spec-plus-custom model; `brand`/`neutral`/`semantic` groups dissolved to optional editor tags). The **spec authors the emitted names** — a Tailwind spec emits `--primary-100…900`, the base spec `--primary-ultra-light…ultra-dark` — while labels are free and L values are the site's (ADR 0023). Emission is **dense** (presence-is-membership: color × stop, no `enabled`, no holes) because `tokens.css` is an open surface whose references can't be enumerated; only the internal-consumer **state tier** (`-hover`/`-active`/`-on`) can be reference-gated (issue #39). See ADR 0025.
+_Avoid_: colorway, shade toggle, `enabled` flag, hue section, `--semantic-success` (grouped variable names)
 
 **Leading**:
 The authored px increment in scale mode's derived heading line-height, `calc(1em + <leading>)`: the text's own size plus a fixed amount, so small headings stay loose and display sizes tighten automatically — including under a retuned type scale or ADR 0018's fluid anchors. It is a baseline-rhythm offset, **not** the optical gap between lines (ink height is glyph- and font-dependent), and must not be labeled as a gap. Letter-spacing derives through the same affine-in-size shape (`calc(<slope>em + <constant>px)`); weight is a single authored value in scale mode. Per-level style blocks exist only in the custom store. See ADR 0022.
