@@ -1183,3 +1183,64 @@
     font-size: 11px;
     border-radius: 4px;
 }
+
+/* ==========================================================================
+   M2 — Mode switch, per-device blocks, derived-knobs (ADR 0018 / 0022)
+   ========================================================================== */
+
+.anti-panel .anti-mode-switch {
+    display: flex;
+    gap: 4px;
+    padding: 3px;
+    margin-bottom: 16px;
+    background: var(--anti-control-bg);
+    border-radius: 8px;
+}
+
+.anti-panel .anti-mode-switch__btn {
+    flex: 1;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--anti-text-secondary);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background var(--anti-transition), color var(--anti-transition);
+}
+
+.anti-panel .anti-mode-switch__btn.is-active {
+    background: var(--anti-bg);
+    color: var(--anti-text);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+.anti-panel .anti-device-block {
+    padding: 12px;
+    margin-bottom: 12px;
+    background: var(--anti-bg-alt);
+    border: 1px solid var(--anti-border);
+    border-radius: 8px;
+}
+
+.anti-panel .anti-device-block__title {
+    margin-bottom: 8px;
+}
+
+.anti-panel .anti-viewport-block {
+    margin-bottom: 20px;
+}
+
+.anti-panel .anti-control-hint {
+    font-size: 11px;
+    line-height: 1.4;
+    color: var(--anti-text-muted);
+    margin-top: 6px;
+}
+
+.anti-panel .anti-size-computed {
+    font-size: 12px;
+    color: var(--anti-text-secondary);
+    font-variant-numeric: tabular-nums;
+}

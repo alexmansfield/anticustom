@@ -1,0 +1,22 @@
+{
+  "_note": "Fixture: headings in mode:custom. Sizes read from the custom store; per-level typography reads from customStyle (the authored per-level blocks that scale mode's derived formulas replace).",
+  "viewport": { "mobile": 390, "desktop": 1440 },
+  "typography": {
+    "headings": {
+      "mode": "custom",
+      "default": "h6",
+      "sizes": {
+        "h1": { "position": 1 },
+        "h6": { "position": 0 }
+      },
+      "custom": {
+        "h1": { "mobile": 40, "desktop": 56 },
+        "h6": { "mobile": 15, "desktop": 16 }
+      },
+      "customStyle": {
+        "h1": { "lineHeight": 1.1, "letterSpacing": -0.02, "weight": 700 },
+        "h6": { "lineHeight": 1.4, "letterSpacing": 0, "weight": 600 }
+      }
+    }
+  }
+}

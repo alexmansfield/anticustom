@@ -1,0 +1,22 @@
+{
+  "_note": "Fixture: a spacing family in mode:custom with a complete store. Every size key has a {mobile,desktop} pair, so emission succeeds and reads the store (not the scale math). m has equal anchors → static; s/l distinct → clamp.",
+  "viewport": { "mobile": 390, "desktop": 1440 },
+  "spacing": {
+    "mode": "custom",
+    "default": "m",
+    "sizes": {
+      "s": { "position": -1 },
+      "m": { "position": 0 },
+      "l": { "position": 1 }
+    },
+    "scale": {
+      "mobile": { "value": 12, "ratio": 1.5 },
+      "desktop": { "value": 16, "ratio": 1.5 }
+    },
+    "custom": {
+      "s": { "mobile": 6, "desktop": 8 },
+      "m": { "mobile": 16, "desktop": 16 },
+      "l": { "mobile": 18, "desktop": 24 }
+    }
+  }
+}

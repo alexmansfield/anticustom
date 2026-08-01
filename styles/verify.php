@@ -30,6 +30,26 @@ function generate_css(?string $tokenPath = null): string
     return (string) shell_exec($cmd . ' 2>/dev/null');
 }
 
+/** Shell the generator and capture [combined output, exit code] — for the
+ *  invalid-data fixtures whose whole point is that generation must fail. */
+function generate_result(?string $tokenPath = null): array
+{
+    $script = escapeshellarg(__DIR__ . '/generate.php');
+    $cmd = 'php ' . $script;
+    if ($tokenPath !== null) {
+        $cmd .= ' ' . escapeshellarg($tokenPath);
+    }
+    $out = [];
+    $code = 0;
+    exec($cmd . ' 2>&1', $out, $code);
+    return [implode("\n", $out), $code];
+}
+
+function fixture(string $name): string
+{
+    return __DIR__ . '/fixtures/' . $name;
+}
+
 /** Parse the set of emitted custom-property names (without the leading `--`). */
 function emitted_keys(string $css): array
 {
@@ -160,6 +180,80 @@ $brokenKeys = emitted_keys($brokenCss);
 check('guard teeth: missing --space alias is detectable',
     !isset($brokenKeys['space']) && isset($brokenKeys['space-l']),
     'no-default fixture should drop the alias while keeping members');
+
+// ═════════════════════════════════════════════════
+// M2 — Mode system + per-device fluid clamps (ADR 0018)
+// ═════════════════════════════════════════════════
+
+// Distinct per-device anchors emit a fluid clamp; the middle term is exactly
+// resolvable server-side (this is the deterministic-output guarantee).
+check('distinct anchors emit a fluid clamp',
+    preg_match('/--space-m:\s*clamp\(/', $css) === 1,
+    'a scale token with distinct device anchors should compile to clamp()');
+check('clamp interpolates between device anchors (space-m)',
+    strpos($css, '--space-m: clamp(12px, calc(10.5143px + 0.381vw), 16px);') !== false,
+    'space-m clamp does not match the resolved line through the viewport anchors');
+
+// Equal per-device anchors collapse to a static value, not a degenerate clamp.
+$staticCss = generate_css(fixture('static-anchor.json'));
+check('equal anchors emit a static value',
+    preg_match('/--space-m:\s*16px\s*;/', $staticCss) === 1 && strpos($staticCss, '--space-m: clamp(') === false,
+    'equal device anchors should emit a plain px value, no clamp');
+
+// Store-completeness guard: mode:custom with a missing size key is invalid data —
+// generation errors rather than backfilling from scale math (protects ADR 0017).
+[$incompleteOut, $incompleteCode] = generate_result(fixture('custom-incomplete.json'));
+check('incomplete custom store is a generate error',
+    $incompleteCode !== 0 && strpos($incompleteOut, "missing 'l'") !== false,
+    'a mode:custom family missing a size key must fail generation');
+
+// A complete custom store generates and reads the store (not the scale math).
+[$completeOut, $completeCode] = generate_result(fixture('custom-complete.json'));
+check('complete custom store generates', $completeCode === 0, $completeOut);
+check('custom store value is read verbatim (space-l)',
+    strpos($completeOut, '--space-l: clamp(18px, calc(15.7714px + 0.5714vw), 24px);') !== false,
+    'custom-mode size should read the {mobile,desktop} pair from the store');
+
+// Distinct-viewport guard: equal viewport anchors zero the slope denominator.
+[$vpOut, $vpCode] = generate_result(fixture('viewport-equal.json'));
+check('equal viewport anchors are a generate error',
+    $vpCode !== 0 && strpos($vpOut, 'viewport anchors must be distinct') !== false,
+    'equal mobile/desktop viewport should fail generation');
+
+// ═════════════════════════════════════════════════
+// M2 — Derived heading typography (ADR 0022)
+// ═════════════════════════════════════════════════
+
+// Scale mode derives line-height/letter-spacing as calc() forms keyed to the
+// computed size (the em term tracks the fluid size), plus one authored weight.
+check('heading line-height is derived calc (leading)',
+    strpos($css, '--h1-line-height: calc(1em + 8px);') !== false,
+    'scale-mode line-height should be calc(1em + <leading>px)');
+check('heading letter-spacing is derived affine calc',
+    strpos($css, '--h1-letter-spacing: calc(-0.022em + 0.35px);') !== false,
+    'scale-mode letter-spacing should be calc(<slope>em + <constant>px)');
+check('heading weight is single authored value',
+    strpos($css, '--h1-weight: 600;') !== false && strpos($css, '--h6-weight: 600;') !== false,
+    'scale mode carries one weight for all levels');
+check('every heading level emits derived typography',
+    substr_count($css, '-line-height: calc(1em + 8px);') === 6,
+    'all six levels should carry the derived line-height');
+
+// Heading sizes resolve exactly server-side at both device anchors.
+check('h1 size resolves at both anchors',
+    strpos($css, '--h1: clamp(114px, calc(90.6px + 6vw), 177px);') !== false,
+    'h1 clamp should match the scale computation at the mobile/desktop anchors');
+check('h6 (anchor step) size resolves',
+    strpos($css, '--h6: clamp(15px, calc(14.6286px + 0.0952vw), 16px);') !== false);
+
+// Custom mode reads per-level blocks from customStyle instead of deriving.
+$customHeadCss = generate_css(fixture('custom-headings.json'));
+check('custom-mode heading reads customStyle line-height',
+    strpos($customHeadCss, '--h1-line-height: 1.1;') !== false,
+    'custom mode should emit the authored per-level line-height');
+check('custom-mode heading reads customStyle weight',
+    strpos($customHeadCss, '--h1-weight: 700;') !== false,
+    'custom mode should emit the authored per-level weight');
 
 // ─────────────────────────────────────────────────
 // Summary
