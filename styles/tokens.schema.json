@@ -2,57 +2,13 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "name": "style-panel",
   "label": "Style Editor Panel",
-  "version": "2.0.0",
-  "description": "Design token editor for typography, colors, spacing, borders, and effects",
+  "version": "3.0.0",
+  "description": "Design token editor for typography, colors, spacing, borders, and effects (palette-model open-set emission)",
   "icons": {
     "typography": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polyline points=\"4 7 4 4 20 4 20 7\"></polyline><line x1=\"9\" y1=\"20\" x2=\"15\" y2=\"20\"></line><line x1=\"12\" y1=\"4\" x2=\"12\" y2=\"20\"></line></svg>",
     "colors": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"8\" y=\"1\" width=\"8\" height=\"18\" rx=\"2\" transform=\"rotate(-25 12 19)\" fill=\"var(--icon-fill, white)\"></rect><rect x=\"8\" y=\"1\" width=\"8\" height=\"18\" rx=\"2\" transform=\"rotate(0 12 19)\" fill=\"var(--icon-fill, white)\"></rect><rect x=\"8\" y=\"1\" width=\"8\" height=\"18\" rx=\"2\" transform=\"rotate(25 12 19)\" fill=\"var(--icon-fill, white)\"></rect></svg>",
     "spacing": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z\"></path><polyline points=\"3.29 7 12 12 20.71 7\"></polyline><line x1=\"12\" y1=\"22\" x2=\"12\" y2=\"12\"></line></svg>",
     "borders": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"2\" ry=\"2\"></rect><line x1=\"3\" y1=\"9\" x2=\"21\" y2=\"9\"></line><line x1=\"9\" y1=\"21\" x2=\"9\" y2=\"9\"></line></svg>"
-  },
-  "sizes": {
-    "headingLevels": {
-      "items": {
-        "h1": { "position": 5, "cssKey": "heading-1" },
-        "h2": { "position": 4, "cssKey": "heading-2" },
-        "h3": { "position": 3, "cssKey": "heading-3" },
-        "h4": { "position": 2, "cssKey": "heading-4" },
-        "h5": { "position": 1, "cssKey": "heading-5" },
-        "h6": { "position": 0, "cssKey": "heading-6" }
-      }
-    },
-    "textSizes": {
-      "items": {
-        "xl": { "position": 2 },
-        "l":  { "position": 1 },
-        "m":  { "position": 0 },
-        "s":  { "position": -1 },
-        "xs": { "position": -2 }
-      }
-    },
-    "spacingSizes": {
-      "items": {
-        "xxs": { "position": -3 },
-        "xs":  { "position": -2 },
-        "s":   { "position": -1 },
-        "m":   { "position": 0 },
-        "l":   { "position": 1 },
-        "xl":  { "position": 2 },
-        "xxl": { "position": 3 }
-      }
-    },
-    "borderSizes": {
-      "items": { "s": {}, "m": {}, "l": {} }
-    },
-    "radiusSizes": {
-      "items": {
-        "xs": {}, "s": {}, "m": {}, "l": {}, "xl": {},
-        "full": { "fixed": true, "displayNote": "9999px (pill/circle)" }
-      }
-    },
-    "shadowSizes": {
-      "items": { "xs": {}, "s": {}, "m": {}, "l": {}, "xl": {} }
-    }
   },
   "panels": [
     {
@@ -63,48 +19,17 @@
         {
           "id": "headings",
           "label": "Headings",
-          "settingsKey": "typography.headings",
           "sections": [
             {
-              "id": "defaults",
-              "label": "Base",
-              "fields": [
-                {
-                  "id": "baseSize",
-                  "label": "Font Size",
-                  "type": "range",
-                  "settingsKey": "typography.headings.baseSize",
-                  "min": 12,
-                  "max": 24,
-                  "step": 1,
-                  "unit": "px"
-                },
-                {
-                  "id": "scale",
-                  "label": "Type Scale",
-                  "type": "range",
-                  "settingsKey": "typography.headings.scale",
-                  "min": 1,
-                  "max": 2,
-                  "step": 0.001,
-                  "presets": "typeScales"
-                }
-              ]
-            },
-            {
-              "id": "overrides",
-              "label": "Individual Sizes",
-              "settingsKey": "typography.headings.sizes",
-              "sizesArray": "headingLevels",
-              "cssPrefix": "heading",
+              "id": "headings",
+              "type": "scale",
+              "label": "Heading Scale",
+              "settingsKey": "typography.headings",
+              "cssPrefix": "",
+              "alias": null,
               "unit": "px",
-              "fields": [
-                { "id": "value", "type": "range", "isMain": true, "min": 12, "max": 128, "step": 1 },
-                { "id": "override", "type": "toggle" },
-                { "id": "lineHeight", "label": "Line Height", "type": "number", "min": 0.5, "max": 3, "step": 0.05, "cssSuffix": "-line-height" },
-                { "id": "letterSpacing", "label": "Letter Spacing", "type": "number", "min": -0.1, "max": 0.5, "step": 0.01, "cssSuffix": "-letter-spacing", "cssUnit": "em" },
-                { "id": "weight", "label": "Weight", "type": "select", "presets": "fontWeights", "cssSuffix": "-weight" }
-              ]
+              "anchor": { "label": "Anchor Size", "min": 8, "max": 48, "step": 1, "unit": "px" },
+              "ratio": { "label": "Type Scale", "min": 1, "max": 2, "step": 0.001, "presets": "typeScales" }
             }
           ],
           "resetButton": {
@@ -115,45 +40,17 @@
         {
           "id": "text",
           "label": "Text",
-          "settingsKey": "typography.text",
           "sections": [
             {
-              "id": "defaults",
-              "label": "Base",
-              "fields": [
-                {
-                  "id": "baseSize",
-                  "label": "Font Size",
-                  "type": "range",
-                  "settingsKey": "typography.text.baseSize",
-                  "min": 12,
-                  "max": 24,
-                  "step": 1,
-                  "unit": "px"
-                },
-                {
-                  "id": "scale",
-                  "label": "Type Scale",
-                  "type": "range",
-                  "settingsKey": "typography.text.scale",
-                  "min": 1,
-                  "max": 2,
-                  "step": 0.001,
-                  "presets": "typeScales"
-                }
-              ]
-            },
-            {
-              "id": "overrides",
-              "label": "Individual Sizes",
-              "settingsKey": "typography.text.sizes",
-              "sizesArray": "textSizes",
-              "cssPrefix": "text",
+              "id": "text",
+              "type": "scale",
+              "label": "Text Scale",
+              "settingsKey": "typography.text",
+              "cssPrefix": "text-",
+              "alias": "text",
               "unit": "px",
-              "fields": [
-                { "id": "value", "type": "range", "isMain": true, "min": 10, "max": 48, "step": 1 },
-                { "id": "override", "type": "toggle" }
-              ]
+              "anchor": { "label": "Anchor Size", "min": 10, "max": 24, "step": 1, "unit": "px" },
+              "ratio": { "label": "Type Scale", "min": 1, "max": 2, "step": 0.001, "presets": "typeScales" }
             }
           ]
         }
@@ -241,42 +138,15 @@
       "icon": "spacing",
       "sections": [
         {
-          "id": "defaults",
-          "label": "Base",
-          "fields": [
-            {
-              "id": "baseSize",
-              "label": "Base Size",
-              "type": "range",
-              "settingsKey": "spacing.baseSize",
-              "min": 4,
-              "max": 32,
-              "step": 1,
-              "unit": "px"
-            },
-            {
-              "id": "scale",
-              "label": "Scale",
-              "type": "range",
-              "settingsKey": "spacing.scale",
-              "min": 1,
-              "max": 3,
-              "step": 0.01,
-              "presets": "spacingScales"
-            }
-          ]
-        },
-        {
-          "id": "overrides",
-          "label": "Individual Sizes",
-          "settingsKey": "spacing.sizes",
-          "sizesArray": "spacingSizes",
-          "cssPrefix": "space",
+          "id": "spacing",
+          "type": "scale",
+          "label": "Spacing Scale",
+          "settingsKey": "spacing",
+          "cssPrefix": "space-",
+          "alias": "space",
           "unit": "px",
-          "fields": [
-            { "id": "value", "type": "range", "isMain": true, "min": 0, "max": 128, "step": 1 },
-            { "id": "override", "type": "toggle" }
-          ]
+          "anchor": { "label": "Anchor Size", "min": 4, "max": 32, "step": 1, "unit": "px" },
+          "ratio": { "label": "Scale", "min": 1, "max": 3, "step": 0.01, "presets": "spacingScales" }
         }
       ],
       "resetButton": {
@@ -292,13 +162,17 @@
         {
           "id": "borders",
           "label": "Borders",
-          "settingsKey": "borders.sizes",
-          "sizesArray": "borderSizes",
-          "cssPrefix": "border",
-          "unit": "px",
-          "fields": [
-            { "id": "value", "type": "range", "isMain": true, "min": 1, "max": 16, "step": 1 },
-            { "id": "enabled", "type": "toggle" }
+          "sections": [
+            {
+              "id": "borders",
+              "type": "pickone",
+              "label": "Border Widths",
+              "settingsKey": "borders",
+              "cssPrefix": "border-",
+              "alias": "border",
+              "unit": "px",
+              "value": { "min": 1, "max": 16, "step": 1 }
+            }
           ],
           "resetButton": {
             "label": "Reset Borders",
@@ -308,33 +182,41 @@
         {
           "id": "shadows",
           "label": "Shadows",
-          "settingsKey": "shadows",
-          "sizesArray": "shadowSizes",
-          "cssPrefix": "shadow",
-          "composite": {
-            "template": "{x}px {y}px {blur}px {spread}px rgba(0,0,0,{opacity})",
-            "fields": [
-              { "id": "x", "label": "X Offset", "type": "range", "min": -50, "max": 50, "step": 1, "unit": "px" },
-              { "id": "y", "label": "Y Offset", "type": "range", "min": -50, "max": 50, "step": 1, "unit": "px" },
-              { "id": "blur", "label": "Blur", "type": "range", "min": 0, "max": 100, "step": 1, "unit": "px" },
-              { "id": "spread", "label": "Spread", "type": "range", "min": -50, "max": 50, "step": 1, "unit": "px" },
-              { "id": "opacity", "label": "Opacity", "type": "range", "min": 0, "max": 1, "step": 0.01 }
-            ]
-          },
-          "fields": [
-            { "id": "enabled", "type": "toggle" }
+          "sections": [
+            {
+              "id": "shadows",
+              "type": "composite",
+              "label": "Shadows",
+              "settingsKey": "shadows",
+              "cssPrefix": "shadow-",
+              "alias": "shadow",
+              "composite": {
+                "template": "{x}px {y}px {blur}px {spread}px rgba(0,0,0,{opacity})",
+                "fields": [
+                  { "id": "x", "label": "X Offset", "type": "range", "min": -50, "max": 50, "step": 1, "unit": "px" },
+                  { "id": "y", "label": "Y Offset", "type": "range", "min": -50, "max": 50, "step": 1, "unit": "px" },
+                  { "id": "blur", "label": "Blur", "type": "range", "min": 0, "max": 100, "step": 1, "unit": "px" },
+                  { "id": "spread", "label": "Spread", "type": "range", "min": -50, "max": 50, "step": 1, "unit": "px" },
+                  { "id": "opacity", "label": "Opacity", "type": "range", "min": 0, "max": 1, "step": 0.01 }
+                ]
+              }
+            }
           ]
         },
         {
           "id": "radius",
           "label": "Radius",
-          "settingsKey": "radius.sizes",
-          "sizesArray": "radiusSizes",
-          "cssPrefix": "radius",
-          "unit": "px",
-          "fields": [
-            { "id": "value", "type": "range", "isMain": true, "min": 0, "max": 64, "step": 1 },
-            { "id": "enabled", "type": "toggle" }
+          "sections": [
+            {
+              "id": "radius",
+              "type": "pickone",
+              "label": "Radius",
+              "settingsKey": "radius",
+              "cssPrefix": "radius-",
+              "alias": "radius",
+              "unit": "px",
+              "value": { "min": 0, "max": 9999, "step": 1 }
+            }
           ]
         }
       ]

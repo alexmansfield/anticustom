@@ -7,10 +7,10 @@
  */
 
 .anti-stats {
-    --anti-stats-padding: var(--space-l, 1.5rem);
+    --anti-stats-padding: var(--space-l, var(--space));
     color: var(--colorway-hard-contrast, #0f172a);
-    border: var(--border-m, 2px) solid transparent;
-    border-radius: var(--radius-m);
+    border: var(--border-m, var(--border)) solid transparent;
+    border-radius: var(--radius-m, var(--radius));
 }
 
 .anti-stats[data-colorway] {

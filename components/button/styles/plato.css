@@ -12,18 +12,18 @@
    ========================================================================== */
 
 .anti-button {
-    --anti-button-gap: var(--space-s, 0.5rem);
-    --anti-button-padding: var(--space-s, 0.5rem) var(--space-l, 1.5rem);
-    --anti-button-padding-s: var(--space-xs, 0.25rem) var(--space-m, 1rem);
-    --anti-button-padding-l: var(--space-m, 1rem) var(--space-xl, 3rem);
-    --anti-button-font: var(--text-m, 1rem);
-    --anti-button-font-s: var(--text-s, 0.875rem);
-    --anti-button-font-l: var(--text-l, 1.125rem);
+    --anti-button-gap: var(--space-s, var(--space));
+    --anti-button-padding: var(--space-s, var(--space)) var(--space-l, var(--space));
+    --anti-button-padding-s: var(--space-xs, var(--space)) var(--space-m, var(--space));
+    --anti-button-padding-l: var(--space-m, var(--space)) var(--space-xl, var(--space));
+    --anti-button-font: var(--text-m, var(--text));
+    --anti-button-font-s: var(--text-s, var(--text));
+    --anti-button-font-l: var(--text-l, var(--text));
 
     background-color: var(--colorway-base, #ffffff);
     color: var(--colorway-hard-contrast, #0f172a);
     font-weight: var(--font-weight-medium, 500);
-    border-radius: var(--radius-m);
+    border-radius: var(--radius-m, var(--radius));
 }
 
 /* ==========================================================================
@@ -31,11 +31,11 @@
    ========================================================================== */
 
 .anti-button--s {
-    border-radius: var(--radius-s);
+    border-radius: var(--radius-s, var(--radius));
 }
 
 .anti-button--l {
-    border-radius: var(--radius-l);
+    border-radius: var(--radius-l, var(--radius));
 }
 
 /* ==========================================================================
@@ -45,7 +45,7 @@
 .anti-button--solid {
     background-color: var(--colorway-hard-contrast);
     color: var(--colorway-base);
-    border: var(--border-m, 2px) solid var(--colorway-hard-contrast);
+    border: var(--border-m, var(--border)) solid var(--colorway-hard-contrast);
 }
 
 .anti-button--solid:hover {
@@ -64,7 +64,7 @@
 .anti-button--outline {
     background-color: transparent;
     color: var(--colorway-hard-contrast);
-    border: var(--border-m, 2px) solid var(--colorway-hard-contrast);
+    border: var(--border-m, var(--border)) solid var(--colorway-hard-contrast);
 }
 
 .anti-button--outline:hover {
@@ -83,7 +83,7 @@
 .anti-button--ghost {
     background-color: transparent;
     color: var(--colorway-hard-contrast);
-    border: var(--border-m, 2px) solid transparent;
+    border: var(--border-m, var(--border)) solid transparent;
 }
 
 .anti-button--ghost:hover {
@@ -99,9 +99,9 @@
    ========================================================================== */
 
 .anti-button--shadow {
-    box-shadow: var(--shadow-m, 0 4px 6px rgba(0, 0, 0, 0.1));
+    box-shadow: var(--shadow-m, var(--shadow));
 }
 
 .anti-button--shadow:hover {
-    box-shadow: var(--shadow-l, 0 8px 15px rgba(0, 0, 0, 0.15));
+    box-shadow: var(--shadow-l, var(--shadow));
 }

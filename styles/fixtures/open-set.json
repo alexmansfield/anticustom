@@ -1,0 +1,12 @@
+{
+  "_note": "Fixture: a spec listing only s/m/l spacing steps. Proves presence-is-membership — exactly those three emit, nothing for the absent steps.",
+  "spacing": {
+    "default": "m",
+    "ratio": 1.5,
+    "sizes": {
+      "s": { "position": -1 },
+      "m": { "position": 0, "value": 16 },
+      "l": { "position": 1 }
+    }
+  }
+}

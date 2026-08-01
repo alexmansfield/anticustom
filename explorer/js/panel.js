@@ -105,7 +105,7 @@ const UI_ICONS = {
 // ============================================
 // Settings version — bump when structure changes
 // ============================================
-const SETTINGS_VERSION = 2;
+const SETTINGS_VERSION = 3;
 
 // ============================================
 // Alpine.js Component Registration
@@ -151,9 +151,9 @@ function registerStylePanel() {
                 return;
             }
 
-            // Build settings from defaults
+            // Build settings from defaults (the open-set token model — every
+            // step in `sizes` is a member; scale families carry `default`/`ratio`).
             this.settings = JSON.parse(JSON.stringify(rawDefaults));
-            this.initCalculatedValues();
             this.defaultSettings = JSON.parse(JSON.stringify(this.settings));
 
             // Load saved settings from localStorage
@@ -163,7 +163,6 @@ function registerStylePanel() {
                     const parsed = JSON.parse(saved);
                     if (parsed._version === SETTINGS_VERSION) {
                         this.settings = this.deepMerge(this.settings, parsed);
-                        this.pruneStaleKeys();
                     }
                     // Old version or missing: discard, start from defaults
                 } catch (e) {
@@ -206,58 +205,6 @@ function registerStylePanel() {
             window.addEventListener('anti-show-notification', (e) => {
                 this.showNotification(e.detail.message, e.detail.type || 'error');
             });
-        },
-
-        /**
-         * For sections with base+scale and positioned items,
-         * calculate computed `value` where missing and add `customized` flag.
-         */
-        initCalculatedValues() {
-            for (const panel of this.schema.panels) {
-                const tabs = panel.tabs || [panel];
-                for (const tab of tabs) {
-                    const sections = tab.sections || [tab];
-                    for (const section of sections) {
-                        if (!section.sizesArray) continue;
-                        const items = this.schema.sizes[section.sizesArray]?.items || {};
-                        const hasPositions = Object.values(items).some(d => d.position !== undefined);
-                        if (!hasPositions) continue;
-
-                        // Find parent that has baseSize + scale
-                        const parentKey = section.settingsKey.split('.').slice(0, -1).join('.');
-                        const parent = this.getByPath(parentKey);
-                        if (!parent?.baseSize || !parent?.scale) continue;
-
-                        if (parent.customized === undefined) parent.customized = false;
-
-                        const settingsObj = this.getByPath(section.settingsKey);
-                        for (const [key, def] of Object.entries(items)) {
-                            if (def.position !== undefined && settingsObj?.[key] && settingsObj[key].value === undefined) {
-                                settingsObj[key].value = Math.round(parent.baseSize * Math.pow(parent.scale, def.position));
-                            }
-                        }
-                    }
-                }
-            }
-        },
-
-        /**
-         * Remove keys from settings that no longer exist in defaults.
-         */
-        pruneStaleKeys() {
-            const prunePaths = [
-                'shadows', 'spacing.sizes', 'borders.sizes', 'radius.sizes',
-                'typography.headings.sizes', 'typography.text.sizes'
-            ];
-            for (const path of prunePaths) {
-                const defaults = this.getByPathFrom(this.defaultSettings, path);
-                const current = this.getByPath(path);
-                if (current && defaults) {
-                    for (const key of Object.keys(current)) {
-                        if (key !== '_version' && !(key in defaults)) delete current[key];
-                    }
-                }
-            }
         },
 
         // ============================================
@@ -377,52 +324,20 @@ function registerStylePanel() {
             return panel.resetButton || null;
         },
 
+        /**
+         * Section render kind. Size families declare `type`
+         * (scale | pickone | composite); color sections are detected by shape.
+         */
         getSectionType(section) {
+            if (section.type) return section.type;
             if (section.properties) return 'colorways';
-            if (section.composite) return 'composite';
             if (section.colors) return 'palette';
-            if (section.sizesArray) return 'overrides';
-            return 'defaults';
-        },
-
-        getSizeItemKeys(sizesArrayName) {
-            return Object.keys(this.schema?.sizes?.[sizesArrayName]?.items || {});
-        },
-
-        getSizeItemDef(sizesArrayName, key) {
-            return this.schema?.sizes?.[sizesArrayName]?.items?.[key] || {};
-        },
-
-        getItemCSSName(section, itemKey) {
-            const itemDef = this.schema.sizes?.[section.sizesArray]?.items?.[itemKey];
-            const cssKey = itemDef?.cssKey || (section.cssPrefix ? `${section.cssPrefix}-${itemKey}` : itemKey);
-            return `--${cssKey}`;
-        },
-
-        getToggleField(section) {
-            return this.hasBaseScale(section) ? 'override' : 'enabled';
+            return 'unknown';
         },
 
         getItemLabel(key) {
             if (key.length <= 3) return key.toUpperCase();
             return key.charAt(0).toUpperCase() + key.slice(1);
-        },
-
-        /** Whether an overrides section has a parent with base+scale */
-        hasBaseScale(section) {
-            const parentKey = this.getParentKey(section.settingsKey);
-            const parent = this.getByPath(parentKey);
-            return parent?.baseSize !== undefined && parent?.scale !== undefined;
-        },
-
-        /** Sub-property fields (those with cssSuffix — not value or toggle) */
-        getSubFields(section) {
-            return (section.fields || []).filter(f => f.cssSuffix);
-        },
-
-        /** Main value field (isMain: true) */
-        getMainField(section) {
-            return (section.fields || []).find(f => f.isMain);
         },
 
         presetValue(opt) {
@@ -434,184 +349,140 @@ function registerStylePanel() {
         },
 
         // ============================================
-        // Generic Update Methods
+        // Size-family helpers (open sets, key-identity, anchor-as-origin)
         // ============================================
 
-        updateBaseOrScale(parentKey, field, value) {
-            const section = this.getByPath(parentKey);
-            if (!section) return;
+        /** The settings object for a size family (its { default, ratio?, sizes }). */
+        familyOf(section) {
+            return this.getByPath(section.settingsKey) || {};
+        },
 
-            if (field === 'baseSize') {
-                section.baseSize = parseInt(value);
-            } else if (field === 'scale') {
-                section.scale = parseFloat(value);
+        /** Open-set membership: the step keys a family currently declares. */
+        sizeKeys(section) {
+            return Object.keys(this.familyOf(section).sizes || {});
+        },
+
+        /** Emitted variable name for a step — key-identity `--{cssPrefix}{key}`. */
+        itemCssName(section, key) {
+            return `--${section.cssPrefix || ''}${key}`;
+        },
+
+        /** A scale family's anchor step (the origin) — its value / position. */
+        anchorValue(section) {
+            const fam = this.familyOf(section);
+            return fam.sizes?.[fam.default]?.value ?? 16;
+        },
+
+        anchorPosition(section) {
+            const fam = this.familyOf(section);
+            return fam.sizes?.[fam.default]?.position ?? 0;
+        },
+
+        /** Computed px for a scale step: anchorValue * ratio^(pos − anchorPos). */
+        computeSize(section, key) {
+            const fam = this.familyOf(section);
+            const pos = fam.sizes?.[key]?.position ?? 0;
+            const raw = this.anchorValue(section) * Math.pow(fam.ratio ?? 1, pos - this.anchorPosition(section));
+            // Text keeps a decimal (finer type steps); spacing/headings round to int.
+            return section.cssPrefix === 'text-' ? Math.round(raw * 10) / 10 : Math.round(raw);
+        },
+
+        // ============================================
+        // Scale-family editing (spacing / text / headings)
+        // ============================================
+
+        applyScale(section) {
+            for (const key of this.sizeKeys(section)) {
+                this.applyCSSVariable(this.itemCssName(section, key), `${this.computeSize(section, key)}px`);
             }
+            const fam = this.familyOf(section);
+            if (section.alias && fam.default) {
+                this.applyCSSVariable(`--${section.alias}`, `var(--${section.cssPrefix}${fam.default})`);
+            }
+        },
 
-            this.recalculateSizes(parentKey);
+        setAnchor(section, value) {
+            const fam = this.familyOf(section);
+            if (!fam.sizes?.[fam.default]) return;
+            fam.sizes[fam.default].value = parseFloat(value);
+            this.applyScale(section);
             this.markChanged();
         },
 
-        recalculateSizes(parentKey, force = false) {
-            const section = this.getByPath(parentKey);
-            if (!section || section.customized === undefined) return;
-
-            const { baseSize, scale } = section;
-
-            // Find the overrides section whose settingsKey starts with parentKey
-            let overridesDef = null;
-            for (const panel of this.schema.panels) {
-                const tabs = panel.tabs || [panel];
-                for (const tab of tabs) {
-                    const sections = tab.sections || [tab];
-                    for (const s of sections) {
-                        if (s.sizesArray && s.settingsKey?.startsWith(parentKey + '.')) {
-                            overridesDef = s;
-                            break;
-                        }
-                    }
-                    if (overridesDef) break;
-                }
-                if (overridesDef) break;
-            }
-
-            if (!overridesDef) return;
-
-            const items = this.schema.sizes[overridesDef.sizesArray]?.items || {};
-            const settingsObj = this.getByPath(overridesDef.settingsKey);
-
-            for (const [key, def] of Object.entries(items)) {
-                if (def.position !== undefined && settingsObj?.[key]) {
-                    if (!force && settingsObj[key].override) continue;
-                    settingsObj[key].value = Math.round(baseSize * Math.pow(scale, def.position));
-                    if (force) settingsObj[key].override = false;
-                }
-            }
-
-            // Derive customized from whether any override is still active
-            section.customized = Object.values(settingsObj).some(
-                s => typeof s === 'object' && s.override
-            );
-
-            this.applySectionCSS(overridesDef);
-        },
-
-        updateOverrideValue(settingsKey, itemKey, value) {
-            const items = this.getByPath(settingsKey);
-            if (!items?.[itemKey]) return;
-
-            items[itemKey].value = parseFloat(value);
-
-            // Mark parent as customized
-            const parentKey = this.getParentKey(settingsKey);
-            const parent = this.getByPath(parentKey);
-            if (parent?.customized !== undefined) parent.customized = true;
-
-            // Apply CSS
-            const sectionDef = this.findSectionBySettingsKey(settingsKey);
-            if (sectionDef) {
-                const cssName = this.getItemCSSName(sectionDef, itemKey);
-                const unit = sectionDef.unit || '';
-                this.applyCSSVariable(cssName, `${value}${unit}`);
-            }
-
+        setRatio(section, value) {
+            const fam = this.familyOf(section);
+            fam.ratio = parseFloat(value);
+            this.applyScale(section);
             this.markChanged();
         },
 
-        updateCompositeField(settingsKey, itemKey, field, value) {
-            const items = this.getByPath(settingsKey);
-            if (!items?.[itemKey]) return;
+        // ============================================
+        // Pick-one editing (border / radius) + designated default → bare alias
+        // ============================================
 
-            items[itemKey][field] = parseFloat(value);
-
-            const sectionDef = this.findSectionBySettingsKey(settingsKey);
-            if (sectionDef?.composite) {
-                this.applyCompositeCSS(sectionDef, itemKey);
-            }
-
-            this.markChanged();
-        },
-
-        updateSubProperty(settingsKey, itemKey, field, value) {
-            const items = this.getByPath(settingsKey);
-            if (!items?.[itemKey]) return;
-
-            items[itemKey][field] = parseFloat(value);
-
-            const sectionDef = this.findSectionBySettingsKey(settingsKey);
-            if (sectionDef) {
-                const fieldDef = sectionDef.fields?.find(f => f.id === field);
-                if (fieldDef?.cssSuffix) {
-                    const cssName = this.getItemCSSName(sectionDef, itemKey) + fieldDef.cssSuffix;
-                    const unit = fieldDef.cssUnit || '';
-                    this.applyCSSVariable(cssName, `${value}${unit}`);
+        applyPickOne(section) {
+            const fam = this.familyOf(section);
+            for (const [key, data] of Object.entries(fam.sizes || {})) {
+                if (data.value !== undefined) {
+                    this.applyCSSVariable(this.itemCssName(section, key), `${data.value}${section.unit || ''}`);
                 }
             }
+            this.applyAlias(section);
+        },
 
+        setPickValue(section, key, value) {
+            const fam = this.familyOf(section);
+            if (!fam.sizes?.[key]) return;
+            fam.sizes[key].value = parseFloat(value);
+            this.applyCSSVariable(this.itemCssName(section, key), `${value}${section.unit || ''}`);
             this.markChanged();
         },
 
-        toggleItem(settingsKey, itemKey, toggled) {
-            const items = this.getByPath(settingsKey);
-            if (!items?.[itemKey]) return;
+        setDefault(section, key) {
+            this.familyOf(section).default = key;
+            this.applyAlias(section);
+            this.markChanged();
+        },
 
-            const parentKey = this.getParentKey(settingsKey);
-            const parent = this.getByPath(parentKey);
-            const isScaleBased = parent?.baseSize !== undefined && parent?.scale !== undefined;
-
-            // Scale-based items use "override"; non-scale use "enabled"
-            if (isScaleBased) {
-                items[itemKey].override = toggled;
+        /** Emit the bare family alias pointing at the designated default step. */
+        applyAlias(section) {
+            if (!section.alias) return;
+            const fam = this.familyOf(section);
+            if (fam.default && fam.sizes?.[fam.default]) {
+                this.applyCSSVariable(`--${section.alias}`, `var(--${section.cssPrefix}${fam.default})`);
             } else {
-                items[itemKey].enabled = toggled;
+                // No member default (e.g. shadow's seeded `none`) → literal none.
+                this.applyCSSVariable(`--${section.alias}`, 'none');
             }
-
-            if (isScaleBased) {
-                // Scale sections: recalculate when disabling, variable always stays
-                if (!toggled) {
-                    const sectionDef = this.findSectionBySettingsKey(settingsKey);
-                    const itemDef = this.schema.sizes?.[sectionDef?.sizesArray]?.items?.[itemKey];
-                    if (itemDef?.position !== undefined) {
-                        items[itemKey].value = Math.round(parent.baseSize * Math.pow(parent.scale, itemDef.position));
-                        if (sectionDef) {
-                            const cssName = this.getItemCSSName(sectionDef, itemKey);
-                            this.applyCSSVariable(cssName, `${items[itemKey].value}${sectionDef.unit || ''}`);
-                        }
-                    }
-                    parent.customized = Object.values(items).some(
-                        s => typeof s === 'object' && s.override
-                    );
-                }
-            } else {
-                // Non-scale sections (radius, borders, shadows): add/remove variable
-                const sectionDef = this.findSectionBySettingsKey(settingsKey);
-                if (sectionDef) {
-                    if (!toggled) {
-                        const cssName = this.getItemCSSName(sectionDef, itemKey);
-                        this.applyCSSVariable(cssName, 'initial');
-                    } else if (sectionDef.composite) {
-                        this.applyCompositeCSS(sectionDef, itemKey);
-                    } else if (items[itemKey].value !== undefined) {
-                        const cssName = this.getItemCSSName(sectionDef, itemKey);
-                        const unit = sectionDef.unit || '';
-                        this.applyCSSVariable(cssName, `${items[itemKey].value}${unit}`);
-                    }
-                }
-            }
-
-            this.markChanged();
         },
 
-        findSectionBySettingsKey(settingsKey) {
-            for (const panel of this.schema.panels) {
-                const tabs = panel.tabs || [panel];
-                for (const tab of tabs) {
-                    const sections = tab.sections || [tab];
-                    for (const s of sections) {
-                        if (s.settingsKey === settingsKey) return s;
-                    }
-                }
+        // ============================================
+        // Composite editing (shadows)
+        // ============================================
+
+        compositeValue(section, key) {
+            const data = this.familyOf(section).sizes?.[key];
+            if (!data) return '';
+            let value = section.composite.template;
+            for (const field of section.composite.fields) {
+                value = value.replace(`{${field.id}}`, data[field.id]);
             }
-            return null;
+            return value;
+        },
+
+        applyComposite(section) {
+            for (const key of this.sizeKeys(section)) {
+                this.applyCSSVariable(this.itemCssName(section, key), this.compositeValue(section, key));
+            }
+            this.applyAlias(section);
+        },
+
+        setCompositeField(section, key, field, value) {
+            const fam = this.familyOf(section);
+            if (!fam.sizes?.[key]) return;
+            fam.sizes[key][field] = parseFloat(value);
+            this.applyCSSVariable(this.itemCssName(section, key), this.compositeValue(section, key));
+            this.markChanged();
         },
 
         // ============================================
@@ -620,62 +491,6 @@ function registerStylePanel() {
 
         applyCSSVariable(name, value) {
             document.documentElement.style.setProperty(name, value);
-        },
-
-        applyCompositeCSS(sectionDef, itemKey) {
-            const data = this.getByPath(sectionDef.settingsKey)?.[itemKey];
-            if (!data) return;
-
-            let value = sectionDef.composite.template;
-            for (const field of sectionDef.composite.fields) {
-                value = value.replace(`{${field.id}}`, data[field.id]);
-            }
-
-            const cssName = this.getItemCSSName(sectionDef, itemKey);
-            this.applyCSSVariable(cssName, value);
-        },
-
-        applySectionCSS(sectionDef) {
-            if (!sectionDef?.settingsKey) return;
-            const items = this.getByPath(sectionDef.settingsKey);
-            if (!items) return;
-
-            // Scale-based sections always emit variables; non-scale sections
-            // (radius, borders, shadows) must remove them when disabled.
-            const parentKey = this.getParentKey(sectionDef.settingsKey);
-            const parent = this.getByPath(parentKey);
-            const isScaleBased = parent?.baseSize !== undefined && parent?.scale !== undefined;
-
-            for (const [key, data] of Object.entries(items)) {
-                if (typeof data !== 'object') continue;
-
-                // Non-scale: remove CSS variable for disabled items
-                if (!isScaleBased && data.enabled === false) {
-                    const cssName = this.getItemCSSName(sectionDef, key);
-                    this.applyCSSVariable(cssName, 'initial');
-                    continue;
-                }
-
-                if (sectionDef.composite) {
-                    this.applyCompositeCSS(sectionDef, key);
-                } else {
-                    const cssName = this.getItemCSSName(sectionDef, key);
-                    if (data.value !== undefined) {
-                        const unit = sectionDef.unit || '';
-                        this.applyCSSVariable(cssName, `${data.value}${unit}`);
-                    }
-                    // Sub-properties
-                    if (sectionDef.fields) {
-                        for (const fieldDef of sectionDef.fields) {
-                            if (fieldDef.cssSuffix && data[fieldDef.id] !== undefined) {
-                                const subCss = cssName + fieldDef.cssSuffix;
-                                const unit = fieldDef.cssUnit || '';
-                                this.applyCSSVariable(subCss, `${data[fieldDef.id]}${unit}`);
-                            }
-                        }
-                    }
-                }
-            }
         },
 
         applyAllSettings() {
@@ -687,8 +502,12 @@ function registerStylePanel() {
                     const sections = tab.sections || [tab];
                     for (const section of sections) {
                         const type = this.getSectionType(section);
-                        if (type === 'overrides' || type === 'composite') {
-                            this.applySectionCSS(section);
+                        if (type === 'scale') {
+                            this.applyScale(section);
+                        } else if (type === 'pickone') {
+                            this.applyPickOne(section);
+                        } else if (type === 'composite') {
+                            this.applyComposite(section);
                         } else if (type === 'palette') {
                             this.applyPaletteSection(section);
                         }
@@ -1024,9 +843,6 @@ function registerStylePanel() {
 
             // Strip panel-only state
             delete result._version;
-            if (result.typography?.headings) delete result.typography.headings.customized;
-            if (result.typography?.text) delete result.typography.text.customized;
-            if (result.spacing) delete result.spacing.customized;
 
             return result;
         },
@@ -1165,125 +981,105 @@ const getPanelHTML = () => `
                     <template x-for="section in currentSections" :key="section.id">
                         <div>
 
-                            <!-- ===== DEFAULTS section ===== -->
-                            <template x-if="getSectionType(section) === 'defaults'">
+                            <!-- ===== SCALE section (spacing / text / headings) ===== -->
+                            <template x-if="getSectionType(section) === 'scale'">
                                 <div>
                                     <div class="anti-section-title" x-text="section.label"></div>
-                                    <template x-for="field in section.fields" :key="field.id">
+
+                                    <!-- Anchor size (the scale origin) -->
+                                    <div class="anti-size-section is-enabled">
+                                        <div class="anti-size-header">
+                                            <span class="anti-size-name" x-text="section.anchor.label"></span>
+                                        </div>
+                                        <div class="anti-size-controls" style="display: block;">
+                                            <div class="anti-control-row">
+                                                <input type="range" class="anti-range"
+                                                    :min="section.anchor.min" :max="section.anchor.max" :step="section.anchor.step"
+                                                    :value="anchorValue(section)"
+                                                    @input="setAnchor(section, $event.target.value)">
+                                                <div class="anti-control-value">
+                                                    <input type="number" :step="section.anchor.step"
+                                                        :value="anchorValue(section)"
+                                                        @change="setAnchor(section, $event.target.value)">
+                                                    <span x-show="section.anchor.unit" x-text="section.anchor.unit"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Ratio -->
+                                    <div class="anti-size-section is-enabled">
+                                        <div class="anti-size-header">
+                                            <span class="anti-size-name" x-text="section.ratio.label"></span>
+                                        </div>
+                                        <div class="anti-size-controls" style="display: block;">
+                                            <div class="anti-control-row">
+                                                <input type="range" class="anti-range"
+                                                    :min="section.ratio.min" :max="section.ratio.max" :step="section.ratio.step"
+                                                    :value="familyOf(section).ratio"
+                                                    @input="setRatio(section, $event.target.value)">
+                                                <div class="anti-control-value">
+                                                    <input type="number" :step="section.ratio.step"
+                                                        :value="familyOf(section).ratio"
+                                                        @change="setRatio(section, $event.target.value)">
+                                                </div>
+                                            </div>
+                                            <template x-if="section.ratio.presets">
+                                                <select class="anti-select" style="margin-top: 12px;"
+                                                    @change="setRatio(section, $event.target.value)">
+                                                    <option value="">Custom</option>
+                                                    <template x-for="preset in (schema.presets[section.ratio.presets] || [])" :key="presetValue(preset)">
+                                                        <option :value="presetValue(preset)" x-text="presetLabel(preset)"
+                                                            :selected="familyOf(section).ratio === presetValue(preset)"></option>
+                                                    </template>
+                                                </select>
+                                            </template>
+                                        </div>
+                                    </div>
+
+                                    <!-- Computed steps (read-only; presence in sizes is membership) -->
+                                    <div class="anti-section-title" style="margin-top: 12px;">Steps</div>
+                                    <template x-for="key in sizeKeys(section)" :key="key">
                                         <div class="anti-size-section is-enabled">
                                             <div class="anti-size-header">
-                                                <span class="anti-size-name" x-text="field.label"></span>
-                                            </div>
-                                            <div class="anti-size-controls" style="display: block;">
-                                                <div class="anti-control-row">
-                                                    <input type="range" class="anti-range"
-                                                        :min="field.min" :max="field.max" :step="field.step"
-                                                        :value="getByPath(field.settingsKey)"
-                                                        @input="updateBaseOrScale(getParentKey(field.settingsKey), field.id, $event.target.value)">
-                                                    <div class="anti-control-value">
-                                                        <input type="number" :step="field.step"
-                                                            :value="getByPath(field.settingsKey)"
-                                                            @change="updateBaseOrScale(getParentKey(field.settingsKey), field.id, $event.target.value)">
-                                                        <span x-show="field.unit" x-text="field.unit"></span>
-                                                    </div>
-                                                </div>
-                                                <template x-if="field.presets">
-                                                    <select class="anti-select" style="margin-top: 12px;"
-                                                        @change="updateBaseOrScale(getParentKey(field.settingsKey), field.id, $event.target.value)">
-                                                        <option value="">Custom</option>
-                                                        <template x-for="preset in (schema.presets[field.presets] || [])" :key="presetValue(preset)">
-                                                            <option :value="presetValue(preset)" x-text="presetLabel(preset)"
-                                                                :selected="getByPath(field.settingsKey) === presetValue(preset)"></option>
-                                                        </template>
-                                                    </select>
-                                                </template>
+                                                <span class="anti-size-name" x-text="getItemLabel(key)"></span>
+                                                <span class="anti-size-computed"
+                                                    x-text="computeSize(section, key) + (section.unit || '')"></span>
                                             </div>
                                         </div>
                                     </template>
                                 </div>
                             </template>
 
-                            <!-- ===== OVERRIDES section ===== -->
-                            <template x-if="getSectionType(section) === 'overrides'">
+                            <!-- ===== PICK-ONE section (border / radius) ===== -->
+                            <template x-if="getSectionType(section) === 'pickone'">
                                 <div>
                                     <div class="anti-section-title" x-text="section.label"></div>
-
-                                    <template x-if="hasBaseScale(section)">
-                                        <div class="anti-recalc-notice"
-                                            :class="{ 'is-visible': getByPath(getParentKey(section.settingsKey))?.customized }">
-                                            Sizes have been manually edited.
-                                            <button @click="recalculateSizes(getParentKey(section.settingsKey), true)">Recalculate from scale</button>
-                                        </div>
-                                    </template>
-
-                                    <template x-for="itemKey in getSizeItemKeys(section.sizesArray)" :key="itemKey">
-                                        <div class="anti-size-section"
-                                            :class="{ 'is-enabled': getByPath(section.settingsKey)?.[itemKey]?.[getToggleField(section)] }">
+                                    <template x-for="key in sizeKeys(section)" :key="key">
+                                        <div class="anti-size-section is-enabled">
                                             <div class="anti-size-header">
-                                                <span class="anti-size-name" x-text="getItemLabel(itemKey)"></span>
-                                                <label class="anti-toggle">
-                                                    <input type="checkbox"
-                                                        :checked="getByPath(section.settingsKey)?.[itemKey]?.[getToggleField(section)]"
-                                                        @change="toggleItem(section.settingsKey, itemKey, $event.target.checked)">
-                                                    <span class="anti-toggle-slider"></span>
+                                                <span class="anti-size-name" x-text="getItemLabel(key)"></span>
+                                                <label class="anti-default-radio">
+                                                    <input type="radio" :name="section.id + '-default'"
+                                                        :checked="familyOf(section).default === key"
+                                                        @change="setDefault(section, key)">
+                                                    <span>Default</span>
                                                 </label>
                                             </div>
-
-                                            <!-- Fixed item (e.g. radius full) -->
-                                            <template x-if="getSizeItemDef(section.sizesArray, itemKey).fixed">
-                                                <div class="anti-size-controls" style="color: var(--anti-text-muted); font-size: 12px;"
-                                                    x-text="getSizeItemDef(section.sizesArray, itemKey).displayNote || ''">
-                                                </div>
-                                            </template>
-
-                                            <!-- Normal item -->
-                                            <template x-if="!getSizeItemDef(section.sizesArray, itemKey).fixed">
-                                                <div class="anti-size-controls">
-                                                    <div class="anti-control-row">
-                                                        <input type="range" class="anti-range"
-                                                            :min="getMainField(section)?.min || 0"
-                                                            :max="getMainField(section)?.max || 128"
-                                                            :step="getMainField(section)?.step || 1"
-                                                            :value="getByPath(section.settingsKey)?.[itemKey]?.value"
-                                                            @input="updateOverrideValue(section.settingsKey, itemKey, $event.target.value)">
-                                                        <div class="anti-control-value">
-                                                            <input type="number"
-                                                                :value="getByPath(section.settingsKey)?.[itemKey]?.value"
-                                                                @change="updateOverrideValue(section.settingsKey, itemKey, $event.target.value)">
-                                                            <span x-show="section.unit" x-text="section.unit"></span>
-                                                        </div>
+                                            <div class="anti-size-controls">
+                                                <div class="anti-control-row">
+                                                    <input type="range" class="anti-range"
+                                                        :min="section.value.min" :max="section.value.max" :step="section.value.step"
+                                                        :value="familyOf(section).sizes[key].value"
+                                                        @input="setPickValue(section, key, $event.target.value)">
+                                                    <div class="anti-control-value">
+                                                        <input type="number" :step="section.value.step"
+                                                            :value="familyOf(section).sizes[key].value"
+                                                            @change="setPickValue(section, key, $event.target.value)">
+                                                        <span x-show="section.unit" x-text="section.unit"></span>
                                                     </div>
-
-                                                    <!-- Sub-properties (lineHeight, letterSpacing, weight, etc.) -->
-                                                    <template x-if="getSubFields(section).length > 0">
-                                                        <div class="anti-control-group" style="margin-top: 8px;">
-                                                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                                                                <template x-for="sf in getSubFields(section).filter(f => f.type === 'number')" :key="sf.id">
-                                                                    <div>
-                                                                        <label class="anti-control-label" style="font-size: 11px;" x-text="sf.label"></label>
-                                                                        <input type="number" class="anti-input"
-                                                                            :step="sf.step" :min="sf.min" :max="sf.max"
-                                                                            :value="getByPath(section.settingsKey)?.[itemKey]?.[sf.id]"
-                                                                            @change="updateSubProperty(section.settingsKey, itemKey, sf.id, $event.target.value)">
-                                                                    </div>
-                                                                </template>
-                                                            </div>
-                                                            <template x-for="sf in getSubFields(section).filter(f => f.type === 'select')" :key="sf.id">
-                                                                <div style="margin-top: 8px;">
-                                                                    <label class="anti-control-label" style="font-size: 11px;" x-text="sf.label"></label>
-                                                                    <select class="anti-select"
-                                                                        @change="updateSubProperty(section.settingsKey, itemKey, sf.id, $event.target.value)">
-                                                                        <template x-for="opt in (schema.presets[sf.presets] || [])" :key="presetValue(opt)">
-                                                                            <option :value="presetValue(opt)" x-text="presetLabel(opt)"
-                                                                                :selected="getByPath(section.settingsKey)?.[itemKey]?.[sf.id] == presetValue(opt)"></option>
-                                                                        </template>
-                                                                    </select>
-                                                                </div>
-                                                            </template>
-                                                        </div>
-                                                    </template>
                                                 </div>
-                                            </template>
+                                            </div>
                                         </div>
                                     </template>
                                 </div>
@@ -1292,16 +1088,16 @@ const getPanelHTML = () => `
                             <!-- ===== COMPOSITE section (shadows) ===== -->
                             <template x-if="getSectionType(section) === 'composite'">
                                 <div>
-                                    <template x-for="itemKey in getSizeItemKeys(section.sizesArray)" :key="itemKey">
-                                        <div class="anti-size-section"
-                                            :class="{ 'is-enabled': getByPath(section.settingsKey)?.[itemKey]?.enabled }">
+                                    <div class="anti-section-title" x-text="section.label"></div>
+                                    <template x-for="key in sizeKeys(section)" :key="key">
+                                        <div class="anti-size-section is-enabled">
                                             <div class="anti-size-header">
-                                                <span class="anti-size-name" x-text="getItemLabel(itemKey)"></span>
-                                                <label class="anti-toggle">
-                                                    <input type="checkbox"
-                                                        :checked="getByPath(section.settingsKey)?.[itemKey]?.enabled"
-                                                        @change="toggleItem(section.settingsKey, itemKey, $event.target.checked)">
-                                                    <span class="anti-toggle-slider"></span>
+                                                <span class="anti-size-name" x-text="getItemLabel(key)"></span>
+                                                <label class="anti-default-radio">
+                                                    <input type="radio" :name="section.id + '-default'"
+                                                        :checked="familyOf(section).default === key"
+                                                        @change="setDefault(section, key)">
+                                                    <span>Default</span>
                                                 </label>
                                             </div>
                                             <div class="anti-size-controls">
@@ -1312,12 +1108,12 @@ const getPanelHTML = () => `
                                                             <div class="anti-control-row">
                                                                 <input type="range" class="anti-range"
                                                                     :min="cf.min" :max="cf.max" :step="cf.step"
-                                                                    :value="getByPath(section.settingsKey)?.[itemKey]?.[cf.id]"
-                                                                    @input="updateCompositeField(section.settingsKey, itemKey, cf.id, $event.target.value)">
+                                                                    :value="familyOf(section).sizes[key][cf.id]"
+                                                                    @input="setCompositeField(section, key, cf.id, $event.target.value)">
                                                                 <div class="anti-control-value">
                                                                     <input type="number" :step="cf.step"
-                                                                        :value="getByPath(section.settingsKey)?.[itemKey]?.[cf.id]"
-                                                                        @change="updateCompositeField(section.settingsKey, itemKey, cf.id, $event.target.value)">
+                                                                        :value="familyOf(section).sizes[key][cf.id]"
+                                                                        @change="setCompositeField(section, key, cf.id, $event.target.value)">
                                                                     <span x-show="cf.unit" x-text="cf.unit"></span>
                                                                 </div>
                                                             </div>
