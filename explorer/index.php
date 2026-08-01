@@ -22,6 +22,17 @@ require_once __DIR__ . '/../components/render.php';
 require_once __DIR__ . '/shared/css.php';
 anti_components_dir(__DIR__ . '/../components');
 
+/**
+ * Cache-busting asset URL: appends the file's mtime as a version query so an
+ * edit always yields a fresh URL (no hard-refresh needed). Own assets only —
+ * vendored files are stable and stay unversioned.
+ */
+function explorer_asset(string $relPath): string {
+    $full = __DIR__ . '/' . $relPath;
+    $v = file_exists($full) ? filemtime($full) : '0';
+    return htmlspecialchars($relPath . '?v=' . $v, ENT_QUOTES);
+}
+
 // Active style (from cookie, default to plato)
 $activeStyle = preg_replace('/[^a-z0-9-]/', '', $_COOKIE['antiExplorer_style'] ?? 'plato') ?: 'plato';
 
@@ -44,16 +55,16 @@ $navItems = [
     <title>Anticustom Explorer — <?php echo ucfirst($tool); ?></title>
     <style id="anti-tokens"><?php echo $tokenCSS; ?></style>
     <style id="anti-components"><?php echo $componentCSS; ?></style>
-    <link rel="stylesheet" href="css/panel.css">
-    <link rel="stylesheet" href="css/explorer.css">
+    <link rel="stylesheet" href="<?php echo explorer_asset('css/panel.css'); ?>">
+    <link rel="stylesheet" href="<?php echo explorer_asset('css/explorer.css'); ?>">
     <link rel="stylesheet" href="vendor/coloris.min.css">
     <?php if ($tool === 'components') : ?>
-        <link rel="stylesheet" href="css/playground.css">
+        <link rel="stylesheet" href="<?php echo explorer_asset('css/playground.css'); ?>">
     <?php endif; ?>
     <script src="vendor/coloris.min.js"></script>
     <script>Coloris({ alpha: false, format: 'hex', themeMode: 'light', margin: 8, swatches: [] });</script>
     <?php if ($tool === 'components') : ?>
-        <script defer src="js/playground.js"></script>
+        <script defer src="<?php echo explorer_asset('js/playground.js'); ?>"></script>
         <!-- Field editor runtime inlined (fields/ is outside document root) -->
         <style id="anti-field-editor"><?php echo file_get_contents(__DIR__ . '/../fields/editor.css'); ?></style>
         <script><?php echo file_get_contents(__DIR__ . '/../fields/leantext.js'); ?></script>
@@ -68,7 +79,7 @@ $navItems = [
         window.ANTI_DEFAULTS = <?php echo file_get_contents(__DIR__ . '/../styles/defaults.json'); ?>;
     </script>
     <!-- Panel JS injects sidebar into body -->
-    <script defer src="js/panel.js"></script>
+    <script defer src="<?php echo explorer_asset('js/panel.js'); ?>"></script>
 
     <!-- Main content area -->
     <main class="anti-explorer" id="explorer-main">

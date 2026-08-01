@@ -19,46 +19,30 @@ document.addEventListener('alpine:init', () => {
 
         rebuild() {
             const settings = window.__antiSettings;
-            const schema = window.ANTI_SCHEMA;
-            if (!settings || !schema) return;
+            if (!settings) return;
 
             const rows = [];
-            const sizes = schema.sizes || {};
 
-            // Spacing
-            const spaceBase = settings.spacing?.baseSize ?? 16;
-            const spaceScale = settings.spacing?.scale ?? 1.5;
-            for (const [size, def] of Object.entries(sizes.spacingSizes?.items || {})) {
-                const sizeData = settings.spacing?.sizes?.[size] ?? {};
-                let val;
-                if (sizeData.enabled && sizeData.value !== undefined) {
-                    val = sizeData.value;
-                } else if (def.position !== undefined) {
-                    val = Math.round(spaceBase * Math.pow(spaceScale, def.position));
-                } else {
-                    continue;
+            // Open-set scale family: every step in `sizes` is a member, computed
+            // from the anchor (default) step by anchorValue * ratio^(pos − anchorPos).
+            const scaleRows = (fam, prefix, category, decimal) => {
+                if (!fam?.sizes) return;
+                const anchor = fam.sizes[fam.default] || {};
+                const aVal = anchor.value ?? 16;
+                const aPos = anchor.position ?? 0;
+                const ratio = fam.ratio ?? 1;
+                for (const [key, def] of Object.entries(fam.sizes)) {
+                    const pos = def.position ?? 0;
+                    const raw = aVal * Math.pow(ratio, pos - aPos);
+                    const val = decimal ? Math.round(raw * 10) / 10 : Math.round(raw);
+                    rows.push({ variable: `--${prefix}${key}`, category, value: `${val}px` });
                 }
-                rows.push({ variable: `--space-${size}`, category: 'Spacing', value: `${val}px` });
-            }
+            };
 
-            // Typography — text sizes
-            const textBase = settings.typography?.text?.baseSize ?? 16;
-            const textScale = settings.typography?.text?.scale ?? 1.125;
-            for (const [size, def] of Object.entries(sizes.textSizes?.items || {})) {
-                const pos = def.position ?? 0;
-                const val = Math.round(textBase * Math.pow(textScale, pos) * 10) / 10;
-                rows.push({ variable: `--text-${size}`, category: 'Typography', value: `${val}px` });
-            }
-
-            // Typography — heading sizes
-            const headingBase = settings.typography?.headings?.baseSize ?? 16;
-            const headingScale = settings.typography?.headings?.scale ?? 1.618;
-            for (const [key, def] of Object.entries(sizes.headingLevels?.items || {})) {
-                const pos = def.position ?? 0;
-                const cssKey = def.cssKey ?? `heading-${key}`;
-                const val = Math.round(headingBase * Math.pow(headingScale, pos));
-                rows.push({ variable: `--${cssKey}`, category: 'Typography', value: `${val}px` });
-            }
+            scaleRows(settings.spacing, 'space-', 'Spacing', false);
+            scaleRows(settings.typography?.text, 'text-', 'Typography', true);
+            // Headings are key-identity: keys h1–h6 emit --h1…--h6 (no prefix).
+            scaleRows(settings.typography?.headings, '', 'Typography', false);
 
             // Colors
             for (const section of Object.values(settings.color?.sections || {})) {
@@ -69,24 +53,23 @@ document.addEventListener('alpine:init', () => {
                 }
             }
 
-            // Borders
+            // Borders (presence is membership — no enabled gate)
             for (const [size, data] of Object.entries(settings.borders?.sizes || {})) {
-                if (data.enabled && data.value !== undefined) {
+                if (data.value !== undefined) {
                     rows.push({ variable: `--border-${size}`, category: 'Borders', value: `${data.value}px` });
                 }
             }
 
             // Shadows
-            for (const [size, s] of Object.entries(settings.shadows || {})) {
+            for (const [size, s] of Object.entries(settings.shadows?.sizes || {})) {
                 if (typeof s !== 'object') continue;
-                if (s.enabled === false) continue;
                 const val = `${s.x ?? 0}px ${s.y ?? 0}px ${s.blur ?? 0}px ${s.spread ?? 0}px rgba(0,0,0,${s.opacity ?? 0.1})`;
                 rows.push({ variable: `--shadow-${size}`, category: 'Shadows', value: val });
             }
 
             // Radius
             for (const [size, data] of Object.entries(settings.radius?.sizes || {})) {
-                if (data.enabled && data.value !== undefined) {
+                if (data.value !== undefined) {
                     rows.push({ variable: `--radius-${size}`, category: 'Radius', value: `${data.value}px` });
                 }
             }

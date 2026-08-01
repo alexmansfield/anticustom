@@ -55,7 +55,7 @@ $samples = [
         'link_url' => '#',
     ],
     'code-block' => [
-        'code' => "<?php\n\$tokens = json_decode(file_get_contents('defaults.json'), true);\n\$spacing = \$tokens['spacing'];\necho \"Base size: \" . \$spacing['baseSize'] . \"px\";",
+        'code' => "<?php\n\$tokens = json_decode(file_get_contents('defaults.json'), true);\n\$spacing = \$tokens['spacing'];\n\$anchor = \$spacing['sizes'][\$spacing['default']];\necho \"Anchor size: \" . \$anchor['value'] . \"px\";",
         'language' => 'php',
         'title' => 'Token Loading Example',
         'line_numbers' => true,
