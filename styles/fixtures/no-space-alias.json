@@ -1,0 +1,10 @@
+{
+  "_note": "Fixture: a spacing family with no `default` step, so no bare `--space` alias is emitted. Negative case that gives the fallback-presence guard its teeth — a component chain `var(--space-x, var(--space))` would resolve to nothing here.",
+  "spacing": {
+    "ratio": 1.5,
+    "sizes": {
+      "m": { "position": 0, "value": 16 },
+      "l": { "position": 1 }
+    }
+  }
+}

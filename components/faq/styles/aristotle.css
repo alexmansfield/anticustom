@@ -12,14 +12,14 @@
    ========================================================================== */
 
 .anti-faq {
-    --anti-faq-gap: var(--space-m, 1rem);
-    --anti-faq-padding: var(--space-m, 1rem) var(--space-s, 0.5rem);
-    --anti-faq-answer-padding: 0 var(--space-s, 0.5rem) var(--space-l, 1.5rem);
-    --anti-faq-padding-mobile: var(--space-s, 0.5rem) 0;
-    --anti-faq-answer-padding-mobile: 0 0 var(--space-m, 1rem);
+    --anti-faq-gap: var(--space-m, var(--space));
+    --anti-faq-padding: var(--space-m, var(--space)) var(--space-s, var(--space));
+    --anti-faq-answer-padding: 0 var(--space-s, var(--space)) var(--space-l, var(--space));
+    --anti-faq-padding-mobile: var(--space-s, var(--space)) 0;
+    --anti-faq-answer-padding-mobile: 0 0 var(--space-m, var(--space));
 
     color: var(--colorway-hard-contrast, #0f172a);
-    border-bottom: var(--border-m, 2px) solid var(--colorway-soft-contrast, #e2e8f0);
+    border-bottom: var(--border-m, var(--border)) solid var(--colorway-soft-contrast, #e2e8f0);
 }
 
 .anti-faq[data-colorway] {
@@ -27,7 +27,7 @@
 }
 
 .anti-faq:first-child {
-    border-top: var(--border-m, 2px) solid var(--colorway-soft-contrast, #e2e8f0);
+    border-top: var(--border-m, var(--border)) solid var(--colorway-soft-contrast, #e2e8f0);
 }
 
 /* ==========================================================================
@@ -39,13 +39,13 @@
 }
 
 .anti-faq__question:focus-visible {
-    outline: var(--border-m, 2px) solid var(--colorway-accent, #2563eb);
-    outline-offset: var(--border-m, 2px);
-    border-radius: var(--radius-s);
+    outline: var(--border-m, var(--border)) solid var(--colorway-accent, #2563eb);
+    outline-offset: var(--border-m, var(--border));
+    border-radius: var(--radius-s, var(--radius));
 }
 
 .anti-faq__question-text {
-    font-size: var(--text-l, 1.125rem);
+    font-size: var(--text-l, var(--text));
     font-weight: 600;
     color: var(--colorway-hard-contrast, #0f172a);
 }
@@ -63,7 +63,7 @@
    ========================================================================== */
 
 .anti-faq__answer p {
-    font-size: var(--text-m, 1rem);
+    font-size: var(--text-m, var(--text));
     color: var(--colorway-contrast, #475569);
 }
 

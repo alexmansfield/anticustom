@@ -1,42 +1,48 @@
 {
   "typography": {
     "headings": {
-      "baseSize": 16,
-      "scale": 1.618,
-      "customized": false,
+      "default": "h6",
+      "ratio": 1.618,
       "sizes": {
         "h1": {
-          "override": false,
+          "position": 5,
+          "spec": true,
           "lineHeight": 1.2,
           "letterSpacing": -0.02,
           "weight": 700
         },
         "h2": {
-          "override": false,
+          "position": 4,
+          "spec": true,
           "lineHeight": 1.25,
           "letterSpacing": -0.02,
           "weight": 700
         },
         "h3": {
-          "override": false,
+          "position": 3,
+          "spec": true,
           "lineHeight": 1.3,
           "letterSpacing": -0.01,
           "weight": 600
         },
         "h4": {
-          "override": false,
+          "position": 2,
+          "spec": true,
           "lineHeight": 1.35,
           "letterSpacing": -0.01,
           "weight": 600
         },
         "h5": {
-          "override": false,
+          "position": 1,
+          "spec": true,
           "lineHeight": 1.4,
           "letterSpacing": 0,
           "weight": 600
         },
         "h6": {
-          "override": false,
+          "position": 0,
+          "spec": true,
+          "value": 16,
           "lineHeight": 1.4,
           "letterSpacing": 0,
           "weight": 600
@@ -44,36 +50,39 @@
       }
     },
     "text": {
-      "baseSize": 16,
-      "scale": 1.125,
-      "customized": false,
+      "default": "m",
+      "ratio": 1.125,
       "sizes": {
         "xl": {
-          "override": false,
+          "position": 2,
           "lineHeight": 1.5,
           "letterSpacing": 0,
           "weight": 400
         },
         "l": {
-          "override": false,
+          "position": 1,
+          "spec": true,
           "lineHeight": 1.5,
           "letterSpacing": 0,
           "weight": 400
         },
         "m": {
-          "override": true,
+          "position": 0,
+          "spec": true,
+          "value": 16,
           "lineHeight": 1.5,
           "letterSpacing": 0,
           "weight": 400
         },
         "s": {
-          "override": false,
+          "position": -1,
+          "spec": true,
           "lineHeight": 1.5,
           "letterSpacing": 0,
           "weight": 400
         },
         "xs": {
-          "override": false,
+          "position": -2,
           "lineHeight": 1.5,
           "letterSpacing": 0,
           "weight": 400
@@ -179,123 +188,112 @@
     }
   },
   "spacing": {
-    "baseSize": 16,
-    "scale": 1.5,
+    "default": "m",
+    "ratio": 1.5,
     "sizes": {
       "xxs": {
-        "value": 4,
-        "override": false
+        "position": -3
       },
       "xs": {
-        "value": 7,
-        "override": false
+        "position": -2,
+        "spec": true
       },
       "s": {
-        "value": 11,
-        "override": false
+        "position": -1,
+        "spec": true
       },
       "m": {
-        "value": 16,
-        "override": false
+        "position": 0,
+        "spec": true,
+        "value": 16
       },
       "l": {
-        "value": 24,
-        "override": false
+        "position": 1,
+        "spec": true
       },
       "xl": {
-        "value": 36,
-        "override": false
+        "position": 2,
+        "spec": true
       },
       "xxl": {
-        "value": 54,
-        "override": false
+        "position": 3
       }
     }
   },
   "borders": {
-    "defaultSize": "m",
+    "default": "m",
     "sizes": {
       "s": {
-        "value": 1,
-        "enabled": false
+        "value": 1
       },
       "m": {
-        "value": 2,
-        "enabled": true
+        "value": 2
       },
       "l": {
-        "value": 4,
-        "enabled": false
+        "value": 4
       }
     }
   },
   "shadows": {
-    "xs": {
-      "enabled": false,
-      "x": 0,
-      "y": 1,
-      "blur": 1,
-      "spread": 0,
-      "opacity": 0.05
-    },
-    "s": {
-      "enabled": false,
-      "x": 0,
-      "y": 1,
-      "blur": 2,
-      "spread": 0,
-      "opacity": 0.05
-    },
-    "m": {
-      "enabled": false,
-      "x": 0,
-      "y": 4,
-      "blur": 6,
-      "spread": -1,
-      "opacity": 0.1
-    },
-    "l": {
-      "enabled": false,
-      "x": 0,
-      "y": 10,
-      "blur": 15,
-      "spread": -3,
-      "opacity": 0.1
-    },
-    "xl": {
-      "enabled": false,
-      "x": 0,
-      "y": 20,
-      "blur": 25,
-      "spread": -5,
-      "opacity": 0.15
+    "default": "none",
+    "sizes": {
+      "xs": {
+        "x": 0,
+        "y": 1,
+        "blur": 1,
+        "spread": 0,
+        "opacity": 0.05
+      },
+      "s": {
+        "x": 0,
+        "y": 1,
+        "blur": 2,
+        "spread": 0,
+        "opacity": 0.05
+      },
+      "m": {
+        "x": 0,
+        "y": 4,
+        "blur": 6,
+        "spread": -1,
+        "opacity": 0.1
+      },
+      "l": {
+        "x": 0,
+        "y": 10,
+        "blur": 15,
+        "spread": -3,
+        "opacity": 0.1
+      },
+      "xl": {
+        "x": 0,
+        "y": 20,
+        "blur": 25,
+        "spread": -5,
+        "opacity": 0.15
+      }
     }
   },
   "radius": {
+    "default": "m",
     "sizes": {
       "xs": {
-        "value": 2,
-        "enabled": false
+        "value": 2
       },
       "s": {
-        "value": 4,
-        "enabled": false
+        "value": 4
       },
       "m": {
-        "value": 8,
-        "enabled": false
+        "value": 8
       },
       "l": {
-        "value": 16,
-        "enabled": false
+        "value": 16
       },
       "xl": {
-        "value": 24,
-        "enabled": false
+        "value": 24
       },
       "full": {
-        "value": 9999,
-        "enabled": true
+        "value": 9999
       }
     }
   }

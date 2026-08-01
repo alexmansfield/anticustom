@@ -11,17 +11,16 @@
    ========================================================================== */
 
 .anti-card {
-    --anti-padding: var(--space-l, 1.5rem);
-    --anti-card-padding: var(--space-l, 1.5rem);
-    --anti-card-title-gap: var(--space-s, 0.5rem);
-    --anti-card-title-size: var(--heading-4, 1.25rem);
-    --anti-card-desc-size: var(--text-m, 1rem);
+    --anti-card-padding: var(--space-l, var(--space));
+    --anti-card-title-gap: var(--space-s, var(--space));
+    --anti-card-title-size: var(--h4, 1.25rem);
+    --anti-card-desc-size: var(--text-m, var(--text));
     --anti-card-icon-size: 48px;
-    --anti-card-icon-gap: var(--space-m, 1rem);
-    --anti-card-link-gap: var(--space-xs, 0.25rem);
-    --anti-card-link-margin: var(--space-m, 1rem);
-    --anti-card-link-size: var(--text-s, 0.875rem);
-    --anti-card-grid-gap: var(--space-l, 1.5rem);
+    --anti-card-icon-gap: var(--space-m, var(--space));
+    --anti-card-link-gap: var(--space-xs, var(--space));
+    --anti-card-link-margin: var(--space-m, var(--space));
+    --anti-card-link-size: var(--text-s, var(--text));
+    --anti-card-grid-gap: var(--space-l, var(--space));
 
     color: var(--colorway-hard-contrast, #0f172a);
     overflow: hidden;
@@ -67,7 +66,7 @@
 .anti-card__icon {
     background-color: var(--colorway-accent, #2563eb);
     color: var(--colorway-hard-contrast, #ffffff);
-    border-radius: var(--radius-m);
+    border-radius: var(--radius-m, var(--radius));
 }
 
 /* ==========================================================================
@@ -80,7 +79,7 @@
 }
 
 .anti-card--clickable:hover .anti-card__link {
-    gap: var(--space-s, 0.5rem);
+    gap: var(--space-s, var(--space));
 }
 
 .anti-card__arrow {
@@ -97,6 +96,6 @@
 
 @media (max-width: 768px) {
     .anti-card {
-        --anti-padding: var(--space-m, 1rem);
+        --anti-card-padding: var(--space-m, var(--space));
     }
 }

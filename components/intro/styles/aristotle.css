@@ -8,7 +8,8 @@
  */
 
 .anti-intro {
-    --anti-padding: var(--space-l, 1.5rem);
+    /* Padding drawn directly (interface apparatus retired, palette-model M1) */
+    padding: var(--space-l, var(--space));
     color: var(--colorway-hard-contrast, #0f172a);
 }
 
@@ -19,8 +20,8 @@
 .anti-intro__eyebrow {
     font-weight: 600;
     color: var(--colorway-accent, #2563eb);
-    padding-bottom: var(--space-xs, 0.25rem);
-    border-bottom: var(--border-m, 2px) solid var(--colorway-accent, #2563eb);
+    padding-bottom: var(--space-xs, var(--space));
+    border-bottom: var(--border-m, var(--border)) solid var(--colorway-accent, #2563eb);
     display: inline-block;
 }
 

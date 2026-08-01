@@ -8,10 +8,10 @@
  */
 
 .anti-testimonial {
-    --anti-testimonial-padding: var(--space-l, 1.5rem);
+    --anti-testimonial-padding: var(--space-l, var(--space));
     color: var(--colorway-hard-contrast, #0f172a);
-    border-radius: var(--radius-l);
-    border: var(--border-s, 1px) solid var(--colorway-soft-contrast, #e2e8f0);
+    border-radius: var(--radius-l, var(--radius));
+    border: var(--border-s, var(--border)) solid var(--colorway-soft-contrast, #e2e8f0);
 }
 
 .anti-testimonial[data-colorway] {
@@ -35,7 +35,7 @@
    ========================================================================== */
 
 .anti-testimonial__quote p {
-    font-size: var(--text-l, 1.125rem);
+    font-size: var(--text-l, var(--text));
     color: var(--colorway-contrast, #475569);
 }
 
@@ -46,17 +46,17 @@
 .anti-testimonial__avatar--placeholder {
     background-color: var(--colorway-accent, #2563eb);
     color: var(--colorway-base, #ffffff);
-    font-size: var(--text-l, 1.125rem);
+    font-size: var(--text-l, var(--text));
 }
 
 .anti-testimonial__name {
-    font-size: var(--text-m, 1rem);
+    font-size: var(--text-m, var(--text));
     font-weight: 600;
     color: var(--colorway-hard-contrast, #0f172a);
 }
 
 .anti-testimonial__role {
-    font-size: var(--text-s, 0.875rem);
+    font-size: var(--text-s, var(--text));
     color: var(--colorway-contrast, #475569);
 }
 
@@ -66,6 +66,6 @@
 
 @media (max-width: 768px) {
     .anti-testimonial__quote p {
-        font-size: var(--text-m, 1rem);
+        font-size: var(--text-m, var(--text));
     }
 }

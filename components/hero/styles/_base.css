@@ -17,7 +17,7 @@
     background-repeat: no-repeat;
     overflow: hidden;
     min-height: var(--anti-hero-min-height, 600px);
-    padding: var(--anti-hero-padding, calc(var(--space-xl, 3rem) * 2) 0);
+    padding: var(--anti-hero-padding, calc(var(--space-xl, var(--space)) * 2) 0);
 }
 
 .anti-hero__container {
@@ -26,7 +26,7 @@
     width: 100%;
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0 var(--space-l, 1.5rem);
+    padding: 0 var(--space-l, var(--space));
 }
 
 .anti-hero__content {
@@ -38,7 +38,7 @@
    ========================================================================== */
 
 .anti-hero__content .anti-intro {
-    margin-bottom: var(--space-l, 1.5rem);
+    margin-bottom: var(--space-l, var(--space));
 }
 
 /* ==========================================================================
@@ -48,7 +48,7 @@
 .anti-hero__actions {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-m, 1rem);
+    gap: var(--space-m, var(--space));
 }
 
 /* ==========================================================================
@@ -91,12 +91,12 @@
 
 .anti-hero--sm {
     --anti-hero-min-height: 300px;
-    --anti-hero-padding: var(--space-xl, 3rem) 0;
+    --anti-hero-padding: var(--space-xl, var(--space)) 0;
 }
 
 .anti-hero--md {
     --anti-hero-min-height: 450px;
-    --anti-hero-padding: var(--space-xl, 3rem) 0;
+    --anti-hero-padding: var(--space-xl, var(--space)) 0;
 }
 
 /* ==========================================================================
@@ -107,7 +107,7 @@
     /* Cap default (large) heroes; sm/md set their own vars and are unaffected */
     .anti-hero {
         min-height: min(var(--anti-hero-min-height, 600px), 450px);
-        padding: var(--anti-hero-padding, var(--space-xl, 3rem) 0);
+        padding: var(--anti-hero-padding, var(--space-xl, var(--space)) 0);
     }
 
     .anti-hero__actions {

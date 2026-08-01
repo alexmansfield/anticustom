@@ -12,23 +12,23 @@
    ========================================================================== */
 
 .anti-card {
-    --anti-padding: var(--space-l, 1.5rem);
-    --anti-border-width: var(--border-s, 1px);
-    --anti-border-radius: var(--radius-l);
-    --anti-card-padding: var(--anti-padding);
-    --anti-card-title-gap: var(--space-s, 0.5rem);
-    --anti-card-title-size: var(--heading-4, 1.25rem);
-    --anti-card-desc-size: var(--text-m, 1rem);
+    --anti-card-padding: var(--space-l, var(--space));
+    --anti-card-title-gap: var(--space-s, var(--space));
+    --anti-card-title-size: var(--h4, 1.25rem);
+    --anti-card-desc-size: var(--text-m, var(--text));
     --anti-card-icon-size: 44px;
-    --anti-card-icon-gap: var(--space-m, 1rem);
-    --anti-card-link-gap: var(--space-xs, 0.25rem);
-    --anti-card-link-margin: var(--space-m, 1rem);
-    --anti-card-link-size: var(--text-s, 0.875rem);
-    --anti-card-grid-gap: var(--space-l, 1.5rem);
+    --anti-card-icon-gap: var(--space-m, var(--space));
+    --anti-card-link-gap: var(--space-xs, var(--space));
+    --anti-card-link-margin: var(--space-m, var(--space));
+    --anti-card-link-size: var(--text-s, var(--text));
+    --anti-card-grid-gap: var(--space-l, var(--space));
 
     color: var(--colorway-hard-contrast, #0f172a);
     overflow: hidden;
     padding: 0;
+    /* Chrome drawn directly (interface apparatus retired, palette-model M1) */
+    border: var(--border-s, var(--border)) solid var(--colorway-soft-contrast, #e2e8f0);
+    border-radius: var(--radius-l, var(--radius));
 }
 
 .anti-card[data-colorway] {
@@ -61,9 +61,9 @@
    ========================================================================== */
 
 .anti-card__icon {
-    border: var(--border-m, 2px) solid var(--colorway-accent, #2563eb);
+    border: var(--border-m, var(--border)) solid var(--colorway-accent, #2563eb);
     color: var(--colorway-accent, #2563eb);
-    border-radius: var(--radius-full);
+    border-radius: var(--radius-full, var(--radius));
 }
 
 /* ==========================================================================
@@ -80,6 +80,6 @@
 
 @media (max-width: 768px) {
     .anti-card {
-        --anti-padding: var(--space-m, 1rem);
+        --anti-card-padding: var(--space-m, var(--space));
     }
 }

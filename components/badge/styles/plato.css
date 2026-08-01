@@ -12,12 +12,12 @@
    ========================================================================== */
 
 .anti-badge {
-    --anti-badge-padding-s: var(--space-xs, 0.25rem) var(--space-s, 0.5rem);
-    --anti-badge-padding-m: var(--space-xs, 0.25rem) var(--space-s, 0.5rem);
-    --anti-badge-font-s: var(--text-xs, 0.75rem);
-    --anti-badge-font-m: var(--text-s, 0.875rem);
+    --anti-badge-padding-s: var(--space-xs, var(--space)) var(--space-s, var(--space));
+    --anti-badge-padding-m: var(--space-xs, var(--space)) var(--space-s, var(--space));
+    --anti-badge-font-s: var(--text-xs, var(--text));
+    --anti-badge-font-m: var(--text-s, var(--text));
 
-    border-radius: var(--radius-full);
+    border-radius: var(--radius-full, var(--radius));
 }
 
 /* ==========================================================================

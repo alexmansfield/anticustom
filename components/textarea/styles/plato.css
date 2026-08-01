@@ -12,16 +12,16 @@
    ========================================================================== */
 
 .anti-textarea {
-    --anti-textarea-label-gap: var(--space-xs, 0.25rem);
+    --anti-textarea-label-gap: var(--space-xs, var(--space));
     --anti-textarea-label-weight: var(--font-weight-medium, 500);
-    --anti-textarea-label-font: var(--text-s, 0.875rem);
-    --anti-textarea-padding-s: var(--space-xs, 0.25rem) var(--space-s, 0.5rem);
-    --anti-textarea-padding-m: var(--space-s, 0.5rem) var(--space-m, 0.75rem);
-    --anti-textarea-padding-l: var(--space-m, 0.75rem) var(--space-l, 1rem);
-    --anti-textarea-font-s: var(--text-s, 0.875rem);
-    --anti-textarea-font-m: var(--text-m, 1rem);
-    --anti-textarea-font-l: var(--text-l, 1.125rem);
-    --anti-textarea-hint-font: var(--text-s, 0.8125rem);
+    --anti-textarea-label-font: var(--text-s, var(--text));
+    --anti-textarea-padding-s: var(--space-xs, var(--space)) var(--space-s, var(--space));
+    --anti-textarea-padding-m: var(--space-s, var(--space)) var(--space-m, var(--space));
+    --anti-textarea-padding-l: var(--space-m, var(--space)) var(--space-l, var(--space));
+    --anti-textarea-font-s: var(--text-s, var(--text));
+    --anti-textarea-font-m: var(--text-m, var(--text));
+    --anti-textarea-font-l: var(--text-l, var(--text));
+    --anti-textarea-hint-font: var(--text-s, var(--text));
 
     background-color: var(--colorway-base, #ffffff);
     color: var(--colorway-hard-contrast, #0f172a);
@@ -44,10 +44,10 @@
    ========================================================================== */
 
 .anti-textarea__control {
-    border: var(--border-m, 2px) solid var(--colorway-soft-contrast, #cbd5e1);
+    border: var(--border-m, var(--border)) solid var(--colorway-soft-contrast, #cbd5e1);
     background-color: var(--colorway-base, #ffffff);
     color: var(--colorway-hard-contrast, #0f172a);
-    border-radius: var(--radius-m);
+    border-radius: var(--radius-m, var(--radius));
 }
 
 .anti-textarea__control::placeholder {

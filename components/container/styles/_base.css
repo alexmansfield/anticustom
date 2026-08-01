@@ -46,13 +46,13 @@
    Gap
    ========================================================================== */
 
-.anti-container[data-gap="xxs"] { gap: var(--space-xxs, 5px); }
-.anti-container[data-gap="xs"]  { gap: var(--space-xs, 7px); }
-.anti-container[data-gap="s"]   { gap: var(--space-s, 11px); }
-.anti-container[data-gap="m"]   { gap: var(--space-m, 16px); }
-.anti-container[data-gap="l"]   { gap: var(--space-l, 24px); }
-.anti-container[data-gap="xl"]  { gap: var(--space-xl, 36px); }
-.anti-container[data-gap="xxl"] { gap: var(--space-xxl, 54px); }
+.anti-container[data-gap="xxs"] { gap: var(--space-xxs, var(--space)); }
+.anti-container[data-gap="xs"]  { gap: var(--space-xs, var(--space)); }
+.anti-container[data-gap="s"]   { gap: var(--space-s, var(--space)); }
+.anti-container[data-gap="m"]   { gap: var(--space-m, var(--space)); }
+.anti-container[data-gap="l"]   { gap: var(--space-l, var(--space)); }
+.anti-container[data-gap="xl"]  { gap: var(--space-xl, var(--space)); }
+.anti-container[data-gap="xxl"] { gap: var(--space-xxl, var(--space)); }
 
 /* ==========================================================================
    Align Items

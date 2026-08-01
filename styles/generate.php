@@ -5,6 +5,19 @@
  * Reads defaults.json (or a custom token file) and outputs a complete CSS
  * file with :root variables and [data-colorway] blocks.
  *
+ * Emission model (palette-model M1, ADRs 0015–0028):
+ *   - Open ordered sets: presence in `sizes` is membership; there is no
+ *     `enabled` gate. A step a spec omits simply does not emit.
+ *   - Key-identity naming: the emitted variable is exactly `--{key}` (the
+ *     spec author owns the namespace; the generator adds no prefix of its own).
+ *   - Anchor-as-origin: a scale family's `default` step is its anchor; that
+ *     step's `value` is the scale origin, and every other step is
+ *     `anchorValue * ratio^(position − anchorPosition)`. There is no `baseSize`.
+ *   - Bare aliases: every scale family emits `--space`/`--text` pointing at its
+ *     anchor, and every pick-one family emits `--border`/`--radius`/`--shadow`
+ *     pointing at its designated default — the chained-fallback targets
+ *     components degrade to (ADR 0017 / 0024).
+ *
  * Usage: php styles/generate.php [path/to/tokens.json] [--output path/to/output.css]
  */
 
@@ -164,15 +177,75 @@ function colorway_derive_state(string $value, string $state): string {
 }
 
 // ============================================================================
-// Scale calculation helper
+// Size-family emission helpers (open sets, key-identity, anchor-as-origin)
 // ============================================================================
 
 /**
- * Calculate a scale value: base * scale^position.
- * Rounds to 1 decimal place for clean output.
+ * Value of a scale step relative to the family anchor:
+ *   anchorValue * ratio^(position − anchorPosition).
+ * The anchor step itself (position === anchorPosition) resolves to anchorValue.
  */
-function scale_value(float $base, float $scale, int $position): float {
-    return round($base * pow($scale, $position), 1);
+function scale_value(float $anchorValue, float $ratio, int $position, int $anchorPosition = 0): float {
+    return $anchorValue * pow($ratio, $position - $anchorPosition);
+}
+
+/**
+ * Emit an open-set scale family (spacing / text / headings).
+ *
+ * Every key in `sizes` emits `--{keyPrefix}{key}` (presence is membership).
+ * The `default` step is the anchor: its `value` is the origin and every other
+ * step scales off it by `ratio^(position − anchorPosition)`. When $alias is
+ * non-null, a bare scale alias `--{alias}` is emitted pointing at the anchor
+ * step (ADR 0024) — the chained-fallback target components degrade to.
+ *
+ * $round true  → integer px (spacing, headings)
+ * $round false → 1-decimal px (text), preserving the finer type steps
+ */
+function emit_scale_family(array $family, string $keyPrefix, ?string $alias, bool $round): array {
+    $lines = [];
+    $sizes = $family['sizes'] ?? [];
+    $ratio = (float) ($family['ratio'] ?? 1);
+    $anchorKey = $family['default'] ?? null;
+    $anchor = ($anchorKey !== null) ? ($sizes[$anchorKey] ?? []) : [];
+    $anchorValue = (float) ($anchor['value'] ?? 16);
+    $anchorPos = (int) ($anchor['position'] ?? 0);
+
+    foreach ($sizes as $key => $data) {
+        $pos = (int) ($data['position'] ?? 0);
+        $val = scale_value($anchorValue, $ratio, $pos, $anchorPos);
+        $val = $round ? round($val) : round($val, 1);
+        $lines[] = "    --{$keyPrefix}{$key}: {$val}px;";
+    }
+
+    if ($alias !== null && $anchorKey !== null && isset($sizes[$anchorKey])) {
+        $lines[] = "    --{$alias}: var(--{$keyPrefix}{$anchorKey});";
+    }
+
+    return $lines;
+}
+
+/**
+ * Emit an open-set pick-one family (border / radius).
+ *
+ * Every key in `sizes` with a `value` emits `--{keyPrefix}{key}{unit}`. The
+ * `default` step backs an always-emitted bare alias `--{alias}` (ADR 0017) so
+ * `var(--border-x, var(--border))`-style fallbacks always resolve.
+ */
+function emit_pick_one_family(array $family, string $keyPrefix, string $alias, string $unit): array {
+    $lines = [];
+    $sizes = $family['sizes'] ?? [];
+
+    foreach ($sizes as $key => $data) {
+        if (!isset($data['value'])) continue;
+        $lines[] = "    --{$keyPrefix}{$key}: {$data['value']}{$unit};";
+    }
+
+    $default = $family['default'] ?? null;
+    if ($default !== null && isset($sizes[$default]['value'])) {
+        $lines[] = "    --{$alias}: var(--{$keyPrefix}{$default});";
+    }
+
+    return $lines;
 }
 
 // ============================================================================
@@ -183,146 +256,79 @@ $rootVars = [];
 $colorwayBlocks = [];
 
 // ============================================================================
-// Spacing
+// Spacing (open scale family: --space-{k} + bare --space alias)
 // ============================================================================
 
-$spacing = $tokens['spacing'] ?? [];
-$spaceBase = $spacing['baseSize'] ?? 16;
-$spaceScale = $spacing['scale'] ?? 1.5;
-$spacePositions = ['xxs' => -3, 'xs' => -2, 's' => -1, 'm' => 0, 'l' => 1, 'xl' => 2, 'xxl' => 3];
-
 $rootVars[] = '    /* Spacing */';
-foreach ($spacePositions as $size => $pos) {
-    $sizeData = $spacing['sizes'][$size] ?? [];
-    if (!empty($sizeData['override']) && isset($sizeData['value'])) {
-        $val = $sizeData['value'];
-    } else {
-        $val = round(scale_value($spaceBase, $spaceScale, $pos));
-    }
-    $rootVars[] = "    --space-{$size}: {$val}px;";
+foreach (emit_scale_family($tokens['spacing'] ?? [], 'space-', 'space', true) as $line) {
+    $rootVars[] = $line;
 }
 
 // ============================================================================
-// Text sizes
+// Text sizes (open scale family: --text-{k} + bare --text alias)
 // ============================================================================
-
-$text = $tokens['typography']['text'] ?? [];
-$textBase = $text['baseSize'] ?? 16;
-$textScale = $text['scale'] ?? 1.125;
-$textPositions = ['xs' => -2, 's' => -1, 'm' => 0, 'l' => 1, 'xl' => 2];
 
 $rootVars[] = '';
 $rootVars[] = '    /* Text */';
-foreach ($textPositions as $size => $pos) {
-    $sizeData = $text['sizes'][$size] ?? [];
-    if (!empty($sizeData['override']) && isset($sizeData['value'])) {
-        $val = $sizeData['value'];
-    } else {
-        $val = scale_value($textBase, $textScale, $pos);
-    }
-    $rootVars[] = "    --text-{$size}: {$val}px;";
-
-    // Optional sub-properties from overrides
-    if (!empty($sizeData['override'])) {
-        if (isset($sizeData['lineHeight'])) {
-            $rootVars[] = "    --text-{$size}-line-height: {$sizeData['lineHeight']};";
-        }
-        if (isset($sizeData['weight']) && $sizeData['weight'] !== 400) {
-            $rootVars[] = "    --text-{$size}-weight: {$sizeData['weight']};";
-        }
-    }
+foreach (emit_scale_family($tokens['typography']['text'] ?? [], 'text-', 'text', false) as $line) {
+    $rootVars[] = $line;
 }
 
 // ============================================================================
-// Heading sizes (inverted: h1 is largest)
+// Heading sizes (symmetric open set: h{n} emits --h{n}, position orders the
+// math — ADR 0027 amends 0024). No bare alias: h1–h6 are guaranteed present.
+// Per-level line-height/letter-spacing/weight are migrated in defaults.json as
+// the (inactive) custom-store seed but not emitted until M2 (ADR 0022).
 // ============================================================================
-
-$headings = $tokens['typography']['headings'] ?? [];
-$headingBase = $headings['baseSize'] ?? 16;
-$headingScale = $headings['scale'] ?? 1.618;
-// h6=0, h5=1, h4=2, h3=3, h2=4, h1=5
-$headingPositions = [6 => 0, 5 => 1, 4 => 2, 3 => 3, 2 => 4, 1 => 5];
 
 $rootVars[] = '';
 $rootVars[] = '    /* Headings */';
-foreach ($headingPositions as $level => $pos) {
-    $key = "h{$level}";
-    $sizeData = $headings['sizes'][$key] ?? [];
-    if (!empty($sizeData['override']) && isset($sizeData['value'])) {
-        $val = $sizeData['value'];
-    } else {
-        $val = round(scale_value($headingBase, $headingScale, $pos));
-    }
-    $rootVars[] = "    --heading-{$level}: {$val}px;";
-
-    // Sub-properties from overrides
-    if (isset($sizeData['lineHeight'])) {
-        $rootVars[] = "    --heading-{$level}-line-height: {$sizeData['lineHeight']};";
-    }
-    if (isset($sizeData['letterSpacing']) && $sizeData['letterSpacing'] != 0) {
-        $rootVars[] = "    --heading-{$level}-letter-spacing: {$sizeData['letterSpacing']}em;";
-    }
-    if (isset($sizeData['weight'])) {
-        $rootVars[] = "    --heading-{$level}-weight: {$sizeData['weight']};";
-    }
+foreach (emit_scale_family($tokens['typography']['headings'] ?? [], '', null, true) as $line) {
+    $rootVars[] = $line;
 }
 
 // ============================================================================
-// Radius
+// Radius (open pick-one family: --radius-{k} + bare --radius alias)
 // ============================================================================
-
-$radius = $tokens['radius']['sizes'] ?? [];
-$radiusOrder = ['xs', 's', 'm', 'l', 'xl', 'full'];
 
 $rootVars[] = '';
 $rootVars[] = '    /* Radius */';
-foreach ($radiusOrder as $size) {
-    $data = $radius[$size] ?? [];
-    if (isset($data['enabled']) && !$data['enabled']) continue;
-    $val = $data['value'] ?? null;
-    if ($val !== null) {
-        $unit = ($size === 'full') ? 'px' : 'px';
-        $rootVars[] = "    --radius-{$size}: {$val}px;";
-    }
+foreach (emit_pick_one_family($tokens['radius'] ?? [], 'radius-', 'radius', 'px') as $line) {
+    $rootVars[] = $line;
 }
 
 // ============================================================================
-// Shadows (composite values)
+// Shadows (composite pick-one family: --shadow-{k} + bare --shadow alias).
+// The seeded default is `none`, so the bare alias emits the literal `none`
+// (a shadow step name would round-trip through a var(); "none" cannot).
 // ============================================================================
 
-$shadows = $tokens['shadows'] ?? [];
-$shadowOrder = ['xs', 's', 'm', 'l', 'xl'];
-
+$shadowFamily = $tokens['shadows'] ?? [];
 $rootVars[] = '';
 $rootVars[] = '    /* Shadows */';
-foreach ($shadowOrder as $size) {
-    $s = $shadows[$size] ?? null;
-    if ($s === null) continue;
-    if (isset($s['enabled']) && !$s['enabled']) continue;
+foreach (($shadowFamily['sizes'] ?? []) as $key => $s) {
     $x = $s['x'] ?? 0;
     $y = $s['y'] ?? 0;
     $blur = $s['blur'] ?? 0;
     $spread = $s['spread'] ?? 0;
     $opacity = $s['opacity'] ?? 0.1;
-    $rootVars[] = "    --shadow-{$size}: {$x}px {$y}px {$blur}px {$spread}px rgba(0, 0, 0, {$opacity});";
+    $rootVars[] = "    --shadow-{$key}: {$x}px {$y}px {$blur}px {$spread}px rgba(0, 0, 0, {$opacity});";
+}
+$shadowDefault = $shadowFamily['default'] ?? 'none';
+if ($shadowDefault !== 'none' && isset($shadowFamily['sizes'][$shadowDefault])) {
+    $rootVars[] = "    --shadow: var(--shadow-{$shadowDefault});";
+} else {
+    $rootVars[] = "    --shadow: none;";
 }
 
 // ============================================================================
-// Borders
+// Borders (open pick-one family: --border-{k} + bare --border alias)
 // ============================================================================
-
-$borders = $tokens['borders']['sizes'] ?? [];
-$borderOrder = ['s', 'm', 'l'];
 
 $rootVars[] = '';
 $rootVars[] = '    /* Borders */';
-foreach ($borderOrder as $size) {
-    $data = $borders[$size] ?? [];
-    if (isset($data['enabled']) && !$data['enabled']) continue;
-    $val = $data['value'] ?? null;
-    if ($val !== null) {
-        $rootVars[] = "    --border-{$size}: {$val}px;";
-    }
+foreach (emit_pick_one_family($tokens['borders'] ?? [], 'border-', 'border', 'px') as $line) {
+    $rootVars[] = $line;
 }
 
 // ============================================================================
@@ -334,7 +340,20 @@ $rootVars[] = '    /* Font weights */';
 $rootVars[] = '    --font-weight-medium: 500;';
 
 // ============================================================================
-// Colors + hue variants
+// Palette bridge (M1)
+//
+// The full palette shape (contrast steps, intents, state tier) lands in M3.
+// M1 emits only the one guaranteed palette key — the surface slot — so the
+// base-spec guarantee holds and the interface retirement's stale surface ref
+// has a live token to point at.
+// ============================================================================
+
+$rootVars[] = '';
+$rootVars[] = '    /* Palette bridge (M1 surface slot; full palette shape lands in M3) */';
+$rootVars[] = '    --palette-surface: var(--colorway-base);';
+
+// ============================================================================
+// Colors + hue variants (unchanged in M1 — the color shape change lands in M3)
 // ============================================================================
 
 $colorSections = $tokens['color']['sections'] ?? [];
@@ -372,7 +391,7 @@ foreach ($enabledColors as $name => $hex) {
 }
 
 // ============================================================================
-// Colorways
+// Colorways (unchanged in M1 — renamed/remapped to the palette break in M3)
 // ============================================================================
 
 $colorways = $tokens['color']['colorways'] ?? [];
@@ -441,14 +460,6 @@ $output .= " */\n\n";
 
 $output .= ":root {\n";
 $output .= implode("\n", $rootVars) . "\n";
-$output .= "}\n";
-
-$output .= "\n/* Interface — centralized application of interface properties */\n";
-$output .= ".anti-interface {\n";
-$output .= "    padding: var(--anti-padding);\n";
-$output .= "    border: var(--anti-border-width) solid var(--colorway-soft-contrast, currentColor);\n";
-$output .= "    border-radius: var(--anti-border-radius);\n";
-$output .= "    box-shadow: var(--anti-shadow);\n";
 $output .= "}\n";
 
 if (!empty($colorwayBlocks)) {

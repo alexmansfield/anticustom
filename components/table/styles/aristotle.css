@@ -24,14 +24,14 @@
    ========================================================================== */
 
 .anti-table__th {
-    padding: var(--space-s, 0.5rem) var(--space-m, 1rem);
-    font-size: var(--text-s, 0.875rem);
+    padding: var(--space-s, var(--space)) var(--space-m, var(--space));
+    font-size: var(--text-s, var(--text));
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.03em;
     background-color: var(--colorway-base, #ffffff);
     color: var(--colorway-hard-contrast, #0f172a);
-    border-bottom: var(--border-s, 1px) solid var(--colorway-soft-contrast, #0f172a);
+    border-bottom: var(--border-s, var(--border)) solid var(--colorway-soft-contrast, #0f172a);
 }
 
 /* ==========================================================================
@@ -39,10 +39,10 @@
    ========================================================================== */
 
 .anti-table__td {
-    padding: var(--space-s, 0.5rem) var(--space-m, 1rem);
-    font-size: var(--text-m, 1rem);
+    padding: var(--space-s, var(--space)) var(--space-m, var(--space));
+    font-size: var(--text-m, var(--text));
     color: var(--colorway-hard-contrast, #0f172a);
-    border-bottom: var(--border-s, 1px) solid var(--colorway-soft-contrast, #e2e8f0);
+    border-bottom: var(--border-s, var(--border)) solid var(--colorway-soft-contrast, #e2e8f0);
 }
 
 /* ==========================================================================
@@ -59,21 +59,21 @@
    ========================================================================== */
 
 .anti-table__empty {
-    padding: var(--space-l, 1.5rem) var(--space-m, 1rem);
+    padding: var(--space-l, var(--space)) var(--space-m, var(--space));
 }
 
 .anti-table__empty-content {
-    gap: var(--space-s, 0.5rem);
+    gap: var(--space-s, var(--space));
 }
 
 .anti-table__empty-title {
-    font-size: var(--text-m, 1rem);
+    font-size: var(--text-m, var(--text));
     font-weight: 600;
     color: var(--colorway-hard-contrast, #0f172a);
 }
 
 .anti-table__empty-text {
-    font-size: var(--text-s, 0.875rem);
+    font-size: var(--text-s, var(--text));
     color: var(--colorway-contrast, #475569);
 }
 
@@ -86,7 +86,7 @@
    ========================================================================== */
 
 .anti-table__td--actions .anti-table__actions {
-    gap: var(--space-s, 0.5rem);
+    gap: var(--space-s, var(--space));
 }
 
 /* ==========================================================================
@@ -95,8 +95,8 @@
 
 .anti-table-wrap {
     color: var(--colorway-hard-contrast, #0f172a);
-    border-radius: var(--radius-l);
-    border: var(--border-s, 1px) solid var(--colorway-soft-contrast, #e2e8f0);
+    border-radius: var(--radius-l, var(--radius));
+    border: var(--border-s, var(--border)) solid var(--colorway-soft-contrast, #e2e8f0);
 }
 
 .anti-table-wrap[data-colorway] {
