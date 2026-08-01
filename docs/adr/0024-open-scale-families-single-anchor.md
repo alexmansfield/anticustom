@@ -28,3 +28,7 @@ ADR 0017 fenced scale families (spacing, type sizes) out of the open-vocabulary 
 
 ## Amends
 ADR 0017's scale-family exclusion (no alias, no freeform names, no chained fallback) is withdrawn: scale families are open sets with bare aliases and chained fallbacks like pick-one families. ADR 0021's envelope and rules extend to spacing, text, and headings.
+
+## Amendment (2026-08-01): headings emit key-identity, not rank-numbered names
+
+[ADR 0027](0027-spec-owned-naming-identity-emission.md) withdraws the rank-numbered heading emission above (`--heading-{n}`, biggest first). Its justification — a skin binds headings positionally without knowing the project's vocabulary — is redundant: every other family delivers the same portability through spec-follow + aliasing (ADR 0023), so a skin follows a heading spec exactly as it follows a spacing spec. Headings emit **key-identity** (`--{key}`) like spacing and text; `position` is retained but orders the *ramp math* (`anchor × scale^position`) only, never the variable name. The base spec's `h1`–`h6` are ordinary reslug-able vocabulary. This also generalizes the bare-alias line above: `--space` / `--text` / `--heading` are not engine constants but spec-declared keys (ADR 0027), and emission carries no generator-applied family prefix — any namespace lives in the key the spec author typed. Everything else here stands.
