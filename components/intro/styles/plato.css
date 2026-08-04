@@ -22,7 +22,7 @@
 }
 
 .anti-intro__title {
-    font-weight: 700;
+    font-weight: var(--h2-weight, 700);
     color: var(--colorway-hard-contrast);
 }
 
