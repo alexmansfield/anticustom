@@ -606,10 +606,17 @@ function emit_intent_bindings(array $default): array {
 // Library mode: when this file is `require`d (by a test/verify harness) rather
 // than run directly, stop here — expose the pure helper functions above without
 // the emission side effects below. `get_included_files()[0]` is always the
-// entry script, so this is true only when we are not it.
+// entry script, so a mismatch means we were included, not run.
+//
+// Exception: the explorer includes this file to capture its output (see
+// explorer/shared/css.php) and deliberately sets $argv[0] = 'generate.php'
+// to request emission. Honor that spoof so server-side token CSS still works;
+// verify.php's bare `require` leaves $argv[0] = 'verify.php' and stays silent.
 // ============================================================================
 
-if (realpath(get_included_files()[0] ?? '') !== realpath(__FILE__)) {
+$anti_is_entry = realpath(get_included_files()[0] ?? '') === realpath(__FILE__);
+$anti_emit_requested = basename($GLOBALS['argv'][0] ?? '') === 'generate.php';
+if (!$anti_is_entry && !$anti_emit_requested) {
     return;
 }
 
