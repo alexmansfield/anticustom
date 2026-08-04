@@ -396,6 +396,54 @@ function emit_pick_one_family(array $family, string $keyPrefix, string $alias, s
 }
 
 // ============================================================================
+// Ramp-tier emission (ADR 0025 / 0019 / 0026)
+// ============================================================================
+
+/**
+ * Emit the dense ramp tier: every source color crossed with every stop.
+ *
+ * Presence is membership — there is no `enabled` gate (ADR 0025). Each color
+ * emits its bare source `--{color}` plus `--{color}-{stop}` for every stop in
+ * the scale. A stop's value is resolved:
+ *   pin wins   — a `pins[stop]` hex overrides the computed shade (ADR 0019);
+ *   L100 / L0  — literal `#ffffff` / `#000000` endpoints (hue is powerless at
+ *                the extremes, so the source hue can't be recovered — the
+ *                special case triggers on the L value, not the stop name);
+ *   otherwise  — the source's hue/chroma held at the stop's L (color_shade).
+ *
+ * No interaction states emit at this tier (ADR 0026): `-hover`/`-active` live
+ * only at the palette tier, whose consumers are the sole internal reference set.
+ */
+function emit_ramp(array $colors, array $stops): array {
+    $lines = [];
+    foreach ($colors as $name => $data) {
+        $hex = $data['value'] ?? null;
+        if ($hex === null) continue;
+
+        $lines[] = "    --{$name}: {$hex};";
+
+        $pins = $data['pins'] ?? [];
+        foreach ($stops as $stopName => $stopData) {
+            if (!isset($stopData['value'])) continue;
+            $L = (float) $stopData['value'];
+
+            if (isset($pins[$stopName])) {
+                $val = $pins[$stopName];
+            } elseif ($L >= 100) {
+                $val = '#ffffff';
+            } elseif ($L <= 0) {
+                $val = '#000000';
+            } else {
+                $val = color_shade($hex, $L);
+            }
+
+            $lines[] = "    --{$name}-{$stopName}: {$val};";
+        }
+    }
+    return $lines;
+}
+
+// ============================================================================
 // Output buffer — collect all lines, then write
 // ============================================================================
 
@@ -507,41 +555,18 @@ $rootVars[] = '    /* Palette bridge (M1 surface slot; full palette shape lands 
 $rootVars[] = '    --palette-surface: var(--colorway-base);';
 
 // ============================================================================
-// Colors + hue variants (unchanged in M1 — the color shape change lands in M3)
+// Ramp tier (ADR 0025/0019/0026): flat source colors × the stop scale, dense
+// (presence-is-membership, no `enabled`), key-identity `--{color}-{stop}`, no
+// interaction states — those emit only at the palette tier (ADR 0026, below).
 // ============================================================================
 
-$colorSections = $tokens['color']['sections'] ?? [];
-$hues = $tokens['color']['hues'] ?? [];
+$rampColors = $tokens['color']['colors'] ?? [];
+$rampStops = $tokens['color']['stops'] ?? [];
 
 $rootVars[] = '';
-$rootVars[] = '    /* Colors */';
-
-// Collect all enabled colors
-$enabledColors = [];
-foreach ($colorSections as $sectionId => $section) {
-    foreach (($section['colors'] ?? []) as $name => $colorData) {
-        if (!empty($colorData['enabled']) && isset($colorData['color'])) {
-            $enabledColors[$name] = $colorData['color'];
-        }
-    }
-}
-
-foreach ($enabledColors as $name => $hex) {
-    $rootVars[] = "    --{$name}: {$hex};";
-    $shifts = color_interaction_shifts($hex);
-    $rootVars[] = "    --{$name}-hover: {$shifts['hover']};";
-    $rootVars[] = "    --{$name}-active: {$shifts['active']};";
-
-    // Generate hue variants + their hover/active
-    foreach ($hues as $hueName => $hueData) {
-        if (!isset($hueData['value'])) continue;
-        if (isset($hueData['enabled']) && !$hueData['enabled']) continue;
-        $shade = color_shade($hex, $hueData['value']);
-        $rootVars[] = "    --{$name}-{$hueName}: {$shade};";
-        $shadeShifts = color_interaction_shifts($shade);
-        $rootVars[] = "    --{$name}-{$hueName}-hover: {$shadeShifts['hover']};";
-        $rootVars[] = "    --{$name}-{$hueName}-active: {$shadeShifts['active']};";
-    }
+$rootVars[] = '    /* Colors (ramp tier) */';
+foreach (emit_ramp($rampColors, $rampStops) as $line) {
+    $rootVars[] = $line;
 }
 
 // ============================================================================
@@ -549,20 +574,6 @@ foreach ($enabledColors as $name => $hex) {
 // ============================================================================
 
 $colorways = $tokens['color']['colorways'] ?? [];
-
-// Auto-generate colorways for enabled semantic colors
-$semanticColors = $colorSections['semantic']['colors'] ?? [];
-foreach ($semanticColors as $name => $colorData) {
-    if (!empty($colorData['enabled']) && !isset($colorways[$name])) {
-        $colorways[$name] = [
-            'base' => "var(--{$name}-ultra-light)",
-            'hard-contrast' => "var(--{$name}-dark)",
-            'contrast' => "var(--{$name})",
-            'soft-contrast' => "var(--{$name}-light)",
-            'accent' => "var(--{$name})",
-        ];
-    }
-}
 
 $colorwayTokens = ['base', 'hard-contrast', 'contrast', 'soft-contrast', 'accent'];
 

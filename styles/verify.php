@@ -255,6 +255,48 @@ check('custom-mode heading reads customStyle weight',
     strpos($customHeadCss, '--h1-weight: 700;') !== false,
     'custom mode should emit the authored per-level weight');
 
+// ═════════════════════════════════════════════════
+// M3 — Ramp tier: flat colors × stops, dense, no states (ADR 0025/0019/0026)
+// ═════════════════════════════════════════════════
+
+// Dense grid: every seeded source color emits its bare source + each stop.
+check('ramp emits bare source --primary', isset($keys['primary']),
+    'the source color itself should emit as --{color}');
+check('ramp emits --primary-ultra-light (spec stop)', isset($keys['primary-ultra-light']));
+check('ramp is dense across colors (--danger-dark)', isset($keys['danger-dark']),
+    'presence-is-membership: every color × stop emits');
+
+// No interaction states at the ramp tier (ADR 0026): the ramp carries base
+// values only; -hover/-active exist solely at the palette tier.
+check('no ramp-tier state on source (--primary-hover absent)', !isset($keys['primary-hover']),
+    'ramp source must not carry interaction states');
+check('no ramp-tier state on stop (--primary-dark-hover absent)', !isset($keys['primary-dark-hover']),
+    'ramp stops must not carry interaction states (ADR 0026)');
+
+// Literal endpoints (ADR 0019): a stop at L100/L0 emits #ffffff / #000000, the
+// special case triggered by the L value, not the stop name.
+check('L100 stop emits literal white', preg_match('/--primary-white:\s*#ffffff\s*;/', $css) === 1,
+    'a stop at L100 should emit literal #ffffff');
+check('L0 stop emits literal black', preg_match('/--primary-black:\s*#000000\s*;/', $css) === 1,
+    'a stop at L0 should emit literal #000000');
+
+// `enabled` is gone (ADR 0025): no legacy section walk survives.
+check('no legacy --semantic-/--brand- section prefix',
+    strpos($css, '--semantic-') === false && strpos($css, '--brand-') === false,
+    'groups flatten — they never entered an emitted name');
+
+// Pins (ADR 0019): a pinned stop's hex wins over the computed shade; presence of
+// the key is the pin; other stops still compute.
+$rampCss  = generate_css(fixture('ramp-pins.json'));
+$rampKeys = emitted_keys($rampCss);
+check('pin overrides computed shade', strpos($rampCss, '--brandx-dark: #1e2f45;') !== false,
+    'a pins[stop] hex should win over the generated ramp value');
+check('unpinned stop still computes', isset($rampKeys['brandx-light']) &&
+    strpos($rampCss, '--brandx-light: #1e2f45;') === false,
+    'a stop without a pin should still emit a computed shade');
+check('pinned ramp still carries no states', !isset($rampKeys['brandx-dark-hover']),
+    'even a pinned stop emits no interaction state (ADR 0026 amends 0019)');
+
 // ─────────────────────────────────────────────────
 // Summary
 // ─────────────────────────────────────────────────

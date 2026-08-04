@@ -1,0 +1,13 @@
+{
+  "color": {
+    "colors": {
+      "brandx": { "value": "#336699", "position": 0, "pins": { "dark": "#1e2f45" } }
+    },
+    "stops": {
+      "white": { "value": 100, "position": 3 },
+      "light": { "value": 80, "position": 2 },
+      "dark": { "value": 20, "position": 1 },
+      "black": { "value": 0, "position": 0 }
+    }
+  }
+}
