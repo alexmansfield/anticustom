@@ -1,0 +1,27 @@
+{
+  "_note": "Fixture (M5 / ADR 0023): a lean site that satisfies a wider spec by aliasing. It designs s/m/l distinctly but points space-xl at space-l and radius-xl at radius-m instead of giving them their own values. Proves aliasing degrades correctly — the aliased tokens emit as var() pointers to a present sibling, so nothing goes missing.",
+  "spec": "base",
+  "viewport": { "mobile": 390, "desktop": 1440 },
+  "spacing": {
+    "mode": "scale",
+    "default": "m",
+    "scale": {
+      "mobile": { "value": 12, "ratio": 1.5 },
+      "desktop": { "value": 16, "ratio": 1.5 }
+    },
+    "sizes": {
+      "s": { "position": -1 },
+      "m": { "position": 0 },
+      "l": { "position": 1 },
+      "xl": { "alias": "l" }
+    }
+  },
+  "radius": {
+    "default": "m",
+    "sizes": {
+      "s": { "value": 4 },
+      "m": { "value": 8 },
+      "xl": { "alias": "m" }
+    }
+  }
+}

@@ -48,6 +48,54 @@ if ($tokens === null) {
 }
 
 // ============================================================================
+// Spec loading (ADR 0023 — the spec is a file; the site declares which it follows)
+//
+// A site's `spec` key names a published spec in styles/specs/. A spec lists the
+// guaranteed token keys (the emitted `--{key}` set) and their default labels;
+// it carries names, never values (ADR 0027 key-identity). Emission stays
+// presence-is-membership — the generator does NOT gate on the spec — but these
+// helpers expose the guaranteed set so verify (conformance) and the editor can
+// read one source of truth instead of a hardcoded list.
+// ============================================================================
+
+function spec_dir(): string {
+    return __DIR__ . '/specs';
+}
+
+/** Load a spec by name ("base" → styles/specs/base.json). Null if absent/invalid. */
+function load_spec(string $name, ?string $dir = null): ?array {
+    $path = ($dir ?? spec_dir()) . '/' . $name . '.json';
+    if (!is_file($path)) return null;
+    $data = json_decode(file_get_contents($path), true);
+    return is_array($data) ? $data : null;
+}
+
+/** The guaranteed token keys of a site's followed spec (the `--{key}` set). Empty if none. */
+function spec_token_keys(array $tokens, ?string $dir = null): array {
+    $name = $tokens['spec'] ?? null;
+    if ($name === null) return [];
+    $spec = load_spec($name, $dir);
+    return $spec ? array_keys($spec['tokens'] ?? []) : [];
+}
+
+/**
+ * The mechanical extends rule (ADR 0023). At publish time a successor that
+ * retains *every* token of the seed it evolved from **extends** it — skins
+ * following the seed stay guaranteed under the successor. Returns the stamp
+ * "{name}@{version}" when the seed is fully retained, or null when any promised
+ * token was dropped (a break: the successor makes no promise to the seed's skins).
+ * Immutability, not this check, is what makes a published version trustworthy;
+ * this only computes the inheritance edge.
+ */
+function spec_extends_stamp(array $draftTokens, ?array $seed): ?string {
+    if ($seed === null) return null;
+    foreach (array_keys($seed['tokens'] ?? []) as $k) {
+        if (!array_key_exists($k, $draftTokens)) return null;   // dropped a promised token
+    }
+    return ($seed['name'] ?? '') . '@' . ($seed['version'] ?? '');
+}
+
+// ============================================================================
 // OKLCH working space (ADR 0025 ramp math; #29 / docs/research/oklch-generation.md)
 //
 // sRGB is converted to OKLCH for ramp generation because OKLab lightness is
@@ -311,6 +359,7 @@ function resolve_scale_sizes(array $family, string $label): array {
     if ($mode === 'custom') {
         $store = $family['custom'] ?? [];
         foreach ($sizes as $key => $data) {
+            if (isset($data['alias'])) continue;   // aliased steps point at a sibling, not a value
             $pair = $store[$key] ?? null;
             if (!is_array($pair) || !isset($pair['mobile'], $pair['desktop'])) {
                 fprintf(STDERR, "Error: %s is mode:custom but the custom store is missing '%s' (both mobile and desktop required)\n", $label, $key);
@@ -328,6 +377,7 @@ function resolve_scale_sizes(array $family, string $label): array {
     $rDesk = (float) ($scale['desktop']['ratio'] ?? 1);
 
     foreach ($sizes as $key => $data) {
+        if (isset($data['alias'])) continue;   // aliased steps are emitted as var() pointers, not computed
         $pos = (int) ($data['position'] ?? 0);
         $out[$key] = [
             scale_value($mMob, $rMob, $pos, $anchorPos),
@@ -351,7 +401,17 @@ function emit_scale_family(array $family, string $keyPrefix, ?string $alias, boo
     $sizes = $family['sizes'] ?? [];
     $anchorKey = $family['default'] ?? null;
 
-    foreach (resolve_scale_sizes($family, $label) as $key => [$mob, $desk]) {
+    $resolved = resolve_scale_sizes($family, $label);
+    foreach ($sizes as $key => $data) {
+        // Aliasing (ADR 0023): a lean site satisfies a wider spec by pointing one
+        // token at another — `"xxl": {"alias":"xl"}` emits `var(--space-xl)`, so an
+        // undesigned step degrades to its sibling's value instead of going missing.
+        if (isset($data['alias'])) {
+            $lines[] = "    --{$keyPrefix}{$key}: var(--{$keyPrefix}{$data['alias']});";
+            continue;
+        }
+        if (!isset($resolved[$key])) continue;
+        [$mob, $desk] = $resolved[$key];
         $value = fluid_clamp($mob, $desk, $vpMobile, $vpDesktop, $round);
         $lines[] = "    --{$keyPrefix}{$key}: {$value};";
     }
@@ -383,7 +443,8 @@ function emit_heading_typography(array $family, string $label): array {
 
     if ($mode === 'custom') {
         $store = $family['customStyle'] ?? [];
-        foreach (array_keys($sizes) as $key) {
+        foreach ($sizes as $key => $sizeData) {
+            if (isset($sizeData['alias'])) continue;   // aliased heading rides its sibling's size var
             $block = $store[$key] ?? null;
             if (!is_array($block) || !isset($block['lineHeight'], $block['letterSpacing'], $block['weight'])) {
                 fprintf(STDERR, "Error: %s is mode:custom but customStyle is missing '%s' (lineHeight, letterSpacing, weight required)\n", $label, $key);
@@ -407,7 +468,8 @@ function emit_heading_typography(array $family, string $label): array {
     $lsSign = $const < 0 ? '-' : '+';
     $letterSpacing = 'calc(' . num($slope) . 'em ' . $lsSign . ' ' . num(abs($const)) . 'px)';
 
-    foreach (array_keys($sizes) as $key) {
+    foreach ($sizes as $key => $sizeData) {
+        if (isset($sizeData['alias'])) continue;   // aliased heading rides its sibling's size var
         $lines[] = "    --{$key}-line-height: {$lineHeight};";
         $lines[] = "    --{$key}-letter-spacing: {$letterSpacing};";
         $lines[] = "    --{$key}-weight: {$weight};";
@@ -427,6 +489,10 @@ function emit_pick_one_family(array $family, string $keyPrefix, string $alias, s
     $sizes = $family['sizes'] ?? [];
 
     foreach ($sizes as $key => $data) {
+        if (isset($data['alias'])) {   // aliasing (ADR 0023): point one step at a sibling
+            $lines[] = "    --{$keyPrefix}{$key}: var(--{$keyPrefix}{$data['alias']});";
+            continue;
+        }
         if (!isset($data['value'])) continue;
         $lines[] = "    --{$keyPrefix}{$key}: {$data['value']}{$unit};";
     }
