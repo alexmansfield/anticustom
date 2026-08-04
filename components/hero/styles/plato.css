@@ -1,15 +1,15 @@
 /**
  * Hero Style: Default
  *
- * Clean hero with colorway background support.
+ * Clean hero with palette background support.
  *
  * @package Anticustom
  */
 
 .anti-hero {
-    color: var(--colorway-hard-contrast, #0f172a);
+    color: var(--palette-hard-contrast, #0f172a);
 }
 
-.anti-hero[data-colorway] {
-    background-color: var(--colorway-base, #f8fafc);
+.anti-hero[data-palette] {
+    background-color: var(--palette-surface, #f8fafc);
 }

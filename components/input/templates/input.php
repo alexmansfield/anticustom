@@ -17,7 +17,7 @@
  * @var string $error_text  Error message (runtime)
  * @var bool   $required    Whether field is required
  * @var bool   $disabled    Whether field is disabled
- * @var string $colorway    Color scheme override
+ * @var string $palette    Color scheme override
  * @var string $class       Additional CSS classes
  */
 
@@ -31,16 +31,16 @@ $helper_text = $props['helper_text'] ?? '';
 $error_text  = $props['error_text'] ?? '';
 $required    = $props['required'] ?? false;
 $disabled    = $props['disabled'] ?? false;
-$colorway    = $props['colorway'] ?? 'inherit';
+$palette    = $props['palette'] ?? 'inherit';
 $class       = $props['class'] ?? '';
 
 // Generate unique ID for label/input association
 $id = $name ? 'input-' . $name : 'input-' . uniqid();
 $has_error = !empty($error_text);
 
-// Build colorway attribute
-$colorway_attr = (!empty($colorway) && $colorway !== 'inherit')
-    ? ' data-colorway="' . attr_escape($colorway) . '"'
+// Build palette attribute
+$palette_attr = (!empty($palette) && $palette !== 'inherit')
+    ? ' data-palette="' . attr_escape($palette) . '"'
     : '';
 
 // Build CSS classes
@@ -57,7 +57,7 @@ if (!empty($helper_text)) $described_by[] = $id . '-helper';
 if ($has_error) $described_by[] = $id . '-error';
 $describedby_attr = !empty($described_by) ? ' aria-describedby="' . attr_escape(implode(' ', $described_by)) . '"' : '';
 ?>
-<div class="<?php echo attr_escape($classes); ?>"<?php echo $colorway_attr; ?><?php echo !empty($editable) ? ' ' . $editable : ''; ?>>
+<div class="<?php echo attr_escape($classes); ?>"<?php echo $palette_attr; ?><?php echo !empty($editable) ? ' ' . $editable : ''; ?>>
     <label class="anti-input__label" for="<?php echo attr_escape($id); ?>">
         <?php echo html_escape($label); ?>
 <?php if ($required) : ?>

@@ -17,8 +17,8 @@
     --anti-boolean-label-font: var(--text-m, var(--text));
     --anti-boolean-hint-font: var(--text-s, var(--text));
 
-    background-color: var(--colorway-base, #ffffff);
-    color: var(--colorway-hard-contrast, #0f172a);
+    background-color: var(--palette-surface, #ffffff);
+    color: var(--palette-hard-contrast, #0f172a);
 }
 
 /* ==========================================================================
@@ -26,7 +26,7 @@
    ========================================================================== */
 
 .anti-boolean__label {
-    color: var(--colorway-hard-contrast, #0f172a);
+    color: var(--palette-hard-contrast, #0f172a);
 }
 
 /* ==========================================================================
@@ -34,18 +34,18 @@
    ========================================================================== */
 
 .anti-boolean--checkbox .anti-boolean__indicator {
-    border: var(--border-m, var(--border)) solid var(--colorway-soft-contrast, #cbd5e1);
-    background-color: var(--colorway-base, #ffffff);
+    border: var(--border-m, var(--border)) solid var(--palette-ultra-soft-contrast, #cbd5e1);
+    background-color: var(--palette-surface, #ffffff);
     border-radius: var(--radius-s, var(--radius));
 }
 
 .anti-boolean--checkbox .anti-boolean__indicator::after {
-    border-color: var(--colorway-base, #ffffff);
+    border-color: var(--palette-surface, #ffffff);
 }
 
 .anti-boolean--checkbox .anti-boolean__control:checked ~ .anti-boolean__indicator {
-    background-color: var(--colorway-hard-contrast, #0f172a);
-    border-color: var(--colorway-hard-contrast, #0f172a);
+    background-color: var(--palette-hard-contrast, #0f172a);
+    border-color: var(--palette-hard-contrast, #0f172a);
 }
 
 /* ==========================================================================
@@ -53,15 +53,15 @@
    ========================================================================== */
 
 .anti-boolean--switch .anti-boolean__indicator {
-    background-color: var(--colorway-soft-contrast, #cbd5e1);
+    background-color: var(--palette-ultra-soft-contrast, #cbd5e1);
 }
 
 .anti-boolean--switch .anti-boolean__indicator::after {
-    background-color: var(--colorway-base, #ffffff);
+    background-color: var(--palette-surface, #ffffff);
 }
 
 .anti-boolean--switch .anti-boolean__control:checked ~ .anti-boolean__indicator {
-    background-color: var(--colorway-hard-contrast, #0f172a);
+    background-color: var(--palette-hard-contrast, #0f172a);
 }
 
 /* ==========================================================================
@@ -69,7 +69,7 @@
    ========================================================================== */
 
 .anti-boolean__control:focus-visible ~ .anti-boolean__indicator {
-    outline: 2px solid var(--colorway-hard-contrast, #0f172a);
+    outline: 2px solid var(--palette-hard-contrast, #0f172a);
     outline-offset: 2px;
 }
 
@@ -88,7 +88,7 @@
    ========================================================================== */
 
 .anti-boolean__helper {
-    color: var(--colorway-soft-contrast, #64748b);
+    color: var(--palette-soft-contrast, #64748b);
 }
 
 .anti-boolean__error {

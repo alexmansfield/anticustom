@@ -19,6 +19,11 @@ $passed = 0;
 $failed = 0;
 $errors = [];
 
+// Pull in the generator's pure helper functions (library mode: the require
+// returns before any emission side effects) so the OKLCH math can be unit-tested
+// at the function boundary, not only through the emitted CSS string.
+require_once __DIR__ . '/generate.php';
+
 /** Shell the generator against a token file and capture the emitted CSS. */
 function generate_css(?string $tokenPath = null): string
 {
@@ -70,6 +75,18 @@ function check(string $label, bool $ok, string $detail = ''): void
         $failed++;
         $errors[] = $detail !== '' ? "{$label}: {$detail}" : $label;
     }
+}
+
+// Advisory channel (ADR 0007 advisory tier): warnings are surfaced but never
+// fail the build — legibility floors are context-dependent (3:1 passes for
+// large/bold text), so a sub-4.5:1 pair is flagged, not rejected.
+$warnings = [];
+function warn(string $label, bool $ok, string $detail = ''): void
+{
+    global $warnings;
+    if ($ok) return;
+    echo "  ⚠ {$label}" . ($detail !== '' ? " — {$detail}" : '') . "\n";
+    $warnings[] = $detail !== '' ? "{$label}: {$detail}" : $label;
 }
 
 $css  = generate_css();               // defaults.json
@@ -255,9 +272,280 @@ check('custom-mode heading reads customStyle weight',
     strpos($customHeadCss, '--h1-weight: 700;') !== false,
     'custom mode should emit the authored per-level weight');
 
+// ═════════════════════════════════════════════════
+// M3 — Ramp tier: flat colors × stops, dense, no states (ADR 0025/0019/0026)
+// ═════════════════════════════════════════════════
+
+// Dense grid: every seeded source color emits its bare source + each stop.
+check('ramp emits bare source --primary', isset($keys['primary']),
+    'the source color itself should emit as --{color}');
+check('ramp emits --primary-ultra-light (spec stop)', isset($keys['primary-ultra-light']));
+check('ramp is dense across colors (--danger-dark)', isset($keys['danger-dark']),
+    'presence-is-membership: every color × stop emits');
+
+// No interaction states at the ramp tier (ADR 0026): the ramp carries base
+// values only; -hover/-active exist solely at the palette tier.
+check('no ramp-tier state on source (--primary-hover absent)', !isset($keys['primary-hover']),
+    'ramp source must not carry interaction states');
+check('no ramp-tier state on stop (--primary-dark-hover absent)', !isset($keys['primary-dark-hover']),
+    'ramp stops must not carry interaction states (ADR 0026)');
+
+// Literal endpoints (ADR 0019): a stop at L100/L0 emits #ffffff / #000000, the
+// special case triggered by the L value, not the stop name.
+check('L100 stop emits literal white', preg_match('/--primary-white:\s*#ffffff\s*;/', $css) === 1,
+    'a stop at L100 should emit literal #ffffff');
+check('L0 stop emits literal black', preg_match('/--primary-black:\s*#000000\s*;/', $css) === 1,
+    'a stop at L0 should emit literal #000000');
+
+// `enabled` is gone (ADR 0025): no legacy section walk survives.
+check('no legacy --semantic-/--brand- section prefix',
+    strpos($css, '--semantic-') === false && strpos($css, '--brand-') === false,
+    'groups flatten — they never entered an emitted name');
+
+// Pins (ADR 0019): a pinned stop's hex wins over the computed shade; presence of
+// the key is the pin; other stops still compute.
+$rampCss  = generate_css(fixture('ramp-pins.json'));
+$rampKeys = emitted_keys($rampCss);
+check('pin overrides computed shade', strpos($rampCss, '--brandx-dark: #1e2f45;') !== false,
+    'a pins[stop] hex should win over the generated ramp value');
+check('unpinned stop still computes', isset($rampKeys['brandx-light']) &&
+    strpos($rampCss, '--brandx-light: #1e2f45;') === false,
+    'a stop without a pin should still emit a computed shade');
+check('pinned ramp still carries no states', !isset($rampKeys['brandx-dark-hover']),
+    'even a pinned stop emits no interaction state (ADR 0026 amends 0019)');
+
+// ═════════════════════════════════════════════════
+// M3 — Palette tier: contrast scale + intents + states + bindings (ADR 0015/16/20/26)
+// ═════════════════════════════════════════════════
+
+// Surface-anchored contrast scale (ADR 0015): surface + 4 steps, no middle.
+foreach (['surface', 'ultra-soft-contrast', 'soft-contrast', 'hard-contrast', 'ultra-hard-contrast'] as $step) {
+    check("palette contrast step --palette-{$step}", isset($keys["palette-{$step}"]), 'not emitted');
+}
+
+// Intents are two tokens — fill + authored -on (ADR 0016/0020) — plus accent peer.
+foreach (['accent', 'info', 'success', 'warning', 'danger'] as $intent) {
+    check("palette intent --palette-{$intent} + -on",
+        isset($keys["palette-{$intent}"]) && isset($keys["palette-{$intent}-on"]),
+        'intent fill and its -on foreground must both emit');
+}
+
+// The colorway vocabulary is fully retired (ADR 0015 rename).
+check('no --colorway-* survives in emitted CSS', strpos($css, '--colorway-') === false,
+    'a colorway token still emits');
+check('no [data-colorway] selector survives', strpos($css, 'data-colorway') === false,
+    'region theming should switch on [data-palette]');
+
+// Interaction states are palette-tier color-mix (ADR 0026), pole by lightness:
+// a light fill mixes toward white, a dark fill toward black.
+check('light fill (surface) hover mixes toward white',
+    strpos($css, '--palette-surface-hover: color-mix(in srgb, var(--palette-surface), white 12%);') !== false,
+    'a light slot should shift outward toward white on hover');
+check('dark fill (hard-contrast) hover mixes toward black',
+    strpos($css, '--palette-hard-contrast-hover: color-mix(in srgb, var(--palette-hard-contrast), black 12%);') !== false,
+    'a dark slot should mix toward black');
+check('active is a larger mix than hover',
+    strpos($css, '--palette-surface-active: color-mix(in srgb, var(--palette-surface), white 20%);') !== false,
+    'active should be a hair stronger (20%) than hover (12%)');
+check('-on foregrounds carry no interaction state', !isset($keys['palette-accent-on-hover']),
+    '-on is orthogonal to states (ADR 0026) — must not emit -on-hover');
+
+// Intent binding rules map generic --intent* to the surrounding palette (ADR 0016).
+check('intent binding rule emitted for success',
+    preg_match('/\[data-intent="success"\]\s*\{[^}]*--intent:\s*var\(--palette-success\)[^}]*--intent-on:\s*var\(--palette-success-on\)/s', $css) === 1,
+    'a [data-intent] binding rule should map --intent/--intent-on to the palette slot');
+
+// A non-default palette emits a [data-palette] region block, sparse (ADR 0015):
+// only its own slots emit; omitted slots inherit from :root via the cascade.
+preg_match('/\[data-palette="primary"\]\s*\{(.*?)\}/s', $css, $primaryBlock);
+$primaryBody = $primaryBlock[1] ?? '';
+check('non-default palette emits [data-palette] region', $primaryBody !== '');
+check('sparse region emits its own slot (surface)',
+    strpos($primaryBody, '--palette-surface:') !== false);
+check('sparse region omits slots it does not define (info inherits via cascade)',
+    strpos($primaryBody, '--palette-info:') === false,
+    'present-keys-only: a slot the region does not define must not emit (ADR 0015 sparse)');
+
+// No component CSS still references the retired --colorway-* vocabulary.
+$sweepCss = '';
+foreach (glob(dirname(__DIR__) . '/components/*/styles/*.css') as $file) {
+    $sweepCss .= file_get_contents($file) . "\n";
+}
+check('no component references retired --colorway-*',
+    strpos($sweepCss, '--colorway-') === false,
+    'a component CSS file still references a --colorway-* token');
+
+// Permanent fallback-presence guard (M3.7, extends the 1.7 mechanism to the
+// palette tier). Palette/intent tokens emit sparsely (ADR 0015) — a bare
+// `var(--palette-x)` referencing a slot a palette omits resolves to nothing, so
+// every component palette/intent ref must carry a fallback. A ref *with* a
+// fallback has a comma; the regex matches only the bare (comma-less) form.
+$paletteBareRefs = function (string $css): array {
+    preg_match_all('/var\(\s*--(palette-[a-z0-9-]+|intent(?:-[a-z]+)?)\s*\)/i', $css, $m);
+    return array_values(array_unique($m[0]));
+};
+// The named-style registry (fields/styles.json) emits into the same stylesheet,
+// so its palette refs are bound by the same contract.
+$sweepCss .= "\n" . file_get_contents(dirname(__DIR__) . '/fields/styles.json');
+$bare = $paletteBareRefs($sweepCss);
+check('no component/named-style palette ref is bare (fallback contract, ADR 0015)',
+    empty($bare),
+    'bare refs (need a fallback): ' . implode(', ', $bare));
+
+// Guard has teeth: a planted bare ref is detected.
+check('guard teeth: a bare palette ref is caught',
+    count($paletteBareRefs('.x { color: var(--palette-soft-contrast); background: var(--intent); }')) === 2,
+    'the bare-ref guard failed to flag a planted violation');
+
+// ═════════════════════════════════════════════════
+// M3 — OKLCH ramp math (isolated port #29; docs/research/oklch-generation.md)
+// ═════════════════════════════════════════════════
+
+$approx = fn(float $a, float $b, float $t = 0.003): bool => abs($a - $b) <= $t;
+
+// Conversion matches published colorjs.io / oklch.com reference values — the
+// anchor against a silent matrix-transcription regression.
+[$rL, $rC, $rH] = hex_to_oklch('#ff0000');
+check('OKLCH(#ff0000) matches reference', $approx($rL, 0.6280) && $approx($rC, 0.2577) && $approx($rH, 29.23, 0.1),
+    sprintf('got L=%.4f C=%.4f H=%.2f, expected L0.6280 C0.2577 H29.23', $rL, $rC, $rH));
+[$bL, $bC, $bH] = hex_to_oklch('#0000ff');
+check('OKLCH(#0000ff) matches reference', $approx($bL, 0.4520) && $approx($bC, 0.3132) && $approx($bH, 264.05, 0.2),
+    sprintf('got L=%.4f C=%.4f H=%.2f, expected L0.4520 C0.3132 H264.05', $bL, $bC, $bH));
+[$wL, $wC] = hex_to_oklch('#ffffff');
+check('OKLCH(#ffffff) is L1 C0', $approx($wL, 1.0) && $approx($wC, 0.0),
+    sprintf('white should be achromatic L1, got L=%.5f C=%.5f', $wL, $wC));
+
+// Round-trip identity: an in-gamut hex survives hex→OKLCH→gamut-mapped hex
+// unchanged (to 8-bit). Exercises the forward and inverse pipelines together.
+$rtOk = true;
+foreach (['#336699', '#0ea5e9', '#22c55e', '#eab308', '#ef4444', '#8b5cf6', '#123456', '#abcdef'] as $hex) {
+    if (strtolower(oklch_to_hex(...hex_to_oklch($hex))) !== strtolower($hex)) {
+        $rtOk = false;
+        break;
+    }
+}
+check('OKLCH round-trip is identity for in-gamut hex', $rtOk,
+    'a color changed under hex→OKLCH→hex — forward/inverse mismatch');
+
+// Hue stability: an achromatic source stays achromatic at every stop (R=G=B) —
+// OKLCH's defining advantage over HSL shading, which drifts hue near extremes.
+$grayStable = true;
+foreach ([90, 80, 65, 35, 20, 10] as $Lv) {
+    $sh = color_shade('#737373', $Lv);
+    if (!(substr($sh, 1, 2) === substr($sh, 3, 2) && substr($sh, 3, 2) === substr($sh, 5, 2))) {
+        $grayStable = false;
+        break;
+    }
+}
+check('achromatic source stays gray at every stop', $grayStable,
+    'neutral ramp drifted off gray — hue leaked through shading');
+
+// Gamut safety: every emitted ramp hex is a well-formed 6-digit sRGB value (the
+// chroma-bisection mapper never emits an out-of-range/garbage channel).
+preg_match_all('/--[a-z0-9-]+:\s*(#[0-9a-f]{6})\s*;/i', $css, $hexes);
+$malformed = array_filter($hexes[1], fn($h) => !preg_match('/^#[0-9a-f]{6}$/i', $h));
+check('every emitted hex is gamut-safe #rrggbb (' . count($hexes[1]) . ' values)', empty($malformed),
+    'malformed hex emitted: ' . implode(', ', $malformed));
+
+// Stable emitted ramp values (regression pins on the actual OKLCH output).
+check('primary ultra-light OKLCH value pinned',
+    strpos($css, '--primary-ultra-light: #bbe2ff;') !== false,
+    'the primary L90 OKLCH stop drifted from its expected value');
+check('neutral semi-light OKLCH value pinned',
+    strpos($css, '--neutral-semi-light: #8f8f8f;') !== false,
+    'the neutral L65 OKLCH stop drifted from its expected value');
+
+// ═════════════════════════════════════════════════
+// M3 — WCAG contrast matrix (isolated port #31; docs/research/php-contrast-matrix.md)
+//
+// Backs verification, not generation (ADR 0020): resolve each palette's pairs
+// exactly as the cascade would and emit advisory warnings below 4.5:1. The two
+// pure functions are WCAG 2.2 relative luminance + contrast ratio (0.04045
+// threshold); thresholds are evaluated on the unrounded ratio.
+// ═════════════════════════════════════════════════
+
+function anti_relative_luminance(string $hex): float {
+    $hex = ltrim($hex, '#');
+    $lin = [];
+    foreach ([0, 2, 4] as $i) {
+        $c = hexdec(substr($hex, $i, 2)) / 255;
+        $lin[] = $c <= 0.04045 ? $c / 12.92 : pow(($c + 0.055) / 1.055, 2.4);
+    }
+    return 0.2126 * $lin[0] + 0.7152 * $lin[1] + 0.0722 * $lin[2];
+}
+
+function anti_contrast_ratio(string $hexA, string $hexB): float {
+    $la = anti_relative_luminance($hexA);
+    $lb = anti_relative_luminance($hexB);
+    [$dark, $light] = $la < $lb ? [$la, $lb] : [$lb, $la];
+    return ($light + 0.05) / ($dark + 0.05);
+}
+
+/** color-mix(in srgb, fill, pole pct%): linear interpolation of gamma-encoded channels. */
+function mix_srgb(string $fillHex, string $pole, float $pct): string {
+    $p = $pct / 100.0;
+    $poleV = $pole === 'white' ? 1.0 : 0.0;
+    $fh = ltrim($fillHex, '#');
+    $out = '#';
+    foreach ([0, 2, 4] as $i) {
+        $c = hexdec(substr($fh, $i, 2)) / 255.0;
+        $out .= sprintf('%02x', (int) round(($c * (1 - $p) + $poleV * $p) * 255));
+    }
+    return $out;
+}
+
+// Hard checks: the math matches WebAIM-published values exactly (the anchor
+// against a silent luminance/ratio regression). These FAIL, unlike legibility.
+$cr = fn($a, $b) => round(anti_contrast_ratio($a, $b), 4);
+check('contrast(#777777, #fff) == 4.4781 (WebAIM)', $cr('#777777', '#ffffff') === 4.4781,
+    'got ' . $cr('#777777', '#ffffff'));
+check('contrast(#767676, #fff) == 4.5422 (WebAIM)', $cr('#767676', '#ffffff') === 4.5422,
+    'got ' . $cr('#767676', '#ffffff'));
+check('contrast(#fff, #000) == 21.0', $cr('#ffffff', '#000000') === 21.0,
+    'got ' . $cr('#ffffff', '#000000'));
+check('contrast ratio is symmetric', $cr('#336699', '#ffffff') === $cr('#ffffff', '#336699'));
+
+// Advisory legibility over the resolved default palette (ADR 0020 coverage):
+// (1) surface vs each text-bearing contrast step; (2) each intent + accent vs
+// its resolved -on, at rest and at the fill's derived hover/active.
+$tokenData = json_decode(file_get_contents(__DIR__ . '/defaults.json'), true);
+$dpal   = $tokenData['color']['palettes']['default'] ?? [];
+$rmap   = resolve_ramp($tokenData['color']['colors'] ?? [], $tokenData['color']['stops'] ?? []);
+$rhex   = fn(?string $v): ?string => $v === null ? null : resolve_palette_hex($v, $rmap);
+
+$surface = $rhex($dpal['surface'] ?? null);
+if ($surface !== null) {
+    foreach (['hard-contrast', 'ultra-hard-contrast'] as $textStep) {   // ADR 0020 default text list
+        $stepHex = $rhex($dpal[$textStep] ?? null);
+        if ($stepHex === null) continue;
+        $ratio = anti_contrast_ratio($surface, $stepHex);
+        warn("surface vs {$textStep} legible (≥4.5:1)", $ratio >= 4.5, sprintf('%.2f:1', $ratio));
+    }
+}
+
+foreach (['accent', 'info', 'success', 'warning', 'danger'] as $intent) {
+    $fill = $rhex($dpal[$intent] ?? null);
+    $on   = $rhex($dpal["{$intent}-on"] ?? null);
+    if ($fill === null || $on === null) continue;
+
+    $pole = palette_state_pole($dpal[$intent], $rmap);
+    $states = [
+        'rest'   => $fill,
+        'hover'  => mix_srgb($fill, $pole, 12),
+        'active' => mix_srgb($fill, $pole, 20),
+    ];
+    foreach ($states as $state => $fillHex) {
+        $ratio = anti_contrast_ratio($fillHex, $on);   // -on stays fixed while fill shifts
+        warn("intent {$intent}/{$state} vs -on legible (≥4.5:1)", $ratio >= 4.5, sprintf('%.2f:1', $ratio));
+    }
+}
+
 // ─────────────────────────────────────────────────
 // Summary
 // ─────────────────────────────────────────────────
+if (!empty($warnings)) {
+    echo "\n" . count($warnings) . " advisory legibility warning(s) (non-failing):\n  - " . implode("\n  - ", $warnings) . "\n";
+}
 echo "\n{$passed} passed, {$failed} failed\n";
 
 if ($failed > 0) {

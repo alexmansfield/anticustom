@@ -70,7 +70,7 @@ $result = verify('badge', ['text' => 'Active', 'variant' => 'success'], 'anti-ba
 echo "badge ........... {$result}\n";
 if ($result === 'OK') $passed++; else { $failed++; $errors[] = "badge: {$result}"; }
 
-$result = verify('badge', ['text' => 'Active', 'variant' => 'success'], 'data-colorway="success"');
+$result = verify('badge', ['text' => 'Active', 'variant' => 'success'], 'data-intent="success"');
 echo "badge/variant ... {$result}\n";
 if ($result === 'OK') $passed++; else { $failed++; $errors[] = "badge/variant: {$result}"; }
 

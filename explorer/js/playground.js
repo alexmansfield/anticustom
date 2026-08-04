@@ -47,7 +47,7 @@ function registerComponentPanel() {
         componentName: '',
         sourceView: null,   // null = preview, 'php' = PHP source, 'css' = CSS source
         loading: false,
-        previewColorway: localStorage.getItem('antiExplorer_previewColorway') || '',
+        previewPalette: localStorage.getItem('antiExplorer_previewPalette') || '',
         cssFiles: {},
         activeCssFile: null,
         activeComponentStyles: [],
@@ -157,11 +157,16 @@ function registerComponentPanel() {
         _settingsVersion: 0,
         activeStyle: window.__antiActiveStyle || 'plato',
 
-        colorwayOptions: [
-            { value: 'inherit', label: 'Inherit' },
-            { value: 'default', label: 'Default' },
-            { value: 'primary', label: 'Primary' },
-        ],
+        // Per-instance palette options (ADR 0016): Inherit + every named palette
+        // the token settings currently declare (kept in sync via __antiPalettes).
+        paletteOptions() {
+            const names = window.__antiPalettes || ['default'];
+            const opts = [{ value: 'inherit', label: 'Inherit' }];
+            for (const n of names) {
+                opts.push({ value: n, label: n.charAt(0).toUpperCase() + n.slice(1) });
+            }
+            return opts;
+        },
 
         spaceOptions: [
             { value: 'xxs', label: 'XXS' },
@@ -208,11 +213,11 @@ function registerComponentPanel() {
                 this._settingsVersion++;
             });
 
-            // Listen for colorway changes from the nav dropdown
-            window.addEventListener('antiColorwayChange', (e) => {
+            // Listen for palette changes from the nav dropdown (region theming)
+            window.addEventListener('antiPaletteChange', (e) => {
                 const store = Alpine.store('componentPreview');
-                store.previewColorway = e.detail.colorway;
-                localStorage.setItem('antiExplorer_previewColorway', e.detail.colorway);
+                store.previewPalette = e.detail.palette;
+                localStorage.setItem('antiExplorer_previewPalette', e.detail.palette);
             });
         },
 
@@ -577,14 +582,14 @@ const getComponentPanelHTML = () => `
                                 </label>
                             </template>
 
-                            <!-- Colorway -->
-                            <template x-if="field.type === 'colorway'">
+                            <!-- Palette (per-instance region theming) -->
+                            <template x-if="field.type === 'palette'">
                                 <div>
                                     <label class="anti-comp-field__label" x-text="field.label"></label>
                                     <select class="anti-comp-field__select"
                                             x-model="props[field.name]"
                                             @change="scheduleRender()">
-                                        <template x-for="opt in colorwayOptions" :key="opt.value">
+                                        <template x-for="opt in paletteOptions()" :key="opt.value">
                                             <option :value="opt.value" x-text="opt.label"></option>
                                         </template>
                                     </select>

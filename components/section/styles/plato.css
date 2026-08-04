@@ -1,15 +1,15 @@
 /**
  * Section Style: Default
  *
- * Applies colorway background and foreground colors.
+ * Applies palette background and foreground colors.
  *
  * @package Anticustom
  */
 
 .anti-section {
-    color: var(--colorway-hard-contrast);
+    color: var(--palette-hard-contrast, #0f172a);
 }
 
-.anti-section[data-colorway] {
-    background-color: var(--colorway-base);
+.anti-section[data-palette] {
+    background-color: var(--palette-surface, #ffffff);
 }

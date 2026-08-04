@@ -31,7 +31,7 @@
       "name": "variant",
       "type": "select",
       "label": "Variant",
-      "description": "Semantic colorway for status display",
+      "description": "Semantic intent for status display",
       "options": [
         {
           "value": "default",
@@ -72,7 +72,10 @@
     "text-xs",
     "text-s",
     "radius-full",
-    "colorway-base",
-    "colorway-hard-contrast"
+    "intent",
+    "intent-on",
+    "palette-surface",
+    "palette-hard-contrast",
+    "palette-soft-contrast"
   ]
 }

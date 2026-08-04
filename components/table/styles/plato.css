@@ -11,11 +11,11 @@
    ========================================================================== */
 
 .anti-table {
-    color: var(--colorway-hard-contrast, #0f172a);
+    color: var(--palette-hard-contrast, #0f172a);
 }
 
-.anti-table-wrap[data-colorway] .anti-table {
-    background-color: var(--colorway-base, #ffffff);
+.anti-table-wrap[data-palette] .anti-table {
+    background-color: var(--palette-surface, #ffffff);
 }
 
 /* ==========================================================================
@@ -28,7 +28,7 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.03em;
-    background-color: var(--colorway-soft-contrast, #f8fafc);
+    background-color: var(--palette-ultra-soft-contrast, #f8fafc);
 }
 
 /* ==========================================================================
@@ -45,8 +45,8 @@
    ========================================================================== */
 
 .anti-table__row--selected .anti-table__td {
-    background-color: var(--colorway-base, #f8fafc);
-    color: var(--colorway-hard-contrast, inherit);
+    background-color: var(--palette-surface, #f8fafc);
+    color: var(--palette-hard-contrast, inherit);
 }
 
 /* ==========================================================================

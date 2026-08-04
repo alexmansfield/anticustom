@@ -20,8 +20,8 @@
     --anti-button-font-m: var(--text-m, var(--text));
     --anti-button-font-l: var(--text-l, var(--text));
 
-    background-color: var(--colorway-base, #ffffff);
-    color: var(--colorway-hard-contrast, #0f172a);
+    background-color: var(--palette-surface, #ffffff);
+    color: var(--palette-hard-contrast, #0f172a);
     font-weight: var(--font-weight-medium, 500);
     border-radius: var(--radius-l, var(--radius));
 }
@@ -31,19 +31,19 @@
    ========================================================================== */
 
 .anti-button--solid {
-    background-color: var(--colorway-hard-contrast, #0f172a);
-    color: var(--colorway-base, #ffffff);
-    border: var(--border-m, var(--border)) solid var(--colorway-hard-contrast, #0f172a);
+    background-color: var(--palette-hard-contrast, #0f172a);
+    color: var(--palette-surface, #ffffff);
+    border: var(--border-m, var(--border)) solid var(--palette-hard-contrast, #0f172a);
 }
 
 .anti-button--solid:hover {
-    background-color: var(--colorway-hard-contrast-hover);
-    border-color: var(--colorway-hard-contrast-hover);
+    background-color: var(--palette-hard-contrast-hover, var(--palette-hard-contrast, #0f172a));
+    border-color: var(--palette-hard-contrast-hover, var(--palette-hard-contrast, #0f172a));
 }
 
 .anti-button--solid:active {
-    background-color: var(--colorway-hard-contrast, #0f172a);
-    border-color: var(--colorway-hard-contrast, #0f172a);
+    background-color: var(--palette-hard-contrast, #0f172a);
+    border-color: var(--palette-hard-contrast, #0f172a);
 }
 
 /* ==========================================================================
@@ -52,19 +52,19 @@
 
 .anti-button--outline {
     background-color: transparent;
-    color: var(--colorway-hard-contrast, #0f172a);
-    border: var(--border-m, var(--border)) solid var(--colorway-hard-contrast, #0f172a);
+    color: var(--palette-hard-contrast, #0f172a);
+    border: var(--border-m, var(--border)) solid var(--palette-hard-contrast, #0f172a);
 }
 
 .anti-button--outline:hover {
-    background-color: var(--colorway-hard-contrast, #0f172a);
-    color: var(--colorway-base, #ffffff);
+    background-color: var(--palette-hard-contrast, #0f172a);
+    color: var(--palette-surface, #ffffff);
 }
 
 .anti-button--outline:active {
-    background-color: var(--colorway-contrast, #475569);
-    border-color: var(--colorway-contrast, #475569);
-    color: var(--colorway-base, #ffffff);
+    background-color: var(--palette-hard-contrast, #475569);
+    border-color: var(--palette-hard-contrast, #475569);
+    color: var(--palette-surface, #ffffff);
 }
 
 /* ==========================================================================
@@ -73,16 +73,16 @@
 
 .anti-button--ghost {
     background-color: transparent;
-    color: var(--colorway-hard-contrast, #0f172a);
-    border: var(--border-m, var(--border)) solid var(--colorway-soft-contrast, #e2e8f0);
+    color: var(--palette-hard-contrast, #0f172a);
+    border: var(--border-m, var(--border)) solid var(--palette-ultra-soft-contrast, #e2e8f0);
 }
 
 .anti-button--ghost:hover {
-    border-color: var(--colorway-hard-contrast, #0f172a);
+    border-color: var(--palette-hard-contrast, #0f172a);
 }
 
 .anti-button--ghost:active {
-    background-color: var(--colorway-soft-contrast, #e2e8f0);
+    background-color: var(--palette-ultra-soft-contrast, #e2e8f0);
 }
 
 /* ==========================================================================

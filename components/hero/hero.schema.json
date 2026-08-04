@@ -186,9 +186,9 @@
       "tab": "settings"
     },
     {
-      "name": "colorway",
-      "type": "colorway",
-      "label": "Colorway",
+      "name": "palette",
+      "type": "palette",
+      "label": "Palette",
       "description": "Color scheme for this section",
       "default": "inherit",
       "tab": "settings"
@@ -202,6 +202,6 @@
     "space-m",
     "space-l",
     "space-xl",
-    "colorway-base"
+    "palette-surface"
   ]
 }

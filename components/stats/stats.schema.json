@@ -79,9 +79,9 @@
       }
     },
     {
-      "name": "colorway",
-      "type": "colorway",
-      "label": "Colorway",
+      "name": "palette",
+      "type": "palette",
+      "label": "Palette",
       "description": "Color scheme for this component",
       "default": "inherit",
       "tab": "settings"
@@ -104,8 +104,8 @@
     "neutral-dark",
     "neutral-semi-dark",
     "neutral-semi-light",
-    "colorway-base",
-    "colorway-hard-contrast",
-    "colorway-accent"
+    "palette-surface",
+    "palette-hard-contrast",
+    "palette-accent"
   ]
 }

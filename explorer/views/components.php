@@ -18,18 +18,10 @@ foreach ($components as $cName => $cData) {
 $allStyleNames = array_keys($allStyleNames);
 sort($allStyleNames);
 
-// Discover available colorway names from token defaults
+// Discover available palette names from token defaults (region theming, ADR 0016)
 $tokensPath = dirname(__DIR__) . '/../styles/defaults.json';
 $tokensData = json_decode(file_get_contents($tokensPath), true);
-$colorwayNames = array_keys($tokensData['color']['colorways'] ?? []);
-
-// Include auto-generated colorways for enabled semantic colors
-$semanticColors = $tokensData['color']['sections']['semantic']['colors'] ?? [];
-foreach ($semanticColors as $semName => $semData) {
-    if (!empty($semData['enabled']) && !in_array($semName, $colorwayNames)) {
-        $colorwayNames[] = $semName;
-    }
-}
+$paletteNames = array_keys($tokensData['color']['palettes'] ?? []);
 
 // Active style (read from cookie, matches index.php)
 $activeStyle = preg_replace('/[^a-z0-9-]/', '', $_COOKIE['antiExplorer_style'] ?? 'plato') ?: 'plato';
@@ -79,7 +71,7 @@ $samples = [
     'hero' => [
         'alignment' => 'center',
         'size' => 'sm',
-        'colorway' => 'primary',
+        'palette' => 'primary',
         'children' => [
             [
                 'type' => 'intro',
@@ -96,7 +88,7 @@ $samples = [
                     'text' => 'Primary Action',
                     'url' => '#',
                     'variant' => 'solid',
-                    'colorway' => 'primary',
+                    'palette' => 'primary',
                 ],
             ],
         ],
@@ -109,7 +101,7 @@ $samples = [
         'size' => 'm',
     ],
     'section' => [
-        'colorway' => 'default',
+        'palette' => 'default',
         'padding_top' => 'l',
         'padding_bottom' => 'l',
         'gap' => 'm',
@@ -276,15 +268,15 @@ window.__antiInitialPreview = {
 };
 window.__antiStyles = <?php echo json_encode($allStyleNames); ?>;
 window.__antiActiveStyle = <?php echo json_encode($activeStyle); ?>;
-window.__antiColorways = <?php echo json_encode($colorwayNames); ?>;
+window.__antiPalettes = <?php echo json_encode($paletteNames); ?>;
 window.__antiFieldStyles = <?php echo json_encode(anti_field_registry()['styles'], JSON_UNESCAPED_UNICODE); ?>;
-// Merge user-created colorways from localStorage so the selector is complete on first render
+// Merge user-created palettes from localStorage so the selector is complete on first render
 try {
     var _saved = JSON.parse(localStorage.getItem('antiExplorer_data') || '{}');
-    var _stored = Object.keys((_saved.color || {}).colorways || {});
+    var _stored = Object.keys((_saved.color || {}).palettes || {});
     for (var i = 0; i < _stored.length; i++) {
-        if (window.__antiColorways.indexOf(_stored[i]) === -1) {
-            window.__antiColorways.push(_stored[i]);
+        if (window.__antiPalettes.indexOf(_stored[i]) === -1) {
+            window.__antiPalettes.push(_stored[i]);
         }
     }
 } catch(e) {}
@@ -327,7 +319,7 @@ try {
 
     <template x-if="$store.componentPreview.componentName && !$store.componentPreview.sourceView">
         <div class="anti-playground__render"
-             :data-colorway="$store.componentPreview.previewColorway || false">
+             :data-palette="$store.componentPreview.previewPalette || false">
             <div x-show="$store.componentPreview.loading" class="anti-playground__loading"></div>
             <div x-html="$store.componentPreview.html"></div>
         </div>

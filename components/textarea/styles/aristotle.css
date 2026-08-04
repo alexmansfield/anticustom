@@ -23,8 +23,8 @@
     --anti-textarea-font-l: var(--text-l, var(--text));
     --anti-textarea-hint-font: var(--text-s, var(--text));
 
-    background-color: var(--colorway-base, #ffffff);
-    color: var(--colorway-hard-contrast, #0f172a);
+    background-color: var(--palette-surface, #ffffff);
+    color: var(--palette-hard-contrast, #0f172a);
 }
 
 /* ==========================================================================
@@ -32,7 +32,7 @@
    ========================================================================== */
 
 .anti-textarea__label {
-    color: var(--colorway-hard-contrast, #0f172a);
+    color: var(--palette-hard-contrast, #0f172a);
 }
 
 .anti-textarea__required {
@@ -44,14 +44,14 @@
    ========================================================================== */
 
 .anti-textarea__control {
-    border: var(--border-m, var(--border)) solid var(--colorway-soft-contrast, #cbd5e1);
-    background-color: var(--colorway-base, #ffffff);
-    color: var(--colorway-hard-contrast, #0f172a);
+    border: var(--border-m, var(--border)) solid var(--palette-ultra-soft-contrast, #cbd5e1);
+    background-color: var(--palette-surface, #ffffff);
+    color: var(--palette-hard-contrast, #0f172a);
     border-radius: var(--radius-l, var(--radius));
 }
 
 .anti-textarea__control::placeholder {
-    color: var(--colorway-soft-contrast, #94a3b8);
+    color: var(--palette-soft-contrast, #94a3b8);
 }
 
 /* ==========================================================================
@@ -59,7 +59,7 @@
    ========================================================================== */
 
 .anti-textarea__control:focus {
-    border-color: var(--colorway-hard-contrast, #0f172a);
+    border-color: var(--palette-hard-contrast, #0f172a);
 }
 
 /* Aristotle does not use box-shadow for focus — border-color change only */
@@ -81,7 +81,7 @@
    ========================================================================== */
 
 .anti-textarea__helper {
-    color: var(--colorway-soft-contrast, #64748b);
+    color: var(--palette-soft-contrast, #64748b);
 }
 
 .anti-textarea__error {

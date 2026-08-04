@@ -2,7 +2,7 @@
  * Intro Style: Aristotle
  *
  * Eyebrow with border-bottom accent for structured emphasis.
- * All colors from colorway tokens.
+ * All colors from palette tokens.
  *
  * @package Anticustom
  */
@@ -10,26 +10,26 @@
 .anti-intro {
     /* Padding drawn directly (interface apparatus retired, palette-model M1) */
     padding: var(--space-l, var(--space));
-    color: var(--colorway-hard-contrast, #0f172a);
+    color: var(--palette-hard-contrast, #0f172a);
 }
 
-.anti-intro[data-colorway] {
-    background-color: var(--colorway-base, #ffffff);
+.anti-intro[data-palette] {
+    background-color: var(--palette-surface, #ffffff);
 }
 
 .anti-intro__eyebrow {
     font-weight: 600;
-    color: var(--colorway-accent, #2563eb);
+    color: var(--palette-accent, #2563eb);
     padding-bottom: var(--space-xs, var(--space));
-    border-bottom: var(--border-m, var(--border)) solid var(--colorway-accent, #2563eb);
+    border-bottom: var(--border-m, var(--border)) solid var(--palette-accent, #2563eb);
     display: inline-block;
 }
 
 .anti-intro__title {
     font-weight: var(--h2-weight, 700);
-    color: var(--colorway-hard-contrast, #0f172a);
+    color: var(--palette-hard-contrast, #0f172a);
 }
 
 .anti-intro__subtitle {
-    color: var(--colorway-contrast, #475569);
+    color: var(--palette-hard-contrast, #475569);
 }

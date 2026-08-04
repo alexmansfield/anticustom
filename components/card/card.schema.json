@@ -120,9 +120,9 @@
       "default": "16:9"
     },
     {
-      "name": "colorway",
-      "type": "colorway",
-      "label": "Colorway",
+      "name": "palette",
+      "type": "palette",
+      "label": "Palette",
       "description": "Color scheme for this card",
       "default": "inherit"
     }
@@ -138,10 +138,10 @@
     "radius-m",
     "shadow-m",
     "shadow-l",
-    "colorway-base",
-    "colorway-hard-contrast",
-    "colorway-contrast",
-    "colorway-soft-contrast",
-    "colorway-accent"
+    "palette-surface",
+    "palette-hard-contrast",
+    "palette-hard-contrast",
+    "palette-soft-contrast",
+    "palette-accent"
   ]
 }
