@@ -27,7 +27,30 @@ php styles/generate.php path/to/custom-tokens.json --output dist/tokens.css
 
 # Verify the emission (generator-output seam)
 php styles/verify.php
+
+# Spec lifecycle (ADR 0023)
+php styles/spec.php evolve base                       # seed the next version's draft
+php styles/spec.php publish styles/specs/base@2.draft.json   # freeze + stamp extends
+php styles/spec.php extends styles/specs/base@2.draft.json   # dry-run: report the stamp only
 ```
+
+## Specs & lifecycle (ADR 0023)
+
+A **spec** is a named, versioned, immutable file that defines the *guaranteed token set* — token keys and their emitted CSS variables, **never values**. It exists independently of any site or skin. `defaults.json` is a **site**: it declares which spec it follows and provides the values.
+
+```
+styles/specs/base.json      the "latest" pointer a site follows by name ("base")
+styles/specs/base@1.json    the immutable, frozen version-1 artifact
+defaults.json               "spec": "base"  + all token values
+```
+
+A spec file is `{ name, version, extends, tokens: { "<key>": { "label" } } }`. The `tokens` keys are the emitted `--{key}` names (ADR 0027 key-identity); each carries a default display **label**. The base spec guarantees: spacing `xs–xl`, text `s/m/l`, six headings, the pick-one bare aliases (`--border`/`--radius`/`--shadow`), the scale bare aliases (`--space`/`--text`), and `--palette-surface`. `xxs`/`xxl` and `text-xs`/`xl` are **custom tokens** — present in the site, absent from the spec.
+
+Membership lives in the spec file, not in the site. Emission is unchanged — still presence-is-membership (ADR 0025), so a token emits whether it's spec or custom. What the spec adds is the **conformance guarantee**: a site is *built to spec* when every spec token resolves in the emitted CSS, and `styles/verify.php` loads the followed spec and asserts exactly that (it no longer hardcodes the guaranteed set).
+
+**Lifecycle — draft → publish → evolve.** A draft is freely editable (add / remove / rename tokens). `publish` freezes it into an immutable `{name}@{N}.json` and advances the latest pointer — published versions are **never rewritten** (re-publishing a version is a hard error; immutability, not permissions, is what makes a spec trustworthy). `evolve` reopens the latest as a draft for the next version. At publish time the **extends** edge is stamped mechanically: a successor that retains *every* token of its seed is stamped `extends: {name}@{seed}` (skins following the seed stay guaranteed); dropping any promised token clears the stamp — a break. Prior versions keep their promises to whatever still follows them.
+
+**Aliasing.** A lean site satisfies a wider spec by pointing one token at another — `"xl": { "alias": "l" }` in a family emits `--space-xl: var(--space-l)` instead of an independently designed value. The promise is kept (the token resolves), the pixels are borrowed. Going out of spec is never a hard break either: consumption is `var()` with chained fallbacks throughout, so an unmet token degrades to the family default.
 
 ## Viewport range (`viewport`)
 
@@ -58,7 +81,7 @@ Open scale family. Every key in `sizes` emits `--space-{key}` as a fluid `clamp(
 
 **JSON path:** `spacing.mode`, `spacing.default`, `spacing.scale.{mobile,desktop}.{value,ratio}`, `spacing.sizes.{key}.position`, and (custom mode) `spacing.custom.{key}.{mobile,desktop}`
 
-The `spec` column classifies base-spec tokens vs custom tokens riding the same ramp (ADR 0023). Both emit identically — the classification is guaranteed-key bookkeeping, asserted by `styles/verify.php`.
+The `spec` column classifies base-spec tokens vs custom tokens riding the same ramp (ADR 0023). Both emit identically — membership lives in the followed spec file (`styles/specs/base.json`), not in the site, and `styles/verify.php` loads it to assert conformance. See **Specs & lifecycle** above.
 
 ### Text Sizes (`--text-{key}` + bare `--text`)
 
@@ -225,9 +248,9 @@ Each scale family is either `mode: scale` (systematic, two anchors) or `mode: cu
 1. Copy `defaults.json` to a new file (e.g., `my-tokens.json`)
 2. Edit values — set per-device anchors under `scale.{mobile,desktop}`, change a `ratio`, tune the `viewport` range, add or drop steps (presence is membership), re-point `default`, adjust heading `style` knobs, add ramp colors/stops (with optional `pins`), or rewire palette slots/intents
 3. Run `php styles/generate.php my-tokens.json --output dist/tokens.css`
-4. Optionally run `php styles/verify.php` to check the base-spec guarantee, the fallback contract, store completeness, and viewport distinctness
+4. Optionally run `php styles/verify.php` to check spec conformance (every token the followed spec guarantees resolves), the fallback contract, store completeness, and viewport distinctness
 
-To hand-author a size that opts out of the scale, set the family's `mode` to `custom` and edit its `custom.{key}.{mobile,desktop}` pairs. To drop a step, remove it from `sizes` — it stops emitting, and any component reference degrades to the family's bare alias.
+To hand-author a size that opts out of the scale, set the family's `mode` to `custom` and edit its `custom.{key}.{mobile,desktop}` pairs. To drop a step, remove it from `sizes` — it stops emitting, and any component reference degrades to the family's bare alias. To keep a spec token present without designing a distinct value, **alias** it: `"xl": { "alias": "l" }` emits `--space-xl: var(--space-l)`.
 
 ## Component CSS Usage
 

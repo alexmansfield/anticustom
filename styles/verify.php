@@ -93,23 +93,63 @@ $css  = generate_css();               // defaults.json
 $keys = emitted_keys($css);
 
 // ─────────────────────────────────────────────────
-// Spec-token presence (1.4): the guaranteed base-spec key set always emits
+// Spec conformance (M5 / ADR 0023): the site is *built to spec* when every token
+// its followed spec guarantees resolves. The guaranteed set is no longer a
+// hardcoded list — it loads from the spec file the site declares, so the spec is
+// the single source of truth for what must emit (M5 replaced the 1.4 constant).
 // ─────────────────────────────────────────────────
-$specKeys = [
-    // spacing spec steps xs–xl
-    'space-xs', 'space-s', 'space-m', 'space-l', 'space-xl',
-    // text spec steps s/m/l
-    'text-s', 'text-m', 'text-l',
-    // six symmetric headings
-    'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
-    // pick-one bare aliases + scale bare aliases
-    'border', 'radius', 'shadow', 'space', 'text',
-    // color's single M1 touchpoint
-    'palette-surface',
-];
+$site = json_decode(file_get_contents(__DIR__ . '/defaults.json'), true);
+$followedSpec = load_spec($site['spec'] ?? '', __DIR__ . '/specs');
+check('site declares a followed spec', isset($site['spec']), 'defaults.json has no "spec" key');
+check("followed spec '{$site['spec']}' loads", $followedSpec !== null, 'spec file not found in styles/specs/');
+
+$specKeys = array_keys($followedSpec['tokens'] ?? []);
+check('followed spec is non-empty', !empty($specKeys), 'spec declares no tokens');
 foreach ($specKeys as $k) {
-    check("spec token --{$k} present", isset($keys[$k]), 'not emitted');
+    check("spec token --{$k} present", isset($keys[$k]), 'not emitted — site is out of spec');
 }
+
+// ─────────────────────────────────────────────────
+// M5 — aliasing degrades correctly (ADR 0023). A lean site satisfies a wider
+// spec by pointing one token at another; the aliased token emits as a var()
+// pointer to a present sibling, so the promise is kept even where the value is
+// not independently designed.
+// ─────────────────────────────────────────────────
+$aliasCss  = generate_css(fixture('alias-site.json'));
+$aliasKeys = emitted_keys($aliasCss);
+check('alias: --space-xl points at its sibling',
+    preg_match('/--space-xl:\s*var\(--space-l\)/', $aliasCss) === 1,
+    'aliased scale token should emit var(--space-l)');
+check('alias: alias target --space-l resolves', isset($aliasKeys['space-l']),
+    'alias target absent — the aliased token would degrade to nothing');
+check('alias: aliased step is not also computed',
+    strpos($aliasCss, '--space-xl: clamp') === false,
+    'an aliased scale step must not also emit a computed clamp');
+check('alias: --radius-xl points at its sibling (pick-one)',
+    preg_match('/--radius-xl:\s*var\(--radius-m\)/', $aliasCss) === 1,
+    'aliased pick-one token should emit var(--radius-m)');
+
+// ─────────────────────────────────────────────────
+// M5 — the mechanical extends stamp (ADR 0023, spec_extends_stamp). A successor
+// retaining every seed token extends it; dropping one breaks the edge; a
+// greenfield publish extends nothing. Same pure rule styles/spec.php publishes
+// with — verified here at the function boundary.
+// ─────────────────────────────────────────────────
+$seedSpec = load_spec('base', __DIR__ . '/specs');
+check('extends: base seed loads', $seedSpec !== null, 'base spec missing');
+$retaining = ($seedSpec['tokens'] ?? []);
+$retaining['space-xxl'] = ['label' => '2X large'];        // add a token, keep all
+check('extends: retaining successor stamps extends base@1',
+    spec_extends_stamp($retaining, $seedSpec) === 'base@1',
+    'a successor keeping every seed token should stamp extends base@1');
+$breaking = ($seedSpec['tokens'] ?? []);
+unset($breaking['space-xs']);                             // drop a promised token
+check('extends: dropping a promised token clears the stamp',
+    spec_extends_stamp($breaking, $seedSpec) === null,
+    'a break must not stamp extends');
+check('extends: greenfield (no seed) extends nothing',
+    spec_extends_stamp($retaining, null) === null,
+    'a first publish has nothing to extend');
 
 // ─────────────────────────────────────────────────
 // Key-identity emission (1.1): names are exactly `--{key}`, no generator prefix

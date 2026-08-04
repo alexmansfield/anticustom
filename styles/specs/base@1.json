@@ -1,0 +1,67 @@
+{
+    "name": "base",
+    "version": 1,
+    "extends": null,
+    "tokens": {
+        "space-xs": {
+            "label": "Extra small"
+        },
+        "space-s": {
+            "label": "Small"
+        },
+        "space-m": {
+            "label": "Medium"
+        },
+        "space-l": {
+            "label": "Large"
+        },
+        "space-xl": {
+            "label": "Extra large"
+        },
+        "space": {
+            "label": "Space"
+        },
+        "text-s": {
+            "label": "Small"
+        },
+        "text-m": {
+            "label": "Medium"
+        },
+        "text-l": {
+            "label": "Large"
+        },
+        "text": {
+            "label": "Text"
+        },
+        "h1": {
+            "label": "Heading 1"
+        },
+        "h2": {
+            "label": "Heading 2"
+        },
+        "h3": {
+            "label": "Heading 3"
+        },
+        "h4": {
+            "label": "Heading 4"
+        },
+        "h5": {
+            "label": "Heading 5"
+        },
+        "h6": {
+            "label": "Heading 6"
+        },
+        "border": {
+            "label": "Border"
+        },
+        "radius": {
+            "label": "Radius"
+        },
+        "shadow": {
+            "label": "Shadow"
+        },
+        "palette-surface": {
+            "label": "Surface"
+        }
+    }
+}
