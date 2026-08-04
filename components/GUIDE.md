@@ -75,7 +75,7 @@ $schema = anti_get_schema('hero');  // cached, returns [] if not found
 
 Each field defines a component prop:
 - `name` — Prop key in templates
-- `type` — Data type (text, select, boolean, array, image, url, textarea, colorway)
+- `type` — Data type (text, select, boolean, array, image, url, textarea, palette)
 - `default` — Default value when prop is not provided
 - `required` — Whether the prop must be provided
 - `tab` — Which editor tab this field appears in
@@ -217,18 +217,22 @@ Each named style file (e.g. `plato.css`, `aristotle.css`) maps design tokens to 
 
 Components can have multiple style files. The explorer auto-discovers them and presents a style switcher in the nav bar. A component without a given style file simply shows base-only styling.
 
-### Colorway system
+### Palette system (ADR 0015/0016)
 
-Components use colorway CSS variables instead of hard-coded colors:
-- `--colorway-base` — Surface/background color
-- `--colorway-hard-contrast` — Headings, strong text
-- `--colorway-contrast` — Body text
-- `--colorway-soft-contrast` — Borders, strokes, dividers (not text)
-- `--colorway-accent` — Decorative highlights: links, icons, eyebrows
+Components use palette CSS variables instead of hard-coded colors — a surface-anchored contrast scale plus hued intents. Always reference them **with a fallback** (palette emission is sparse, ADR 0015):
+- `--palette-surface` — Surface/background color
+- `--palette-ultra-soft-contrast` — Subtlest mark against the surface
+- `--palette-soft-contrast` — Secondary text, dividers
+- `--palette-hard-contrast` — Headings, strong/primary text
+- `--palette-ultra-hard-contrast` — Maximum emphasis
+- `--palette-accent` / `--palette-accent-on` — Emphasis fill + its foreground
+- `--palette-{info,success,warning,danger}` / `-on` — Intents
 
-Surface components use `base`/`hard-contrast`. Body text uses `contrast`. Structural elements (borders, dividers) use `soft-contrast`. Decorative elements (links, icons, eyebrows) use `accent`.
+Each slot also has generator-authored `-hover`/`-active` (`color-mix`, ADR 0026). Surface components use `surface`/`hard-contrast`; structural elements (borders, dividers) use `soft-contrast`; emphasis uses `accent`.
 
-Set via `data-colorway` attribute: `<div data-colorway="primary">`.
+**Region theming:** set a palette on a container via `data-palette` — `<div data-palette="primary">` — and everything inside adopts it.
+
+**Element intents:** a status element (e.g. badge) carries `data-intent` and reads the generic `--intent`/`--intent-on` (bound per intent by the generator), so it stays inside whatever palette surrounds it: `<span data-intent="success">`.
 
 ## Creating a New Component
 

@@ -3,7 +3,7 @@
  * CSS Variable Generator
  *
  * Reads defaults.json (or a custom token file) and outputs a complete CSS
- * file with :root variables and [data-colorway] blocks.
+ * file with :root variables and [data-palette] / [data-intent] blocks.
  *
  * Emission model (palette-model M1, ADRs 0015–0028):
  *   - Open ordered sets: presence in `sizes` is membership; there is no

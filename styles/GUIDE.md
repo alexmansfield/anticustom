@@ -146,62 +146,53 @@ Open pick-one family; the `default` step backs the bare `--border` alias.
 
 **JSON path:** `borders.default`, `borders.sizes.{key}.value`
 
-### Colors (`--{name}`)
+### Color: two spec-declared tiers (ADR 0025)
 
-> Color emission is unchanged in M1 — its shape change (ramp / palette break / state tier) lands in M3. The one M1 touchpoint is the palette bridge below.
+Color is **two tiers** — a flat open **ramp** and a spec-shaped **palette** — and the generator hardcodes neither.
 
-Base colors from `color.sections.*.colors.*`. Each enabled color generates a base variable plus hue shade variants.
+#### Ramp tier (`--{color}`, `--{color}-{stop}`)
 
-**Base:** `--primary`, `--neutral`, `--info`, `--success`, `--warning`, `--error`
+A dense grid of every **source color** × every **stop**. Presence is membership — there is no `enabled`; a color that exists, crossed with a stop that exists, emits.
 
-**Hue shades** (appended to each base color):
+- **Source colors** (`color.colors`): a flat open set, `{ value: "#hex", position, spec? }`. Each emits its bare `--{color}` plus `--{color}-{stop}` for every stop.
+- **Stops** (`color.stops`): an L-ordered scale, `{ value: 0–100, position, spec? }`. `white` (L100) and `black` (L0) are ordinary data stops that emit literal `#ffffff`/`#000000` (the special case triggers on the L value, not the name).
+- **Pins** (ADR 0019): a per-color `pins: { stop: "#hex" }` overrides a computed shade; deleting the key restores the generated value.
+- **No interaction states at this tier** (ADR 0026) — `-hover`/`-active` live only at the palette tier.
 
-| Shade | Lightness | Example |
-|-------|-----------|---------|
-| `ultra-light` | 90% | `--neutral-ultra-light` |
-| `light` | 80% | `--neutral-light` |
-| `semi-light` | 65% | `--neutral-semi-light` |
-| `semi-dark` | 35% | `--neutral-semi-dark` |
-| `dark` | 20% | `--neutral-dark` |
-| `ultra-dark` | 10% | `--neutral-ultra-dark` |
+Shades are computed in **OKLCH** (ADR 0025 / `docs/research/oklch-generation.md`): the generator holds the source's OKLCH chroma+hue and moves lightness to the stop's L (÷100), then gamut-maps into sRGB with the CSS Color 4 chroma-bisection algorithm. OKLab lightness is perceptually uniform, so steps are visually even and hue never drifts. Output stays 6-digit hex.
 
-The generator takes the base color's hue and saturation, then replaces its lightness with the shade's target percentage.
+**JSON path:** `color.colors.{name}.{value,position,pins?}`, `color.stops.{name}.{value,position}`
 
-**JSON path:** `color.sections.{section}.colors.{name}`, `color.hues.{shade}.value`
+#### Palette tier (`--palette-*`)
 
-### Palette bridge (`--palette-surface`)
+A palette is a **surface-anchored contrast scale** plus hued **intents** (ADR 0015/0016). The slot list is data — the generator iterates each palette's own keys; a key `X-on`/`X-hover`/`X-active` of an existing key `X` is an attribute of that slot, everything else is a slot.
 
-M1 emits one forward-looking palette token — `--palette-surface: var(--colorway-base)` — the surface slot the full palette shape (M3) will build out. It is the single guaranteed color key in the base spec.
-
-### Colorways (`--colorway-*`)
-
-> Renamed/remapped to the palette break in M3; unchanged in M1.
-
-Colorways are named color schemes applied via `data-colorway` attributes. Each colorway defines five tokens:
-
-| Token | Role |
+| Slot | Role |
 |---|---|
-| `--colorway-base` | Surface/background color |
-| `--colorway-hard-contrast` | Headings, strong text |
-| `--colorway-contrast` | Body text |
-| `--colorway-soft-contrast` | Borders, strokes, dividers (not text) |
-| `--colorway-accent` | Decorative highlights: links, icons, eyebrows |
+| `--palette-surface` | Background / surface |
+| `--palette-ultra-soft-contrast` | Subtlest against surface |
+| `--palette-soft-contrast` | Secondary |
+| `--palette-hard-contrast` | Primary text |
+| `--palette-ultra-hard-contrast` | Maximum emphasis |
+| `--palette-accent` / `-on` | Emphasis fill + its foreground |
+| `--palette-{info,success,warning,danger}` / `-on` | Intents: tint fill + legible foreground |
 
-Each generates a scoped CSS block:
+- **`-on` foregrounds are authored** (ADR 0020), not derived; legibility is a `verify` advisory warning backed by the WCAG contrast matrix.
+- **Interaction states are generator-authored `color-mix()`** (ADR 0026): `--palette-{slot}-hover: color-mix(in srgb, var(--palette-{slot}), {pole} 12%)` and `active` at 20%. The pole is picked by the slot's resolved OKLCH lightness (L > 0.5 → `white`, else `black`).
+- **Sparse emission** (ADR 0015): the default palette lands at `:root`; a named palette at `[data-palette="name"]` emits only the slots it overrides — the rest inherit through the cascade. This makes the component `var()` fallback a **mandatory contract** (the `verify` guard rejects any bare palette ref).
+- **Intents bind generically**: each intent (a slot with an `-on` sibling) emits a `[data-intent="name"] { --intent; --intent-on; --intent-hover; --intent-active }` rule, so an element like a badge stays inside whatever palette surrounds it.
 
 ```css
-[data-colorway="primary"] {
-    --colorway-base: var(--primary);
-    --colorway-hard-contrast: #ffffff;
-    --colorway-contrast: var(--primary-light);
-    --colorway-soft-contrast: var(--primary-semi-light);
-    --colorway-accent: var(--primary-dark);
+[data-palette="primary"] {          /* sparse — only its own slots */
+    --palette-surface: var(--primary);
+    --palette-surface-hover: color-mix(in srgb, var(--palette-surface), black 12%);
+    --palette-hard-contrast: #ffffff;
+    --palette-accent: var(--primary-dark);
+    --palette-accent-on: #ffffff;
 }
 ```
 
-Components pick the token that matches their semantic role: surface components use `base`/`hard-contrast`, body text uses `contrast`, structural elements (borders, dividers) use `soft-contrast`, and decorative elements (links, icons) use `accent`.
-
-**JSON path:** `color.colorways.{name}.{base,hard-contrast,contrast,soft-contrast,accent}`
+**JSON path:** `color.palettes.{name}.{slot|slot-on}`
 
 ### Font Weights
 
@@ -232,7 +223,7 @@ Each scale family is either `mode: scale` (systematic, two anchors) or `mode: cu
 ## How to Customize
 
 1. Copy `defaults.json` to a new file (e.g., `my-tokens.json`)
-2. Edit values — set per-device anchors under `scale.{mobile,desktop}`, change a `ratio`, tune the `viewport` range, add or drop steps (presence is membership), re-point `default`, adjust heading `style` knobs, add colors
+2. Edit values — set per-device anchors under `scale.{mobile,desktop}`, change a `ratio`, tune the `viewport` range, add or drop steps (presence is membership), re-point `default`, adjust heading `style` knobs, add ramp colors/stops (with optional `pins`), or rewire palette slots/intents
 3. Run `php styles/generate.php my-tokens.json --output dist/tokens.css`
 4. Optionally run `php styles/verify.php` to check the base-spec guarantee, the fallback contract, store completeness, and viewport distinctness
 
@@ -247,11 +238,13 @@ Components reference size tokens through **chained fallbacks** to the family ali
     padding: var(--space-m, var(--space));
     font-size: var(--text-s, var(--text));
     border-radius: var(--radius-m, var(--radius));
-    border: var(--border-s, var(--border)) solid var(--colorway-soft-contrast);
+    border: var(--border-s, var(--border)) solid var(--palette-soft-contrast, #e2e8f0);
     box-shadow: var(--shadow-m, var(--shadow));
-    background-color: var(--colorway-base);
-    color: var(--colorway-hard-contrast);
+    background-color: var(--palette-surface, #ffffff);
+    color: var(--palette-hard-contrast, #0f172a);
 }
 ```
+
+Palette refs carry a fallback for the same reason (sparse emission, ADR 0015): a slot a palette omits inherits via the cascade, and a slot no palette defines resolves to the fallback. Status elements use the generic `--intent`/`--intent-on` with a neutral fallback, e.g. `var(--intent, var(--palette-surface))`.
 
 If a spec omits `--space-m`, the reference resolves to `--space` (the anchor); if it omits the alias too, `styles/verify.php`'s fallback-presence guard flags it before it ships.
