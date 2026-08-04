@@ -110,13 +110,177 @@ function hue_to_rgb(float $p, float $q, float $t): float {
     return $p;
 }
 
+// ============================================================================
+// OKLCH working space (ADR 0025 ramp math; #29 / docs/research/oklch-generation.md)
+//
+// sRGB is converted to OKLCH for ramp generation because OKLab lightness is
+// perceptually uniform — a fixed ΔL is a visually even step everywhere on the
+// ramp, and holding chroma+hue while moving L produces no hue drift (the
+// failure mode HSL shading has near saturated/extreme shades). OKLCH stays an
+// *internal* working space: every value emitted is still 6-digit sRGB hex,
+// gamut-mapped at generation time (browsers only channel-clip, which distorts
+// hue), so the output contract is identical to the old HSL path.
+//
+// Matrices are Ottosson's 2021-01-25 set (linear sRGB ↔ OKLab, direct, no XYZ
+// leg) at full published precision; the inverse LMS→linear matrix is Ottosson's
+// published reference inverse. Copied verbatim — do not retype truncated.
+// ============================================================================
+
+/** Sign-preserving cube root (LMS can go negative mid-gamut-map). */
+function cbrt_signed(float $x): float {
+    return $x < 0 ? -pow(-$x, 1 / 3) : pow($x, 1 / 3);
+}
+
+/** sRGB transfer function, per channel in [0,1] (sign-preserving). */
+function srgb_decode(float $v): float {
+    $s = $v < 0 ? -1 : 1;
+    $v = abs($v);
+    return $s * ($v <= 0.04045 ? $v / 12.92 : pow(($v + 0.055) / 1.055, 2.4));
+}
+function srgb_encode(float $v): float {
+    $s = $v < 0 ? -1 : 1;
+    $v = abs($v);
+    return $s * ($v > 0.0031308 ? 1.055 * pow($v, 1 / 2.4) - 0.055 : 12.92 * $v);
+}
+
+/** Linear sRGB → OKLab (M1, cube-root, M2). */
+function linear_to_oklab(float $r, float $g, float $b): array {
+    $l = 0.4122214708 * $r + 0.5363325363 * $g + 0.0514459929 * $b;
+    $m = 0.2119034982 * $r + 0.6806995451 * $g + 0.1073969566 * $b;
+    $s = 0.0883024619 * $r + 0.2817188376 * $g + 0.6299787005 * $b;
+
+    $l_ = cbrt_signed($l);
+    $m_ = cbrt_signed($m);
+    $s_ = cbrt_signed($s);
+
+    return [
+        0.2104542553 * $l_ + 0.7936177850 * $m_ - 0.0040720468 * $s_,
+        1.9779984951 * $l_ - 2.4285922050 * $m_ + 0.4505937099 * $s_,
+        0.0259040371 * $l_ + 0.7827717662 * $m_ - 0.8086757660 * $s_,
+    ];
+}
+
+/** OKLCH (L 0–1, C, H°) → linear sRGB (may fall outside [0,1] — out of gamut). */
+function oklch_to_linear(float $L, float $C, float $H): array {
+    $hr = deg2rad($H);
+    $a = $C * cos($hr);
+    $b = $C * sin($hr);
+
+    // OKLab → LMS' (inverse M2)
+    $l_ = $L + 0.3963377773761749 * $a + 0.2158037573099136 * $b;
+    $m_ = $L - 0.1055613458156586 * $a - 0.0638541728258133 * $b;
+    $s_ = $L - 0.0894841775298119 * $a - 1.2914855480194092 * $b;
+
+    // cube, then LMS → linear sRGB (inverse M1)
+    $l = $l_ ** 3;
+    $m = $m_ ** 3;
+    $s = $s_ ** 3;
+
+    return [
+         4.0767416621 * $l - 3.3077115913 * $m + 0.2309699292 * $s,
+        -1.2684380046 * $l + 2.6097574011 * $m - 0.3413193965 * $s,
+        -0.0041960863 * $l - 0.7034186147 * $m + 1.7076147010 * $s,
+    ];
+}
+
+/** hex → OKLCH [L 0–1, C, H°]. */
+function hex_to_oklch(string $hex): array {
+    $hex = ltrim($hex, '#');
+    $r = srgb_decode(hexdec(substr($hex, 0, 2)) / 255);
+    $g = srgb_decode(hexdec(substr($hex, 2, 2)) / 255);
+    $b = srgb_decode(hexdec(substr($hex, 4, 2)) / 255);
+
+    [$L, $a, $bb] = linear_to_oklab($r, $g, $b);
+    $C = sqrt($a * $a + $bb * $bb);
+    $H = rad2deg(atan2($bb, $a));
+    if ($H < 0) $H += 360;
+
+    return [$L, $C, $H];
+}
+
+/** True when an OKLCH triple lands inside the sRGB cube (small tolerance). */
+function oklch_in_gamut(float $L, float $C, float $H): bool {
+    foreach (oklch_to_linear($L, $C, $H) as $c) {
+        if ($c < -0.0001 || $c > 1.0001) return false;
+    }
+    return true;
+}
+
+/** Channel-clip an OKLCH triple into sRGB and format as 6-digit hex. */
+function oklch_clip_to_hex(float $L, float $C, float $H): string {
+    $enc = [];
+    foreach (oklch_to_linear($L, $C, $H) as $c) {
+        $enc[] = max(0.0, min(1.0, srgb_encode($c)));
+    }
+    return sprintf('#%02x%02x%02x',
+        (int) round($enc[0] * 255),
+        (int) round($enc[1] * 255),
+        (int) round($enc[2] * 255)
+    );
+}
+
 /**
- * Given a base hex color and a target lightness (0-100), return a new hex
- * color with the same hue and saturation but adjusted lightness.
+ * OKLCH → in-gamut sRGB hex via the CSS Color 4 gamut-mapping algorithm
+ * (binary-search chroma with local MINDE, JND 0.02 / ε 0.0001 — the constants
+ * both colorjs.io and culori ship as their spec default). L and H are preserved
+ * exactly; only chroma is reduced, and only until the channel-clipped candidate
+ * is within a just-noticeable deltaEOK of the search point.
+ */
+function oklch_to_hex(float $L, float $C, float $H): string {
+    if ($L >= 1.0) return '#ffffff';
+    if ($L <= 0.0) return '#000000';
+    if (oklch_in_gamut($L, $C, $H)) return oklch_clip_to_hex($L, $C, $H);
+
+    $JND = 0.02;
+    $EPS = 0.0001;
+    $hr = deg2rad($H);
+
+    $min = 0.0;
+    $max = $C;
+    $minInGamut = true;
+    $chroma = $C;
+
+    while (($max - $min) > $EPS) {
+        $chroma = ($min + $max) / 2.0;
+
+        if ($minInGamut && oklch_in_gamut($L, $chroma, $H)) {
+            $min = $chroma;
+            continue;
+        }
+
+        // deltaEOK between the clipped candidate and the (out-of-gamut) search point
+        $clippedLin = oklch_to_linear($L, $chroma, $H);
+        $clipped = [];
+        foreach ($clippedLin as $c) {
+            $clipped[] = srgb_decode(max(0.0, min(1.0, srgb_encode($c))));
+        }
+        [$cl, $ca, $cb] = linear_to_oklab($clipped[0], $clipped[1], $clipped[2]);
+        $E = sqrt(
+            ($cl - $L) ** 2
+            + ($ca - $chroma * cos($hr)) ** 2
+            + ($cb - $chroma * sin($hr)) ** 2
+        );
+
+        if ($E < $JND) {
+            if (($JND - $E) < $EPS) return oklch_clip_to_hex($L, $chroma, $H);
+            $minInGamut = false;
+            $min = $chroma;
+        } else {
+            $max = $chroma;
+        }
+    }
+
+    return oklch_clip_to_hex($L, $chroma, $H);
+}
+
+/**
+ * Given a base hex color and a target lightness (0–100), return a new hex color
+ * holding the source's OKLCH chroma and hue but at the target lightness,
+ * gamut-mapped into sRGB. The 0–100 stop value maps to OKLCH L by /100.
  */
 function color_shade(string $hex, float $targetLightness): string {
-    [$h, $s, $l] = hex_to_hsl($hex);
-    return hsl_to_hex($h, $s, $targetLightness);
+    [, $C, $H] = hex_to_oklch($hex);
+    return oklch_to_hex($targetLightness / 100.0, $C, $H);
 }
 
 // ============================================================================
@@ -441,6 +605,17 @@ function emit_ramp(array $colors, array $stops): array {
         }
     }
     return $lines;
+}
+
+// ============================================================================
+// Library mode: when this file is `require`d (by a test/verify harness) rather
+// than run directly, stop here — expose the pure helper functions above without
+// the emission side effects below. `get_included_files()[0]` is always the
+// entry script, so this is true only when we are not it.
+// ============================================================================
+
+if (realpath(get_included_files()[0] ?? '') !== realpath(__FILE__)) {
+    return;
 }
 
 // ============================================================================

@@ -19,6 +19,11 @@ $passed = 0;
 $failed = 0;
 $errors = [];
 
+// Pull in the generator's pure helper functions (library mode: the require
+// returns before any emission side effects) so the OKLCH math can be unit-tested
+// at the function boundary, not only through the emitted CSS string.
+require_once __DIR__ . '/generate.php';
+
 /** Shell the generator against a token file and capture the emitted CSS. */
 function generate_css(?string $tokenPath = null): string
 {
@@ -296,6 +301,64 @@ check('unpinned stop still computes', isset($rampKeys['brandx-light']) &&
     'a stop without a pin should still emit a computed shade');
 check('pinned ramp still carries no states', !isset($rampKeys['brandx-dark-hover']),
     'even a pinned stop emits no interaction state (ADR 0026 amends 0019)');
+
+// ═════════════════════════════════════════════════
+// M3 — OKLCH ramp math (isolated port #29; docs/research/oklch-generation.md)
+// ═════════════════════════════════════════════════
+
+$approx = fn(float $a, float $b, float $t = 0.003): bool => abs($a - $b) <= $t;
+
+// Conversion matches published colorjs.io / oklch.com reference values — the
+// anchor against a silent matrix-transcription regression.
+[$rL, $rC, $rH] = hex_to_oklch('#ff0000');
+check('OKLCH(#ff0000) matches reference', $approx($rL, 0.6280) && $approx($rC, 0.2577) && $approx($rH, 29.23, 0.1),
+    sprintf('got L=%.4f C=%.4f H=%.2f, expected L0.6280 C0.2577 H29.23', $rL, $rC, $rH));
+[$bL, $bC, $bH] = hex_to_oklch('#0000ff');
+check('OKLCH(#0000ff) matches reference', $approx($bL, 0.4520) && $approx($bC, 0.3132) && $approx($bH, 264.05, 0.2),
+    sprintf('got L=%.4f C=%.4f H=%.2f, expected L0.4520 C0.3132 H264.05', $bL, $bC, $bH));
+[$wL, $wC] = hex_to_oklch('#ffffff');
+check('OKLCH(#ffffff) is L1 C0', $approx($wL, 1.0) && $approx($wC, 0.0),
+    sprintf('white should be achromatic L1, got L=%.5f C=%.5f', $wL, $wC));
+
+// Round-trip identity: an in-gamut hex survives hex→OKLCH→gamut-mapped hex
+// unchanged (to 8-bit). Exercises the forward and inverse pipelines together.
+$rtOk = true;
+foreach (['#336699', '#0ea5e9', '#22c55e', '#eab308', '#ef4444', '#8b5cf6', '#123456', '#abcdef'] as $hex) {
+    if (strtolower(oklch_to_hex(...hex_to_oklch($hex))) !== strtolower($hex)) {
+        $rtOk = false;
+        break;
+    }
+}
+check('OKLCH round-trip is identity for in-gamut hex', $rtOk,
+    'a color changed under hex→OKLCH→hex — forward/inverse mismatch');
+
+// Hue stability: an achromatic source stays achromatic at every stop (R=G=B) —
+// OKLCH's defining advantage over HSL shading, which drifts hue near extremes.
+$grayStable = true;
+foreach ([90, 80, 65, 35, 20, 10] as $Lv) {
+    $sh = color_shade('#737373', $Lv);
+    if (!(substr($sh, 1, 2) === substr($sh, 3, 2) && substr($sh, 3, 2) === substr($sh, 5, 2))) {
+        $grayStable = false;
+        break;
+    }
+}
+check('achromatic source stays gray at every stop', $grayStable,
+    'neutral ramp drifted off gray — hue leaked through shading');
+
+// Gamut safety: every emitted ramp hex is a well-formed 6-digit sRGB value (the
+// chroma-bisection mapper never emits an out-of-range/garbage channel).
+preg_match_all('/--[a-z0-9-]+:\s*(#[0-9a-f]{6})\s*;/i', $css, $hexes);
+$malformed = array_filter($hexes[1], fn($h) => !preg_match('/^#[0-9a-f]{6}$/i', $h));
+check('every emitted hex is gamut-safe #rrggbb (' . count($hexes[1]) . ' values)', empty($malformed),
+    'malformed hex emitted: ' . implode(', ', $malformed));
+
+// Stable emitted ramp values (regression pins on the actual OKLCH output).
+check('primary ultra-light OKLCH value pinned',
+    strpos($css, '--primary-ultra-light: #bbe2ff;') !== false,
+    'the primary L90 OKLCH stop drifted from its expected value');
+check('neutral semi-light OKLCH value pinned',
+    strpos($css, '--neutral-semi-light: #8f8f8f;') !== false,
+    'the neutral L65 OKLCH stop drifted from its expected value');
 
 // ─────────────────────────────────────────────────
 // Summary
