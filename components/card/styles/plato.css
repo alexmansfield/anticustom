@@ -51,7 +51,7 @@
    ========================================================================== */
 
 .anti-card__title {
-    font-weight: 600;
+    font-weight: var(--h4-weight, 600);
     color: var(--colorway-hard-contrast, #0f172a);
 }
 

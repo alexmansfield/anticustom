@@ -29,13 +29,14 @@
 .anti-stats__prefix,
 .anti-stats__suffix {
     font-size: var(--h2, 2.25rem);
-    font-weight: 700;
+    font-weight: var(--h2-weight, 700);
+    letter-spacing: var(--h2-letter-spacing, normal);
 }
 
 .anti-stats__number {
     font-size: var(--h1, 3rem);
-    font-weight: 700;
-    letter-spacing: -0.02em;
+    font-weight: var(--h1-weight, 700);
+    letter-spacing: var(--h1-letter-spacing, -0.02em);
 }
 
 /* ==========================================================================

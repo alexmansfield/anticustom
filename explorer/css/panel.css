@@ -1244,3 +1244,27 @@
     color: var(--anti-text-secondary);
     font-variant-numeric: tabular-nums;
 }
+
+/* Anchor-step legibility (#47): designated-step tag + Steps meta row */
+.anti-panel .anti-size-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.anti-panel .anti-anchor-tag {
+    display: inline-block;
+    margin-left: 6px;
+    padding: 1px 6px;
+    border-radius: 4px;
+    background: var(--anti-control-bg);
+    color: var(--anti-text-secondary);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    vertical-align: middle;
+}
+
+.anti-panel .anti-size-section.is-anchor {
+    border-color: var(--anti-accent);
+}

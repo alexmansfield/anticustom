@@ -65,7 +65,8 @@
 .anti-card__title {
     margin: 0 0 var(--anti-card-title-gap, 0.5rem) 0;
     font-size: var(--anti-card-title-size, 1.25rem);
-    line-height: 1.3;
+    line-height: var(--h4-line-height, 1.3);
+    letter-spacing: var(--h4-letter-spacing, normal);
 }
 
 .anti-card__description {

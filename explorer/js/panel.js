@@ -495,6 +495,24 @@ function registerStylePanel() {
             this.markChanged();
         },
 
+        /**
+         * Re-point the anchor step (#47). The anchor is a pointer (`default`)
+         * into `sizes`, not a standalone scalar — moving it makes another step
+         * the scale origin and every other step re-derives around it. Mirrors
+         * the pick-one families' Default radio; recomputes (setDefault only
+         * re-emits the alias, which is right for pick-one but not for scale).
+         */
+        setScaleAnchor(section, key) {
+            this.familyOf(section).default = key;
+            this.applyScale(section);
+            this.markChanged();
+        },
+
+        /** The anchor step's display key (uppercased) for labelling the origin control. */
+        anchorLabel(section) {
+            return (this.familyOf(section).default || '').toUpperCase();
+        },
+
         // ---- mode switching (ADR 0018): nondestructive; seed per-key on → custom ----
         setMode(section, mode) {
             const fam = this.familyOf(section);
@@ -1200,7 +1218,10 @@ const getPanelHTML = () => `
 
                                                     <div class="anti-size-section is-enabled">
                                                         <div class="anti-size-header">
-                                                            <span class="anti-size-name" x-text="section.anchor.label"></span>
+                                                            <span class="anti-size-name">
+                                                                <span x-text="section.anchor.label"></span>
+                                                                <span class="anti-anchor-tag" x-text="anchorLabel(section)"></span>
+                                                            </span>
                                                         </div>
                                                         <div class="anti-size-controls" style="display: block;">
                                                             <div class="anti-control-row">
@@ -1278,14 +1299,24 @@ const getPanelHTML = () => `
                                                 </div>
                                             </template>
 
-                                            <!-- Computed steps (read-only; fluid mobile → desktop) -->
+                                            <!-- Steps: values computed (read-only), anchor is a re-pointable
+                                                 designated step — the origin, not a standalone scalar (#47) -->
                                             <div class="anti-section-title" style="margin-top: 12px;">Steps</div>
                                             <template x-for="key in sizeKeys(section)" :key="key">
-                                                <div class="anti-size-section is-enabled">
+                                                <div class="anti-size-section is-enabled"
+                                                    :class="{ 'is-anchor': familyOf(section).default === key }">
                                                     <div class="anti-size-header">
                                                         <span class="anti-size-name" x-text="getItemLabel(key)"></span>
-                                                        <span class="anti-size-computed"
-                                                            x-text="computeDeviceSize(section, key, 'mobile') + ' → ' + computeDeviceSize(section, key, 'desktop') + (section.unit || '')"></span>
+                                                        <span class="anti-size-meta">
+                                                            <span class="anti-size-computed"
+                                                                x-text="computeDeviceSize(section, key, 'mobile') + ' → ' + computeDeviceSize(section, key, 'desktop') + (section.unit || '')"></span>
+                                                            <label class="anti-default-radio">
+                                                                <input type="radio" :name="section.id + '-anchor'"
+                                                                    :checked="familyOf(section).default === key"
+                                                                    @change="setScaleAnchor(section, key)">
+                                                                <span>Anchor</span>
+                                                            </label>
+                                                        </span>
                                                     </div>
                                                 </div>
                                             </template>
