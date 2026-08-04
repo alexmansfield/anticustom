@@ -74,7 +74,7 @@
 .anti-button--ghost {
     background-color: transparent;
     color: var(--palette-hard-contrast, #0f172a);
-    border: var(--border-m, var(--border)) solid var(--palette-soft-contrast, #e2e8f0);
+    border: var(--border-m, var(--border)) solid var(--palette-ultra-soft-contrast, #e2e8f0);
 }
 
 .anti-button--ghost:hover {
@@ -82,7 +82,7 @@
 }
 
 .anti-button--ghost:active {
-    background-color: var(--palette-soft-contrast, #e2e8f0);
+    background-color: var(--palette-ultra-soft-contrast, #e2e8f0);
 }
 
 /* ==========================================================================

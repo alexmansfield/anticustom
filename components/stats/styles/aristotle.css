@@ -11,7 +11,7 @@
     --anti-stats-padding: var(--space-l, var(--space));
     color: var(--palette-hard-contrast, #0f172a);
     border-radius: var(--radius-l, var(--radius));
-    border: var(--border-m, var(--border)) solid var(--palette-soft-contrast, #e2e8f0);
+    border: var(--border-m, var(--border)) solid var(--palette-ultra-soft-contrast, #e2e8f0);
 }
 
 .anti-stats[data-palette] {

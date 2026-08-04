@@ -28,7 +28,7 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.03em;
-    background-color: var(--palette-soft-contrast, #f8fafc);
+    background-color: var(--palette-ultra-soft-contrast, #f8fafc);
 }
 
 /* ==========================================================================

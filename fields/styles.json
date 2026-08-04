@@ -4,7 +4,7 @@
     "highlight": {
       "label": "Highlight",
       "css": {
-        "background": "var(--palette-soft-contrast, var(--palette-surface, #ffffff))",
+        "background": "var(--palette-ultra-soft-contrast, var(--palette-surface, #ffffff))",
         "color": "var(--palette-hard-contrast, #0f172a)",
         "border-radius": "var(--radius-s, 0.25rem)",
         "padding": "0 0.15em"

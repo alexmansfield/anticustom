@@ -35,7 +35,7 @@
    ========================================================================== */
 
 .anti-card__image {
-    background-color: var(--palette-soft-contrast, #f8fafc);
+    background-color: var(--palette-ultra-soft-contrast, #f8fafc);
 }
 
 .anti-card__image img {

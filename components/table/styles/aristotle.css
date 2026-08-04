@@ -31,7 +31,7 @@
     letter-spacing: 0.03em;
     background-color: var(--palette-surface, #ffffff);
     color: var(--palette-hard-contrast, #0f172a);
-    border-bottom: var(--border-s, var(--border)) solid var(--palette-soft-contrast, #0f172a);
+    border-bottom: var(--border-s, var(--border)) solid var(--palette-ultra-soft-contrast, #0f172a);
 }
 
 /* ==========================================================================
@@ -42,7 +42,7 @@
     padding: var(--space-s, var(--space)) var(--space-m, var(--space));
     font-size: var(--text-m, var(--text));
     color: var(--palette-hard-contrast, #0f172a);
-    border-bottom: var(--border-s, var(--border)) solid var(--palette-soft-contrast, #e2e8f0);
+    border-bottom: var(--border-s, var(--border)) solid var(--palette-ultra-soft-contrast, #e2e8f0);
 }
 
 /* ==========================================================================
@@ -96,7 +96,7 @@
 .anti-table-wrap {
     color: var(--palette-hard-contrast, #0f172a);
     border-radius: var(--radius-l, var(--radius));
-    border: var(--border-s, var(--border)) solid var(--palette-soft-contrast, #e2e8f0);
+    border: var(--border-s, var(--border)) solid var(--palette-ultra-soft-contrast, #e2e8f0);
 }
 
 .anti-table-wrap[data-palette] {

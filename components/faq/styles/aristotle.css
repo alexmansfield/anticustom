@@ -19,7 +19,7 @@
     --anti-faq-answer-padding-mobile: 0 0 var(--space-m, var(--space));
 
     color: var(--palette-hard-contrast, #0f172a);
-    border-bottom: var(--border-m, var(--border)) solid var(--palette-soft-contrast, #e2e8f0);
+    border-bottom: var(--border-m, var(--border)) solid var(--palette-ultra-soft-contrast, #e2e8f0);
 }
 
 .anti-faq[data-palette] {
@@ -27,7 +27,7 @@
 }
 
 .anti-faq:first-child {
-    border-top: var(--border-m, var(--border)) solid var(--palette-soft-contrast, #e2e8f0);
+    border-top: var(--border-m, var(--border)) solid var(--palette-ultra-soft-contrast, #e2e8f0);
 }
 
 /* ==========================================================================

@@ -9,7 +9,7 @@
 
 .anti-hero {
     color: var(--palette-hard-contrast, #0f172a);
-    border-bottom: var(--border-m, var(--border)) solid var(--palette-soft-contrast, #e2e8f0);
+    border-bottom: var(--border-m, var(--border)) solid var(--palette-ultra-soft-contrast, #e2e8f0);
 }
 
 .anti-hero[data-palette] {

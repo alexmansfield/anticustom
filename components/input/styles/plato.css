@@ -44,7 +44,7 @@
    ========================================================================== */
 
 .anti-input__control {
-    border: var(--border-m, var(--border)) solid var(--palette-soft-contrast, #cbd5e1);
+    border: var(--border-m, var(--border)) solid var(--palette-ultra-soft-contrast, #cbd5e1);
     background-color: var(--palette-surface, #ffffff);
     color: var(--palette-hard-contrast, #0f172a);
     border-radius: var(--radius-m, var(--radius));

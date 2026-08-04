@@ -27,7 +27,7 @@
     overflow: hidden;
     padding: 0;
     /* Chrome drawn directly (interface apparatus retired, palette-model M1) */
-    border: var(--border-s, var(--border)) solid var(--palette-soft-contrast, #e2e8f0);
+    border: var(--border-s, var(--border)) solid var(--palette-ultra-soft-contrast, #e2e8f0);
     border-radius: var(--radius-l, var(--radius));
 }
 
@@ -40,7 +40,7 @@
    ========================================================================== */
 
 .anti-card__image {
-    background-color: var(--palette-soft-contrast, #f8fafc);
+    background-color: var(--palette-ultra-soft-contrast, #f8fafc);
 }
 
 /* ==========================================================================

@@ -25,7 +25,7 @@
 
 .anti-code-block__header {
     padding: var(--space-xs, var(--space)) var(--space-m, var(--space));
-    border-bottom: var(--border-s, var(--border)) solid var(--palette-soft-contrast, #0f172a);
+    border-bottom: var(--border-s, var(--border)) solid var(--palette-ultra-soft-contrast, #0f172a);
 }
 
 .anti-code-block__title {
