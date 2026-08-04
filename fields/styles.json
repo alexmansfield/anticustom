@@ -4,8 +4,8 @@
     "highlight": {
       "label": "Highlight",
       "css": {
-        "background": "var(--palette-soft-contrast)",
-        "color": "var(--palette-hard-contrast)",
+        "background": "var(--palette-soft-contrast, var(--palette-surface, #ffffff))",
+        "color": "var(--palette-hard-contrast, #0f172a)",
         "border-radius": "var(--radius-s, 0.25rem)",
         "padding": "0 0.15em"
       }
@@ -13,7 +13,7 @@
     "accent": {
       "label": "Accent",
       "css": {
-        "color": "var(--palette-accent)",
+        "color": "var(--palette-accent, var(--palette-hard-contrast, #0f172a))",
         "font-weight": "var(--font-weight-medium)"
       }
     }

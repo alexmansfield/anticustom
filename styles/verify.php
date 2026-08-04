@@ -77,6 +77,18 @@ function check(string $label, bool $ok, string $detail = ''): void
     }
 }
 
+// Advisory channel (ADR 0007 advisory tier): warnings are surfaced but never
+// fail the build — legibility floors are context-dependent (3:1 passes for
+// large/bold text), so a sub-4.5:1 pair is flagged, not rejected.
+$warnings = [];
+function warn(string $label, bool $ok, string $detail = ''): void
+{
+    global $warnings;
+    if ($ok) return;
+    echo "  ⚠ {$label}" . ($detail !== '' ? " — {$detail}" : '') . "\n";
+    $warnings[] = $detail !== '' ? "{$label}: {$detail}" : $label;
+}
+
 $css  = generate_css();               // defaults.json
 $keys = emitted_keys($css);
 
@@ -372,8 +384,11 @@ $paletteBareRefs = function (string $css): array {
     preg_match_all('/var\(\s*--(palette-[a-z0-9-]+|intent(?:-[a-z]+)?)\s*\)/i', $css, $m);
     return array_values(array_unique($m[0]));
 };
+// The named-style registry (fields/styles.json) emits into the same stylesheet,
+// so its palette refs are bound by the same contract.
+$sweepCss .= "\n" . file_get_contents(dirname(__DIR__) . '/fields/styles.json');
 $bare = $paletteBareRefs($sweepCss);
-check('no component palette/intent ref is bare (fallback contract, ADR 0015)',
+check('no component/named-style palette ref is bare (fallback contract, ADR 0015)',
     empty($bare),
     'bare refs (need a fallback): ' . implode(', ', $bare));
 
@@ -440,9 +455,97 @@ check('neutral semi-light OKLCH value pinned',
     strpos($css, '--neutral-semi-light: #8f8f8f;') !== false,
     'the neutral L65 OKLCH stop drifted from its expected value');
 
+// ═════════════════════════════════════════════════
+// M3 — WCAG contrast matrix (isolated port #31; docs/research/php-contrast-matrix.md)
+//
+// Backs verification, not generation (ADR 0020): resolve each palette's pairs
+// exactly as the cascade would and emit advisory warnings below 4.5:1. The two
+// pure functions are WCAG 2.2 relative luminance + contrast ratio (0.04045
+// threshold); thresholds are evaluated on the unrounded ratio.
+// ═════════════════════════════════════════════════
+
+function anti_relative_luminance(string $hex): float {
+    $hex = ltrim($hex, '#');
+    $lin = [];
+    foreach ([0, 2, 4] as $i) {
+        $c = hexdec(substr($hex, $i, 2)) / 255;
+        $lin[] = $c <= 0.04045 ? $c / 12.92 : pow(($c + 0.055) / 1.055, 2.4);
+    }
+    return 0.2126 * $lin[0] + 0.7152 * $lin[1] + 0.0722 * $lin[2];
+}
+
+function anti_contrast_ratio(string $hexA, string $hexB): float {
+    $la = anti_relative_luminance($hexA);
+    $lb = anti_relative_luminance($hexB);
+    [$dark, $light] = $la < $lb ? [$la, $lb] : [$lb, $la];
+    return ($light + 0.05) / ($dark + 0.05);
+}
+
+/** color-mix(in srgb, fill, pole pct%): linear interpolation of gamma-encoded channels. */
+function mix_srgb(string $fillHex, string $pole, float $pct): string {
+    $p = $pct / 100.0;
+    $poleV = $pole === 'white' ? 1.0 : 0.0;
+    $fh = ltrim($fillHex, '#');
+    $out = '#';
+    foreach ([0, 2, 4] as $i) {
+        $c = hexdec(substr($fh, $i, 2)) / 255.0;
+        $out .= sprintf('%02x', (int) round(($c * (1 - $p) + $poleV * $p) * 255));
+    }
+    return $out;
+}
+
+// Hard checks: the math matches WebAIM-published values exactly (the anchor
+// against a silent luminance/ratio regression). These FAIL, unlike legibility.
+$cr = fn($a, $b) => round(anti_contrast_ratio($a, $b), 4);
+check('contrast(#777777, #fff) == 4.4781 (WebAIM)', $cr('#777777', '#ffffff') === 4.4781,
+    'got ' . $cr('#777777', '#ffffff'));
+check('contrast(#767676, #fff) == 4.5422 (WebAIM)', $cr('#767676', '#ffffff') === 4.5422,
+    'got ' . $cr('#767676', '#ffffff'));
+check('contrast(#fff, #000) == 21.0', $cr('#ffffff', '#000000') === 21.0,
+    'got ' . $cr('#ffffff', '#000000'));
+check('contrast ratio is symmetric', $cr('#336699', '#ffffff') === $cr('#ffffff', '#336699'));
+
+// Advisory legibility over the resolved default palette (ADR 0020 coverage):
+// (1) surface vs each text-bearing contrast step; (2) each intent + accent vs
+// its resolved -on, at rest and at the fill's derived hover/active.
+$tokenData = json_decode(file_get_contents(__DIR__ . '/defaults.json'), true);
+$dpal   = $tokenData['color']['palettes']['default'] ?? [];
+$rmap   = resolve_ramp($tokenData['color']['colors'] ?? [], $tokenData['color']['stops'] ?? []);
+$rhex   = fn(?string $v): ?string => $v === null ? null : resolve_palette_hex($v, $rmap);
+
+$surface = $rhex($dpal['surface'] ?? null);
+if ($surface !== null) {
+    foreach (['hard-contrast', 'ultra-hard-contrast'] as $textStep) {   // ADR 0020 default text list
+        $stepHex = $rhex($dpal[$textStep] ?? null);
+        if ($stepHex === null) continue;
+        $ratio = anti_contrast_ratio($surface, $stepHex);
+        warn("surface vs {$textStep} legible (≥4.5:1)", $ratio >= 4.5, sprintf('%.2f:1', $ratio));
+    }
+}
+
+foreach (['accent', 'info', 'success', 'warning', 'danger'] as $intent) {
+    $fill = $rhex($dpal[$intent] ?? null);
+    $on   = $rhex($dpal["{$intent}-on"] ?? null);
+    if ($fill === null || $on === null) continue;
+
+    $pole = palette_state_pole($dpal[$intent], $rmap);
+    $states = [
+        'rest'   => $fill,
+        'hover'  => mix_srgb($fill, $pole, 12),
+        'active' => mix_srgb($fill, $pole, 20),
+    ];
+    foreach ($states as $state => $fillHex) {
+        $ratio = anti_contrast_ratio($fillHex, $on);   // -on stays fixed while fill shifts
+        warn("intent {$intent}/{$state} vs -on legible (≥4.5:1)", $ratio >= 4.5, sprintf('%.2f:1', $ratio));
+    }
+}
+
 // ─────────────────────────────────────────────────
 // Summary
 // ─────────────────────────────────────────────────
+if (!empty($warnings)) {
+    echo "\n" . count($warnings) . " advisory legibility warning(s) (non-failing):\n  - " . implode("\n  - ", $warnings) . "\n";
+}
 echo "\n{$passed} passed, {$failed} failed\n";
 
 if ($failed > 0) {
