@@ -2,8 +2,8 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "name": "style-panel",
   "label": "Style Editor Panel",
-  "version": "4.0.0",
-  "description": "Design token editor for typography, colors, spacing, borders, and effects (palette-model open-set emission, per-device fluid scales)",
+  "version": "5.0.0",
+  "description": "Design token editor for typography, colors, spacing, borders, and effects (palette-model open-set emission, OKLCH ramp + palette tiers, per-device fluid scales)",
   "viewport": {
     "label": "Viewport Range",
     "hint": "The two widths every fluid scale interpolates between.",
@@ -77,72 +77,51 @@
       "icon": "colors",
       "tabs": [
         {
-          "id": "palette",
-          "label": "Palette",
-          "settingsKey": "color.sections",
+          "id": "ramp",
+          "label": "Ramp",
           "sections": [
             {
-              "id": "brand",
-              "label": "Brand Colors",
-              "settingsKey": "color.sections.brand.colors",
-              "colors": [
-                "base",
-                "primary",
-                "secondary",
-                "tertiary"
-              ]
+              "id": "colors",
+              "label": "Source Colors",
+              "settingsKey": "color.colors"
             },
             {
-              "id": "neutral",
-              "label": "Neutral Colors",
-              "settingsKey": "color.sections.neutral.colors",
-              "colors": [
-                "neutral"
-              ]
-            },
-            {
-              "id": "semantic",
-              "label": "Semantic Colors",
-              "settingsKey": "color.sections.semantic.colors",
-              "colors": [
-                "info",
-                "success",
-                "warning",
-                "danger"
-              ]
+              "id": "stops",
+              "label": "Stop Scale",
+              "settingsKey": "color.stops",
+              "value": { "min": 0, "max": 100, "step": 1 }
             }
           ],
-          "hues": {
-            "settingsKey": "color.hues",
-            "shades": [
-              { "id": "ultra-light", "lightness": 90 },
-              { "id": "light", "lightness": 80 },
-              { "id": "semi-light", "lightness": 65 },
-              { "id": "semi-dark", "lightness": 35 },
-              { "id": "dark", "lightness": 20 },
-              { "id": "ultra-dark", "lightness": 10 }
-            ]
-          },
           "resetButton": {
             "label": "Reset Colors",
-            "sections": ["color.sections"]
+            "sections": ["color.colors", "color.stops", "color.palettes"]
           }
         },
         {
-          "id": "colorways",
-          "label": "Colorways",
-          "settingsKey": "color.colorways",
-          "description": "Define color schemes that can be applied to sections",
+          "id": "palettes",
+          "label": "Palettes",
+          "settingsKey": "color.palettes",
+          "description": "Map contrast-scale and intent slots to ramp colors for each palette. Slots left unset inherit from the default palette.",
           "properties": [
-            { "id": "base", "label": "Base" },
-            { "id": "hard-contrast", "label": "Hard Contrast" },
-            { "id": "contrast", "label": "Contrast" },
+            { "id": "surface", "label": "Surface" },
+            { "id": "ultra-soft-contrast", "label": "Ultra Soft Contrast" },
             { "id": "soft-contrast", "label": "Soft Contrast" },
-            { "id": "accent", "label": "Accent" }
+            { "id": "hard-contrast", "label": "Hard Contrast" },
+            { "id": "ultra-hard-contrast", "label": "Ultra Hard Contrast" },
+            { "id": "accent", "label": "Accent" },
+            { "id": "accent-on", "label": "Accent On" },
+            { "id": "info", "label": "Info" },
+            { "id": "info-on", "label": "Info On" },
+            { "id": "success", "label": "Success" },
+            { "id": "success-on", "label": "Success On" },
+            { "id": "warning", "label": "Warning" },
+            { "id": "warning-on", "label": "Warning On" },
+            { "id": "danger", "label": "Danger" },
+            { "id": "danger-on", "label": "Danger On" }
           ],
           "resetButton": {
-            "label": "Reset Colorways",
-            "sections": ["color.colorways"]
+            "label": "Reset Palettes",
+            "sections": ["color.palettes"]
           }
         }
       ]

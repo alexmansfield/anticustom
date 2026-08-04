@@ -103,23 +103,23 @@ $navItems = [
                 </svg>
             </button>
 
-            <!-- Colorway selector (components view only) -->
+            <!-- Palette selector (components view only) — region theming via [data-palette] -->
             <?php if ($tool === 'components') : ?>
             <select
                 class="anti-explorer__colorway-select"
                 x-data="{
-                    colorway: localStorage.getItem('antiExplorer_previewColorway') || '',
-                    colorways: (window.__antiColorways || []).filter(n => n !== 'default')
+                    palette: localStorage.getItem('antiExplorer_previewPalette') || '',
+                    palettes: (window.__antiPalettes || []).filter(n => n !== 'default')
                 }"
-                x-model="colorway"
-                @change="window.dispatchEvent(new CustomEvent('antiColorwayChange', { detail: { colorway: colorway } }))"
-                @anti-colorways-changed.window="colorways = $event.detail.colorways.filter(n => n !== 'default')"
-                aria-label="Preview colorway"
-                title="Preview colorway"
+                x-model="palette"
+                @change="window.dispatchEvent(new CustomEvent('antiPaletteChange', { detail: { palette: palette } }))"
+                @anti-palettes-changed.window="palettes = $event.detail.palettes.filter(n => n !== 'default')"
+                aria-label="Preview palette"
+                title="Preview palette"
             >
                 <option value="">Default</option>
-                <template x-for="c in colorways" :key="c">
-                    <option :value="c" x-text="c.charAt(0).toUpperCase() + c.slice(1)" :selected="c === colorway"></option>
+                <template x-for="c in palettes" :key="c">
+                    <option :value="c" x-text="c.charAt(0).toUpperCase() + c.slice(1)" :selected="c === palette"></option>
                 </template>
             </select>
             <?php endif; ?>

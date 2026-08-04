@@ -10,63 +10,78 @@
  */
 
 // ============================================
-// Color Conversion Utilities (mirrors generate.php)
+// Color Conversion Utilities (mirrors generate.php OKLCH ramp math)
+//
+// EXACT JS port of styles/generate.php OKLCH + color-mix math. The explorer's
+// live preview MUST produce byte-identical hex to the generator.
+// Verified: colorShade('#737373',65) === '#8f8f8f'; colorShade('#336699',90) === '#bbe2ff'.
 // ============================================
 
-function hexToHsl(hex) {
-    hex = hex.replace('#', '');
-    const r = parseInt(hex.substring(0, 2), 16) / 255;
-    const g = parseInt(hex.substring(2, 4), 16) / 255;
-    const b = parseInt(hex.substring(4, 6), 16) / 255;
+function cbrtSigned(x){ return x < 0 ? -Math.pow(-x, 1/3) : Math.pow(x, 1/3); }
+function srgbDecode(v){ const s = v<0?-1:1; v=Math.abs(v); return s*(v<=0.04045 ? v/12.92 : Math.pow((v+0.055)/1.055, 2.4)); }
+function srgbEncode(v){ const s = v<0?-1:1; v=Math.abs(v); return s*(v>0.0031308 ? 1.055*Math.pow(v,1/2.4)-0.055 : 12.92*v); }
 
-    const max = Math.max(r, g, b);
-    const min = Math.min(r, g, b);
-    let h, s, l = (max + min) / 2;
-
-    if (max === min) {
-        return { h: 0, s: 0, l: l * 100 };
-    }
-
-    const d = max - min;
-    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-
-    if (max === r) {
-        h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
-    } else if (max === g) {
-        h = ((b - r) / d + 2) / 6;
-    } else {
-        h = ((r - g) / d + 4) / 6;
-    }
-
-    return { h: h * 360, s: s * 100, l: l * 100 };
+function linearToOklab(r,g,b){
+    const l = 0.4122214708*r + 0.5363325363*g + 0.0514459929*b;
+    const m = 0.2119034982*r + 0.6806995451*g + 0.1073969566*b;
+    const s = 0.0883024619*r + 0.2817188376*g + 0.6299787005*b;
+    const l_=cbrtSigned(l), m_=cbrtSigned(m), s_=cbrtSigned(s);
+    return [
+        0.2104542553*l_ + 0.7936177850*m_ - 0.0040720468*s_,
+        1.9779984951*l_ - 2.4285922050*m_ + 0.4505937099*s_,
+        0.0259040371*l_ + 0.7827717662*m_ - 0.8086757660*s_,
+    ];
 }
-
-function hueToRgb(p, q, t) {
-    if (t < 0) t += 1;
-    if (t > 1) t -= 1;
-    if (t < 1/6) return p + (q - p) * 6 * t;
-    if (t < 1/2) return q;
-    if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
-    return p;
+function oklchToLinear(L,C,H){
+    const hr = H*Math.PI/180, a = C*Math.cos(hr), b = C*Math.sin(hr);
+    const l_ = L + 0.3963377773761749*a + 0.2158037573099136*b;
+    const m_ = L - 0.1055613458156586*a - 0.0638541728258133*b;
+    const s_ = L - 0.0894841775298119*a - 1.2914855480194092*b;
+    const l=l_**3, m=m_**3, s=s_**3;
+    return [
+         4.0767416621*l - 3.3077115913*m + 0.2309699292*s,
+        -1.2684380046*l + 2.6097574011*m - 0.3413193965*s,
+        -0.0041960863*l - 0.7034186147*m + 1.7076147010*s,
+    ];
 }
-
-function hslToHex(h, s, l) {
-    h /= 360; s /= 100; l /= 100;
-    let r, g, b;
-
-    if (s === 0) {
-        r = g = b = l;
-    } else {
-        const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-        const p = 2 * l - q;
-        r = hueToRgb(p, q, h + 1/3);
-        g = hueToRgb(p, q, h);
-        b = hueToRgb(p, q, h - 1/3);
+function hexToOklch(hex){
+    hex = hex.replace('#','');
+    const r=srgbDecode(parseInt(hex.substr(0,2),16)/255);
+    const g=srgbDecode(parseInt(hex.substr(2,2),16)/255);
+    const b=srgbDecode(parseInt(hex.substr(4,2),16)/255);
+    const [L,a,bb]=linearToOklab(r,g,b);
+    let H = Math.atan2(bb,a)*180/Math.PI; if (H<0) H+=360;
+    return [L, Math.sqrt(a*a+bb*bb), H];
+}
+function oklchInGamut(L,C,H){ return oklchToLinear(L,C,H).every(c => c>=-0.0001 && c<=1.0001); }
+function oklchClipToHex(L,C,H){
+    const enc = oklchToLinear(L,C,H).map(c => Math.max(0, Math.min(1, srgbEncode(c))));
+    return '#' + enc.map(c => Math.round(c*255).toString(16).padStart(2,'0')).join('');
+}
+function oklchToHex(L,C,H){
+    if (L>=1) return '#ffffff'; if (L<=0) return '#000000';
+    if (oklchInGamut(L,C,H)) return oklchClipToHex(L,C,H);
+    const JND=0.02, EPS=0.0001, hr=H*Math.PI/180;
+    let min=0, max=C, minIn=true, chroma=C;
+    while (max-min > EPS){
+        chroma=(min+max)/2;
+        if (minIn && oklchInGamut(L,chroma,H)){ min=chroma; continue; }
+        const clip = oklchToLinear(L,chroma,H).map(c => srgbDecode(Math.max(0,Math.min(1,srgbEncode(c)))));
+        const [cl,ca,cb]=linearToOklab(clip[0],clip[1],clip[2]);
+        const E=Math.sqrt((cl-L)**2 + (ca-chroma*Math.cos(hr))**2 + (cb-chroma*Math.sin(hr))**2);
+        if (E<JND){ if (JND-E<EPS) return oklchClipToHex(L,chroma,H); minIn=false; min=chroma; }
+        else max=chroma;
     }
-
-    const toHex = v => Math.round(v * 255).toString(16).padStart(2, '0');
-    return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+    return oklchClipToHex(L,chroma,H);
 }
+// stop `value` is 0..100 → OKLCH L by /100. L100/L0 → literal white/black (handled by caller for stops).
+function colorShade(hex, L100){ const [,C,H]=hexToOklch(hex); return oklchToHex(L100/100, C, H); }
+
+// state pole for a resolved fill hex (ADR 0026 v1): L>0.5 → white, else black.
+function statePole(hex){ const [L]=hexToOklch(hex); return L>0.5 ? 'white' : 'black'; }
+
+// color-mix(in srgb, fillHex, pole pct%) resolved to hex (mirrors CSS color-mix).
+function colorMix(fillHex, pole, pct){ const p=pct/100, pv=pole==='white'?1:0, h=fillHex.replace('#',''); let o='#'; for(let i=0;i<6;i+=2){const c=parseInt(h.substr(i,2),16)/255; o+=Math.round((c*(1-p)+pv*p)*255).toString(16).padStart(2,'0');} return o; }
 
 // ============================================
 // UI-Only Icons (panel chrome)
@@ -105,7 +120,7 @@ const UI_ICONS = {
 // ============================================
 // Settings version — bump when structure changes
 // ============================================
-const SETTINGS_VERSION = 4;
+const SETTINGS_VERSION = 5;
 
 // ============================================
 // Alpine.js Component Registration
@@ -124,13 +139,13 @@ function registerStylePanel() {
         notificationText: '',
         notificationType: 'success',
 
-        // Colorway picker state
-        colorwayDropdownId: null,
-        colorwayCustomMode: null,
+        // Palette slot-picker state
+        paletteDropdownId: null,
+        paletteCustomMode: null,
 
-        // Colorway management state
-        addingColorway: false,
-        newColorwayName: '',
+        // Palette management state
+        addingPalette: false,
+        newPaletteName: '',
 
         // Schema-driven data
         schema: null,
@@ -194,10 +209,10 @@ function registerStylePanel() {
             window.__antiSettings = this.settings;
             window.dispatchEvent(new CustomEvent('anti-settings-changed'));
 
-            // Close colorway dropdown on outside click
+            // Close palette slot-picker dropdown on outside click
             document.addEventListener('click', (e) => {
-                if (this.colorwayDropdownId && !e.target.closest('.anti-colorway-picker') && !e.target.closest('.clr-picker')) {
-                    this.closeColorwayDropdown();
+                if (this.paletteDropdownId && !e.target.closest('.anti-colorway-picker') && !e.target.closest('.clr-picker')) {
+                    this.closePaletteDropdown();
                 }
             });
 
@@ -330,8 +345,9 @@ function registerStylePanel() {
          */
         getSectionType(section) {
             if (section.type) return section.type;
-            if (section.properties) return 'colorways';
-            if (section.colors) return 'palette';
+            if (section.properties) return 'palettes';
+            if (section.settingsKey === 'color.colors') return 'ramp';
+            if (section.settingsKey === 'color.stops') return 'stops';
             return 'unknown';
         },
 
@@ -698,100 +714,189 @@ function registerStylePanel() {
                             this.applyPickOne(section);
                         } else if (type === 'composite') {
                             this.applyComposite(section);
-                        } else if (type === 'palette') {
-                            this.applyPaletteSection(section);
+                        } else if (type === 'ramp') {
+                            this.applyRamp();
+                        } else if (type === 'palettes') {
+                            this.applyPalettes();
                         }
-                    }
-                    if (tab.properties) {
-                        this.applyColorwaySettings();
+                        // 'stops' emits no CSS of its own — ramp reads the stop
+                        // scale directly; changing a stop re-runs applyRamp().
                     }
                 }
             }
         },
 
         // ============================================
-        // Color Methods
+        // Ramp-tier Methods (ADR 0025/0019 — OKLCH, mirrors generate.php)
         // ============================================
 
-        applyPaletteSection(section) {
-            const colors = this.getByPath(section.settingsKey);
-            if (!colors) return;
+        /**
+         * Build the ramp map exactly as generate.php resolve_ramp():
+         * `{name}` → source hex, `{name}-{stop}` → shade. A pin wins; an L≥100
+         * stop is literal white, L≤0 literal black; else colorShade (OKLCH).
+         */
+        buildRampMap() {
+            const colors = this.getByPath('color.colors') || {};
+            const stops = this.getByPath('color.stops') || {};
+            const map = {};
             for (const [name, data] of Object.entries(colors)) {
-                if (!data.enabled) {
-                    this.applyCSSVariable(`--${name}`, 'initial');
-                    for (const shade of this.getHueShades()) {
-                        this.applyCSSVariable(`--${name}-${shade.id}`, 'initial');
-                    }
-                    continue;
+                const hex = data.value;
+                if (!hex) continue;
+                map[name] = hex;
+                const pins = data.pins || {};
+                for (const [stopName, stopData] of Object.entries(stops)) {
+                    if (stopData.value === undefined) continue;
+                    const L = parseFloat(stopData.value);
+                    let val;
+                    if (pins[stopName] !== undefined) val = pins[stopName];
+                    else if (L >= 100) val = '#ffffff';
+                    else if (L <= 0) val = '#000000';
+                    else val = colorShade(hex, L);
+                    map[`${name}-${stopName}`] = val;
                 }
-                if (data.color) {
-                    this.applyCSSVariable(`--${name}`, data.color);
-                    this.applyColorHues(name, data.color);
-                }
+            }
+            return map;
+        },
+
+        /** Emit `--{name}` + `--{name}-{stop}` for every source color × stop. */
+        applyRamp() {
+            const map = this.buildRampMap();
+            for (const [key, hex] of Object.entries(map)) {
+                this.applyCSSVariable(`--${key}`, hex);
             }
         },
 
-        updateColorBase(settingsKey, colorName, value) {
-            const colors = this.getByPath(settingsKey);
-            if (colors?.[colorName]) {
-                colors[colorName].color = value;
-                this.applyCSSVariable(`--${colorName}`, value);
-                this.applyColorHues(colorName, value);
+        updateRampColor(name, value) {
+            const colors = this.getByPath('color.colors');
+            if (colors?.[name]) {
+                colors[name].value = value;
+                this.applyRamp();
+                this.applyPalettes();   // palette state-mix poles depend on ramp hexes
                 this.markChanged();
             }
         },
 
-        toggleColor(settingsKey, colorName, enabled) {
-            const colors = this.getByPath(settingsKey);
-            if (colors?.[colorName]) {
-                colors[colorName].enabled = enabled;
-                if (enabled && colors[colorName].color) {
-                    this.applyCSSVariable(`--${colorName}`, colors[colorName].color);
-                    this.applyColorHues(colorName, colors[colorName].color);
-                } else {
-                    this.applyCSSVariable(`--${colorName}`, 'initial');
-                    for (const shade of this.getHueShades()) {
-                        this.applyCSSVariable(`--${colorName}-${shade.id}`, 'initial');
-                    }
-                }
+        updateStop(name, value) {
+            const stops = this.getByPath('color.stops');
+            if (stops?.[name]) {
+                stops[name].value = parseFloat(value);
+                this.applyRamp();
+                this.applyPalettes();
                 this.markChanged();
             }
         },
 
-        applyColorHues(name, hex) {
-            const hsl = hexToHsl(hex);
-            for (const shade of this.getHueShades()) {
-                const shadeHex = hslToHex(hsl.h, hsl.s, shade.lightness);
-                this.applyCSSVariable(`--${name}-${shade.id}`, shadeHex);
-            }
-        },
-
-        getHueShades() {
-            const colorsPanel = this.schema?.panels?.find(p => p.id === 'colors');
-            const paletteTab = colorsPanel?.tabs?.find(t => t.id === 'palette');
-            return paletteTab?.hues?.shades || [];
-        },
-
-        getPaletteTab() {
-            const colorsPanel = this.schema?.panels?.find(p => p.id === 'colors');
-            return colorsPanel?.tabs?.find(t => t.id === 'palette');
+        /** Title-case a hyphenated key for display (e.g. "ultra-light" → "Ultra Light"). */
+        titleCaseKey(key) {
+            return key.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
         },
 
         // ============================================
-        // Colorway Methods
+        // Palette-tier Methods (ADR 0015/0016/0020/0026 — mirrors generate.php)
         // ============================================
 
-        updateColorway(wayName, prop, value) {
-            const colorways = this.settings.color?.colorways;
-            if (colorways?.[wayName]) {
-                colorways[wayName][prop] = value;
-                this.applyColorwaySettings();
+        /** Resolve a palette value (`#hex` or `var(--rampKey)`) to a hex, or null. */
+        resolvePaletteHex(value, rampMap) {
+            if (!value) return null;
+            const v = value.trim();
+            if (/^#[0-9a-fA-F]{6}$/.test(v)) return v;
+            const m = v.match(/^var\(\s*--([a-z0-9-]+)\s*\)$/i);
+            if (m) return rampMap[m[1]] ?? null;
+            return null;
+        },
+
+        /** The fill slots of a palette (keys not an -on/-hover/-active of another key). */
+        paletteSlots(palette) {
+            const slots = [];
+            for (const key of Object.keys(palette)) {
+                const m = key.match(/^(.*)-(on|hover|active)$/);
+                if (m && palette[m[1]] !== undefined) continue;
+                slots.push(key);
+            }
+            return slots;
+        },
+
+        /** color-mix pole for a slot's state; unresolvable → black (ADR 0026 v1). */
+        paletteStatePole(value, rampMap) {
+            const hex = this.resolvePaletteHex(value, rampMap);
+            if (hex === null) return 'black';
+            return statePole(hex);
+        },
+
+        /** One sparse palette block's lines, mirroring emit_palette_block(). */
+        emitPaletteBlock(palette, rampMap) {
+            const STATE_MIX = { hover: 12, active: 20 };
+            const lines = [];
+            for (const slot of this.paletteSlots(palette)) {
+                const value = palette[slot];
+                lines.push(`    --palette-${slot}: ${value};`);
+                if (palette[`${slot}-on`] !== undefined) {
+                    lines.push(`    --palette-${slot}-on: ${palette[`${slot}-on`]};`);
+                }
+                for (const [state, pct] of Object.entries(STATE_MIX)) {
+                    if (palette[`${slot}-${state}`] !== undefined) {
+                        lines.push(`    --palette-${slot}-${state}: ${palette[`${slot}-${state}`]};`);
+                    } else {
+                        const pole = this.paletteStatePole(value, rampMap);
+                        lines.push(`    --palette-${slot}-${state}: color-mix(in srgb, var(--palette-${slot}), ${pole} ${pct}%);`);
+                    }
+                }
+            }
+            return lines;
+        },
+
+        /**
+         * Emit the live-preview palette overrides: sparse per-palette blocks
+         * (default → :root, others → [data-palette="name"]) with color-mix
+         * states, plus one [data-intent] binding per intent — byte-for-byte the
+         * generator's palette-tier output.
+         */
+        applyPalettes() {
+            const palettes = this.settings.color?.palettes;
+            if (!palettes) return;
+            const rampMap = this.buildRampMap();
+            const defaultPalette = palettes.default || {};
+
+            let styleEl = document.getElementById('anti-palette-overrides');
+            if (!styleEl) {
+                styleEl = document.createElement('style');
+                styleEl.id = 'anti-palette-overrides';
+                document.head.appendChild(styleEl);
+            }
+
+            let css = '';
+            for (const [paletteName, palette] of Object.entries(palettes)) {
+                const lines = this.emitPaletteBlock(palette, rampMap);
+                if (!lines.length) continue;
+                const selector = paletteName === 'default' ? ':root' : `[data-palette="${paletteName}"]`;
+                css += `${selector} {\n${lines.join('\n')}\n}\n`;
+            }
+
+            for (const slot of this.paletteSlots(defaultPalette)) {
+                if (defaultPalette[`${slot}-on`] === undefined) continue;
+                css += `[data-intent="${slot}"] {\n`;
+                css += `    --intent: var(--palette-${slot});\n`;
+                css += `    --intent-on: var(--palette-${slot}-on);\n`;
+                css += `    --intent-hover: var(--palette-${slot}-hover);\n`;
+                css += `    --intent-active: var(--palette-${slot}-active);\n`;
+                css += `}\n`;
+            }
+
+            styleEl.textContent = css;
+            this.syncPaletteList();
+        },
+
+        updatePalette(paletteName, slot, value) {
+            const palettes = this.settings.color?.palettes;
+            if (palettes?.[paletteName]) {
+                palettes[paletteName][slot] = value;
+                this.applyPalettes();
                 this.markChanged();
             }
         },
 
+        /** Ramp source colors × stops as picker option groups (+ fixed white/black). */
         getPaletteOptions() {
-            const shades = this.getHueShades();
             const groups = [{
                 group: 'Fixed',
                 base: null,
@@ -801,97 +906,75 @@ function registerStylePanel() {
                 ]
             }];
 
-            const paletteTab = this.getPaletteTab();
-            if (!paletteTab) return groups;
+            const colors = this.getByPath('color.colors') || {};
+            const stops = this.getByPath('color.stops') || {};
 
-            for (const section of paletteTab.sections || []) {
-                if (!section.colors) continue;
-                const colors = this.getByPath(section.settingsKey);
-                for (const name of section.colors) {
-                    const data = colors?.[name];
-                    if (!data?.enabled || !data?.color) continue;
-
-                    const displayName = name.charAt(0).toUpperCase() + name.slice(1);
-                    const hsl = hexToHsl(data.color);
-
-                    const base = { value: `var(--${name})`, label: displayName, hex: data.color };
-                    const shadeList = shades.map(shade => ({
-                        value: `var(--${name}-${shade.id})`,
-                        label: `${displayName} ${shade.id.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}`,
-                        hex: hslToHex(hsl.h, hsl.s, shade.lightness)
-                    }));
-
-                    groups.push({ group: displayName, base, shades: shadeList });
+            for (const [name, data] of Object.entries(colors)) {
+                if (!data.value) continue;
+                const displayName = this.titleCaseKey(name);
+                const base = { value: `var(--${name})`, label: displayName, hex: data.value };
+                const pins = data.pins || {};
+                const shadeList = [];
+                for (const [stopName, stopData] of Object.entries(stops)) {
+                    if (stopData.value === undefined) continue;
+                    const L = parseFloat(stopData.value);
+                    let hex;
+                    if (pins[stopName] !== undefined) hex = pins[stopName];
+                    else if (L >= 100) hex = '#ffffff';
+                    else if (L <= 0) hex = '#000000';
+                    else hex = colorShade(data.value, L);
+                    shadeList.push({
+                        value: `var(--${name}-${stopName})`,
+                        label: `${displayName} ${this.titleCaseKey(stopName)}`,
+                        hex
+                    });
                 }
+                groups.push({ group: displayName, base, shades: shadeList });
             }
 
             return groups;
         },
 
-        resolveColorwayHex(value) {
+        /** Resolve a palette slot value to a swatch hex (OKLCH-accurate). */
+        resolvePaletteSwatch(value) {
             if (!value) return '#cccccc';
-            if (value.startsWith('#')) return value;
-
-            const match = value.match(/^var\(--(.+)\)$/);
-            if (!match) return '#cccccc';
-
-            const varName = match[1];
-            const shades = this.getHueShades();
-            const shadeMap = {};
-            for (const shade of shades) {
-                shadeMap[shade.id] = shade.lightness;
-            }
-
-            const paletteTab = this.getPaletteTab();
-            for (const section of paletteTab?.sections || []) {
-                const colors = this.getByPath(section.settingsKey);
-                for (const [name, data] of Object.entries(colors || {})) {
-                    if (varName === name) return data.color || '#cccccc';
-                    if (varName.startsWith(name + '-')) {
-                        const shade = varName.slice(name.length + 1);
-                        if (shade in shadeMap) {
-                            const hsl = hexToHsl(data.color);
-                            return hslToHex(hsl.h, hsl.s, shadeMap[shade]);
-                        }
-                    }
-                }
-            }
-
-            return '#cccccc';
+            const v = value.trim();
+            if (/^#[0-9a-fA-F]{6}$/.test(v)) return v;
+            return this.resolvePaletteHex(v, this.buildRampMap()) ?? '#cccccc';
         },
 
-        toggleColorwayDropdown(id) {
-            if (this.colorwayDropdownId === id) {
-                this.closeColorwayDropdown();
+        togglePaletteDropdown(id) {
+            if (this.paletteDropdownId === id) {
+                this.closePaletteDropdown();
             } else {
-                this.colorwayDropdownId = id;
-                this.colorwayCustomMode = null;
+                this.paletteDropdownId = id;
+                this.paletteCustomMode = null;
             }
         },
 
-        closeColorwayDropdown() {
-            this.colorwayDropdownId = null;
-            this.colorwayCustomMode = null;
+        closePaletteDropdown() {
+            this.paletteDropdownId = null;
+            this.paletteCustomMode = null;
         },
 
-        selectColorwayOption(wayName, tokenId, value) {
-            this.updateColorway(wayName, tokenId, value);
-            this.closeColorwayDropdown();
+        selectPaletteOption(paletteName, slot, value) {
+            this.updatePalette(paletteName, slot, value);
+            this.closePaletteDropdown();
         },
 
         enterCustomHexMode(id) {
-            this.colorwayCustomMode = id;
+            this.paletteCustomMode = id;
         },
 
-        applyCustomHex(wayName, tokenId, hex) {
+        applyCustomHex(paletteName, slot, hex) {
             if (/^#[0-9a-fA-F]{6}$/.test(hex)) {
-                this.updateColorway(wayName, tokenId, hex);
-                this.closeColorwayDropdown();
+                this.updatePalette(paletteName, slot, hex);
+                this.closePaletteDropdown();
             }
         },
 
-        getColorwayDisplayLabel(value) {
-            if (!value) return '';
+        getPaletteValueLabel(value) {
+            if (!value) return 'Inherit';
             if (value === '#ffffff') return 'White';
             if (value === '#000000') return 'Black';
             if (value.startsWith('#')) return value.toUpperCase();
@@ -899,86 +982,55 @@ function registerStylePanel() {
             const match = value.match(/^var\(--(.+)\)$/);
             if (!match) return value;
 
-            return match[1].split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+            return this.titleCaseKey(match[1]);
         },
 
-        applyColorwaySettings() {
-            const colorways = this.settings.color?.colorways;
-            if (!colorways) return;
-
-            const colorsPanel = this.schema?.panels?.find(p => p.id === 'colors');
-            const colorwaysTab = colorsPanel?.tabs?.find(t => t.id === 'colorways');
-            const properties = colorwaysTab?.properties || [];
-
-            let styleEl = document.getElementById('anti-colorway-overrides');
-            if (!styleEl) {
-                styleEl = document.createElement('style');
-                styleEl.id = 'anti-colorway-overrides';
-                document.head.appendChild(styleEl);
-            }
-
-            let css = '';
-            for (const [wayName, data] of Object.entries(colorways)) {
-                const selector = wayName === 'default' ? ':root' : `[data-colorway="${wayName}"]`;
-                const lines = [];
-                for (const prop of properties) {
-                    if (data[prop.id]) lines.push(`    --colorway-${prop.id}: ${data[prop.id]};`);
-                }
-                if (lines.length) {
-                    css += `${selector} {\n${lines.join('\n')}\n}\n`;
-                }
-            }
-            styleEl.textContent = css;
-
-            this.syncColorwayList();
-        },
-
-        /** Broadcast current colorway names so other components (e.g. preview selector) stay in sync */
-        syncColorwayList() {
-            const colorways = Object.keys(this.settings.color?.colorways || {});
-            window.__antiColorways = colorways;
-            window.dispatchEvent(new CustomEvent('anti-colorways-changed', { detail: { colorways } }));
+        /** Broadcast current palette names so the preview region selector stays in sync. */
+        syncPaletteList() {
+            const palettes = Object.keys(this.settings.color?.palettes || {});
+            window.__antiPalettes = palettes;
+            window.dispatchEvent(new CustomEvent('anti-palettes-changed', { detail: { palettes } }));
         },
 
         // ============================================
-        // Colorway Management (Add / Delete)
+        // Palette Management (Add / Delete)
         // ============================================
 
-        addColorway() {
-            const name = this.newColorwayName.trim();
+        addPalette() {
+            const name = this.newPaletteName.trim();
             if (!name) return;
 
-            const colorways = this.settings.color?.colorways;
-            if (!colorways || colorways[name]) {
-                this.showNotification(colorways[name] ? 'Colorway already exists' : 'Error', 'error');
+            const palettes = this.settings.color?.palettes;
+            if (!palettes || palettes[name]) {
+                this.showNotification(palettes[name] ? 'Palette already exists' : 'Error', 'error');
                 return;
             }
 
-            // Clone from default colorway as starting point
-            const defaultWay = colorways['default'] || {};
-            colorways[name] = JSON.parse(JSON.stringify(defaultWay));
+            // Clone from default palette as a starting point.
+            const defaultPalette = palettes['default'] || {};
+            palettes[name] = JSON.parse(JSON.stringify(defaultPalette));
 
-            this.newColorwayName = '';
-            this.addingColorway = false;
-            this.applyColorwaySettings();
+            this.newPaletteName = '';
+            this.addingPalette = false;
+            this.applyPalettes();
             this.markChanged();
-            this.showNotification(`Colorway "${name}" added`, 'success');
+            this.showNotification(`Palette "${name}" added`, 'success');
         },
 
-        deleteColorway(wayName) {
-            if (wayName === 'default') return;
-            const colorways = this.settings.color?.colorways;
-            if (!colorways?.[wayName]) return;
+        deletePalette(paletteName) {
+            if (paletteName === 'default') return;
+            const palettes = this.settings.color?.palettes;
+            if (!palettes?.[paletteName]) return;
 
-            delete colorways[wayName];
-            this.applyColorwaySettings();
+            delete palettes[paletteName];
+            this.applyPalettes();
             this.markChanged();
-            this.showNotification(`Colorway "${wayName}" removed`, 'success');
+            this.showNotification(`Palette "${paletteName}" removed`, 'success');
         },
 
-        cancelAddColorway() {
-            this.addingColorway = false;
-            this.newColorwayName = '';
+        cancelAddPalette() {
+            this.addingPalette = false;
+            this.newPaletteName = '';
         },
 
         // ============================================
@@ -1098,7 +1150,7 @@ const getPanelHTML = () => `
     <div x-data="stylePanel"
          class="anti-panel anti-panel-container"
          :class="{ 'settings-open': settingsOpen, 'is-hidden': !isOpen }"
-         @keydown.escape.window="colorwayDropdownId ? closeColorwayDropdown() : closeSettings()">
+         @keydown.escape.window="paletteDropdownId ? closePaletteDropdown() : closeSettings()">
 
         <!-- Navigation Panel -->
         <nav class="anti-nav">
@@ -1430,31 +1482,24 @@ const getPanelHTML = () => `
                                 </div>
                             </template>
 
-                            <!-- ===== PALETTE section (colors) ===== -->
-                            <template x-if="getSectionType(section) === 'palette'">
+                            <!-- ===== RAMP section (flat source colors) ===== -->
+                            <template x-if="getSectionType(section) === 'ramp'">
                                 <div>
                                     <div class="anti-section-title" x-text="section.label" style="margin-top: 8px;"></div>
-                                    <template x-for="colorName in section.colors" :key="colorName">
-                                        <div class="anti-size-section"
-                                            :class="{ 'is-enabled': getByPath(section.settingsKey)?.[colorName]?.enabled }">
+                                    <template x-for="(data, colorName) in (getByPath(section.settingsKey) || {})" :key="colorName">
+                                        <div class="anti-size-section is-enabled">
                                             <div class="anti-size-header">
                                                 <span class="anti-size-name"
-                                                    x-text="colorName.charAt(0).toUpperCase() + colorName.slice(1)"></span>
-                                                <label class="anti-toggle">
-                                                    <input type="checkbox"
-                                                        :checked="getByPath(section.settingsKey)?.[colorName]?.enabled"
-                                                        @change="toggleColor(section.settingsKey, colorName, $event.target.checked)">
-                                                    <span class="anti-toggle-slider"></span>
-                                                </label>
+                                                    x-text="titleCaseKey(colorName)"></span>
                                             </div>
                                             <div class="anti-size-controls">
                                                 <div class="anti-control-group">
                                                     <div class="anti-color-input">
                                                         <span class="anti-color-swatch"
-                                                            :style="'background:' + (getByPath(section.settingsKey)?.[colorName]?.color || '#cccccc')"></span>
+                                                            :style="'background:' + (getByPath(section.settingsKey)?.[colorName]?.value || '#cccccc')"></span>
                                                         <input type="text" data-coloris
-                                                            :value="getByPath(section.settingsKey)?.[colorName]?.color"
-                                                            @input="updateColorBase(section.settingsKey, colorName, $event.target.value)">
+                                                            :value="getByPath(section.settingsKey)?.[colorName]?.value"
+                                                            @input="updateRampColor(colorName, $event.target.value)">
                                                     </div>
                                                 </div>
                                             </div>
@@ -1463,19 +1508,48 @@ const getPanelHTML = () => `
                                 </div>
                             </template>
 
-                            <!-- ===== COLORWAYS section ===== -->
-                            <template x-if="getSectionType(section) === 'colorways'">
+                            <!-- ===== STOPS section (contrast lightness scale) ===== -->
+                            <template x-if="getSectionType(section) === 'stops'">
                                 <div>
-                                    <template x-for="(way, wayName) in (getByPath(section.settingsKey) || {})" :key="wayName">
+                                    <div class="anti-section-title" x-text="section.label" style="margin-top: 8px;"></div>
+                                    <template x-for="(data, stopName) in (getByPath(section.settingsKey) || {})" :key="stopName">
+                                        <div class="anti-size-section is-enabled">
+                                            <div class="anti-size-header">
+                                                <span class="anti-size-name" x-text="titleCaseKey(stopName)"></span>
+                                            </div>
+                                            <div class="anti-size-controls">
+                                                <div class="anti-control-row">
+                                                    <input type="range" class="anti-range"
+                                                        :min="section.value.min" :max="section.value.max" :step="section.value.step"
+                                                        :value="getByPath(section.settingsKey)?.[stopName]?.value"
+                                                        @input="updateStop(stopName, $event.target.value)">
+                                                    <div class="anti-control-value">
+                                                        <input type="number"
+                                                            :min="section.value.min" :max="section.value.max" :step="section.value.step"
+                                                            :value="getByPath(section.settingsKey)?.[stopName]?.value"
+                                                            @change="updateStop(stopName, $event.target.value)">
+                                                        <span>L</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </div>
+                            </template>
+
+                            <!-- ===== PALETTES section ===== -->
+                            <template x-if="getSectionType(section) === 'palettes'">
+                                <div>
+                                    <template x-for="(palette, paletteName) in (getByPath(section.settingsKey) || {})" :key="paletteName">
                                         <div class="anti-size-section is-enabled">
                                             <div class="anti-size-header">
                                                 <span class="anti-size-name"
-                                                    x-text="wayName.charAt(0).toUpperCase() + wayName.slice(1)"></span>
-                                                <button x-show="wayName !== 'default'"
+                                                    x-text="titleCaseKey(paletteName)"></span>
+                                                <button x-show="paletteName !== 'default'"
                                                     class="anti-colorway-delete"
-                                                    @click="deleteColorway(wayName)"
-                                                    :title="'Delete ' + wayName + ' colorway'"
-                                                    aria-label="Delete colorway">
+                                                    @click="deletePalette(paletteName)"
+                                                    :title="'Delete ' + paletteName + ' palette'"
+                                                    aria-label="Delete palette">
                                                     ${UI_ICONS.close}
                                                 </button>
                                             </div>
@@ -1485,25 +1559,25 @@ const getPanelHTML = () => `
                                                         <label class="anti-control-label" style="font-size: 11px;" x-text="token.label"></label>
                                                         <div class="anti-colorway-picker">
                                                             <button class="anti-colorway-picker__trigger"
-                                                                @click="toggleColorwayDropdown(wayName + '-' + token.id)">
+                                                                @click="togglePaletteDropdown(paletteName + '-' + token.id)">
                                                                 <span class="anti-colorway-picker__swatch"
-                                                                    :class="{ 'is-white': resolveColorwayHex(way[token.id]) === '#ffffff' }"
-                                                                    :style="'background:' + resolveColorwayHex(way[token.id])"></span>
+                                                                    :class="{ 'is-white': resolvePaletteSwatch(palette[token.id]) === '#ffffff' }"
+                                                                    :style="'background:' + resolvePaletteSwatch(palette[token.id])"></span>
                                                                 <span class="anti-colorway-picker__label"
-                                                                    x-text="getColorwayDisplayLabel(way[token.id])"></span>
+                                                                    x-text="getPaletteValueLabel(palette[token.id])"></span>
                                                                 <span class="anti-colorway-picker__chevron">&#9662;</span>
                                                             </button>
                                                             <div class="anti-colorway-picker__dropdown"
-                                                                x-show="colorwayDropdownId === wayName + '-' + token.id"
+                                                                x-show="paletteDropdownId === paletteName + '-' + token.id"
                                                                 x-cloak>
-                                                                <template x-if="colorwayCustomMode !== wayName + '-' + token.id">
+                                                                <template x-if="paletteCustomMode !== paletteName + '-' + token.id">
                                                                     <div>
                                                                         <template x-for="group in getPaletteOptions()" :key="group.group">
                                                                             <div class="anti-colorway-picker__group">
                                                                                 <button x-show="group.base"
                                                                                     class="anti-colorway-picker__color-row"
-                                                                                    :class="{ 'is-selected': way[token.id] === group.base?.value }"
-                                                                                    @click="selectColorwayOption(wayName, token.id, group.base?.value)">
+                                                                                    :class="{ 'is-selected': palette[token.id] === group.base?.value }"
+                                                                                    @click="selectPaletteOption(paletteName, token.id, group.base?.value)">
                                                                                     <span class="anti-colorway-picker__parent-swatch"
                                                                                         :class="{ 'is-white': group.base?.hex === '#ffffff' }"
                                                                                         :style="'background:' + group.base?.hex"></span>
@@ -1515,10 +1589,10 @@ const getPanelHTML = () => `
                                                                                 <div class="anti-colorway-picker__shade-row">
                                                                                     <template x-for="shade in group.shades" :key="shade.value">
                                                                                         <button class="anti-colorway-picker__shade"
-                                                                                            :class="{ 'is-selected': way[token.id] === shade.value, 'is-white': shade.hex === '#ffffff' }"
+                                                                                            :class="{ 'is-selected': palette[token.id] === shade.value, 'is-white': shade.hex === '#ffffff' }"
                                                                                             :style="'background:' + shade.hex"
                                                                                             :title="shade.label"
-                                                                                            @click="selectColorwayOption(wayName, token.id, shade.value)">
+                                                                                            @click="selectPaletteOption(paletteName, token.id, shade.value)">
                                                                                         </button>
                                                                                     </template>
                                                                                 </div>
@@ -1526,7 +1600,7 @@ const getPanelHTML = () => `
                                                                         </template>
                                                                         <div class="anti-colorway-picker__group">
                                                                             <button class="anti-colorway-picker__option"
-                                                                                @click="enterCustomHexMode(wayName + '-' + token.id)">
+                                                                                @click="enterCustomHexMode(paletteName + '-' + token.id)">
                                                                                 <span class="anti-colorway-picker__option-swatch"
                                                                                     style="background: linear-gradient(135deg, #ff0000, #ff8800, #ffff00, #00ff00, #0088ff, #8800ff)"></span>
                                                                                 <span class="anti-colorway-picker__option-label">Custom hex...</span>
@@ -1534,13 +1608,13 @@ const getPanelHTML = () => `
                                                                         </div>
                                                                     </div>
                                                                 </template>
-                                                                <template x-if="colorwayCustomMode === wayName + '-' + token.id">
+                                                                <template x-if="paletteCustomMode === paletteName + '-' + token.id">
                                                                     <div class="anti-colorway-picker__custom">
                                                                         <input type="text" data-coloris
-                                                                            :value="way[token.id]?.startsWith?.('#') ? way[token.id] : ''"
+                                                                            :value="palette[token.id]?.startsWith?.('#') ? palette[token.id] : ''"
                                                                             placeholder="#000000"
-                                                                            @input="updateColorway(wayName, token.id, $event.target.value)"
-                                                                            @keydown.enter="applyCustomHex(wayName, token.id, $event.target.value)">
+                                                                            @input="updatePalette(paletteName, token.id, $event.target.value)"
+                                                                            @keydown.enter="applyCustomHex(paletteName, token.id, $event.target.value)">
                                                                     </div>
                                                                 </template>
                                                             </div>
@@ -1551,24 +1625,24 @@ const getPanelHTML = () => `
                                         </div>
                                     </template>
 
-                                    <!-- Add Colorway -->
+                                    <!-- Add Palette -->
                                     <div class="anti-colorway-add">
-                                        <template x-if="!addingColorway">
-                                            <button class="anti-btn anti-btn--add-colorway" @click="addingColorway = true">
-                                                + Add Colorway
+                                        <template x-if="!addingPalette">
+                                            <button class="anti-btn anti-btn--add-colorway" @click="addingPalette = true">
+                                                + Add Palette
                                             </button>
                                         </template>
-                                        <template x-if="addingColorway">
+                                        <template x-if="addingPalette">
                                             <div class="anti-colorway-add__form">
                                                 <input type="text" class="anti-input"
-                                                    x-model="newColorwayName"
-                                                    placeholder="Colorway Name"
-                                                    @keydown.enter="addColorway()"
-                                                    @keydown.escape="cancelAddColorway()"
+                                                    x-model="newPaletteName"
+                                                    placeholder="Palette Name"
+                                                    @keydown.enter="addPalette()"
+                                                    @keydown.escape="cancelAddPalette()"
                                                     x-init="$nextTick(() => $el.focus())">
                                                 <div class="anti-colorway-add__actions">
-                                                    <button class="anti-btn anti-btn--small anti-btn--primary" @click="addColorway()">Add</button>
-                                                    <button class="anti-btn anti-btn--small anti-btn--secondary" @click="cancelAddColorway()">Cancel</button>
+                                                    <button class="anti-btn anti-btn--small anti-btn--primary" @click="addPalette()">Add</button>
+                                                    <button class="anti-btn anti-btn--small anti-btn--secondary" @click="cancelAddPalette()">Cancel</button>
                                                 </div>
                                             </div>
                                         </template>
