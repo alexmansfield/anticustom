@@ -2,7 +2,7 @@
  * Input Style: Plato
  *
  * Clean inputs with subtle focus rings and smooth transitions.
- * Uses design tokens from the colorway system.
+ * Uses design tokens from the palette system.
  *
  * @package Anticustom
  */
@@ -23,8 +23,8 @@
     --anti-input-font-l: var(--text-l, var(--text));
     --anti-input-hint-font: var(--text-s, var(--text));
 
-    background-color: var(--colorway-base, #ffffff);
-    color: var(--colorway-hard-contrast, #0f172a);
+    background-color: var(--palette-surface, #ffffff);
+    color: var(--palette-hard-contrast, #0f172a);
 }
 
 /* ==========================================================================
@@ -32,7 +32,7 @@
    ========================================================================== */
 
 .anti-input__label {
-    color: var(--colorway-hard-contrast, #0f172a);
+    color: var(--palette-hard-contrast, #0f172a);
 }
 
 .anti-input__required {
@@ -44,14 +44,14 @@
    ========================================================================== */
 
 .anti-input__control {
-    border: var(--border-m, var(--border)) solid var(--colorway-soft-contrast, #cbd5e1);
-    background-color: var(--colorway-base, #ffffff);
-    color: var(--colorway-hard-contrast, #0f172a);
+    border: var(--border-m, var(--border)) solid var(--palette-soft-contrast, #cbd5e1);
+    background-color: var(--palette-surface, #ffffff);
+    color: var(--palette-hard-contrast, #0f172a);
     border-radius: var(--radius-m, var(--radius));
 }
 
 .anti-input__control::placeholder {
-    color: var(--colorway-soft-contrast, #94a3b8);
+    color: var(--palette-soft-contrast, #94a3b8);
 }
 
 /* ==========================================================================
@@ -59,7 +59,7 @@
    ========================================================================== */
 
 .anti-input__control:focus {
-    border-color: var(--colorway-hard-contrast, #3b82f6);
+    border-color: var(--palette-hard-contrast, #3b82f6);
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
 }
 
@@ -81,7 +81,7 @@
    ========================================================================== */
 
 .anti-input__helper {
-    color: var(--colorway-soft-contrast, #64748b);
+    color: var(--palette-soft-contrast, #64748b);
 }
 
 .anti-input__error {

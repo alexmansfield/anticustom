@@ -105,9 +105,9 @@
       "tab": "settings"
     },
     {
-      "name": "colorway",
-      "type": "colorway",
-      "label": "Colorway",
+      "name": "palette",
+      "type": "palette",
+      "label": "Palette",
       "description": "Color scheme for this select",
       "default": "inherit",
       "tab": "settings"
@@ -131,8 +131,8 @@
     "text-l",
     "radius-m",
     "radius-l",
-    "colorway-base",
-    "colorway-hard-contrast",
-    "colorway-soft-contrast"
+    "palette-surface",
+    "palette-hard-contrast",
+    "palette-soft-contrast"
   ]
 }

@@ -25,7 +25,7 @@
  * @var string $alignment             Text alignment: left|center|right
  * @var string $size                  Hero size: sm|md|lg
  * @var string $background_image      Optional background image URL
- * @var string $colorway              Color scheme
+ * @var string $palette              Color scheme
  */
 
 // Extract props with defaults
@@ -41,7 +41,7 @@ $secondary_cta_variant = $props['secondary_cta_variant'] ?? 'outline';
 $alignment             = $props['alignment'] ?? 'center';
 $size                  = $props['size'] ?? 'lg';
 $background_image      = $props['background_image'] ?? '';
-$colorway              = $props['colorway'] ?? 'default';
+$palette              = $props['palette'] ?? 'default';
 
 // Determine title tag: h2 if eyebrow is absent, p if eyebrow is present
 $title_tag = !empty($eyebrow) ? 'p' : 'h2';
@@ -71,7 +71,7 @@ $secondary_classes = anti_classes([
 
 // Build data attributes (skip if 'inherit' - let it inherit from parent)
 $attrs = anti_attrs([
-    'data-colorway' => (!empty($colorway) && $colorway !== 'inherit') ? $colorway : false,
+    'data-palette' => (!empty($palette) && $palette !== 'inherit') ? $palette : false,
 ]);
 ?>
 
@@ -98,11 +98,11 @@ $attrs = anti_attrs([
                 <div class="anti-hero__actions">
                     <?php if (!empty($primary_cta_text)) : ?>
                         <?php if (!empty($primary_cta_url)) : ?>
-                            <a href="<?php echo url_escape($primary_cta_url); ?>" class="<?php echo attr_escape($primary_classes); ?>" data-colorway="primary">
+                            <a href="<?php echo url_escape($primary_cta_url); ?>" class="<?php echo attr_escape($primary_classes); ?>" data-palette="primary">
                                 <?php echo html_escape($primary_cta_text); ?>
                             </a>
                         <?php else : ?>
-                            <button type="button" class="<?php echo attr_escape($primary_classes); ?>" data-colorway="primary">
+                            <button type="button" class="<?php echo attr_escape($primary_classes); ?>" data-palette="primary">
                                 <?php echo html_escape($primary_cta_text); ?>
                             </button>
                         <?php endif; ?>
@@ -110,11 +110,11 @@ $attrs = anti_attrs([
 
                     <?php if (!empty($secondary_cta_text)) : ?>
                         <?php if (!empty($secondary_cta_url)) : ?>
-                            <a href="<?php echo url_escape($secondary_cta_url); ?>" class="<?php echo attr_escape($secondary_classes); ?>" data-colorway="primary">
+                            <a href="<?php echo url_escape($secondary_cta_url); ?>" class="<?php echo attr_escape($secondary_classes); ?>" data-palette="primary">
                                 <?php echo html_escape($secondary_cta_text); ?>
                             </a>
                         <?php else : ?>
-                            <button type="button" class="<?php echo attr_escape($secondary_classes); ?>" data-colorway="primary">
+                            <button type="button" class="<?php echo attr_escape($secondary_classes); ?>" data-palette="primary">
                                 <?php echo html_escape($secondary_cta_text); ?>
                             </button>
                         <?php endif; ?>

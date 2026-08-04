@@ -105,9 +105,9 @@
       "tab": "settings"
     },
     {
-      "name": "colorway",
-      "type": "colorway",
-      "label": "Colorway",
+      "name": "palette",
+      "type": "palette",
+      "label": "Palette",
       "description": "Color scheme for this component",
       "default": "inherit",
       "tab": "settings"
@@ -125,7 +125,7 @@
     "space-xs",
     "space-s",
     "space-m",
-    "colorway-accent",
-    "colorway-hard-contrast"
+    "palette-accent",
+    "palette-hard-contrast"
   ]
 }

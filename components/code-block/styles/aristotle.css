@@ -2,7 +2,7 @@
  * Code Block Style: Aristotle
  *
  * Lighter code theme with clear border delineation.
- * No dark background — uses colorway base with visible border.
+ * No dark background — uses palette base with visible border.
  *
  * @package Anticustom
  */
@@ -13,12 +13,12 @@
 
 .anti-code-block {
     border-radius: var(--radius-l, var(--radius));
-    color: var(--colorway-hard-contrast, #0f172a);
-    border: var(--border-s, var(--border)) solid var(--colorway-soft-contrast, #e2e8f0);
+    color: var(--palette-hard-contrast, #0f172a);
+    border: var(--border-s, var(--border)) solid var(--palette-soft-contrast, #e2e8f0);
 }
 
-.anti-code-block[data-colorway] {
-    background-color: var(--colorway-base, #ffffff);
+.anti-code-block[data-palette] {
+    background-color: var(--palette-surface, #ffffff);
 }
 
 /* ==========================================================================
@@ -27,20 +27,20 @@
 
 .anti-code-block__header {
     padding: var(--space-xs, var(--space)) var(--space-m, var(--space));
-    border-bottom: var(--border-s, var(--border)) solid var(--colorway-soft-contrast, #e2e8f0);
+    border-bottom: var(--border-s, var(--border)) solid var(--palette-soft-contrast, #e2e8f0);
 }
 
 .anti-code-block__title {
     font-size: var(--text-s, var(--text));
     font-weight: var(--font-weight-medium, 500);
-    color: var(--colorway-hard-contrast, #0f172a);
+    color: var(--palette-hard-contrast, #0f172a);
 }
 
 .anti-code-block__language {
     font-size: var(--text-xs, var(--text));
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: var(--colorway-contrast, #475569);
+    color: var(--palette-hard-contrast, #475569);
 }
 
 /* ==========================================================================
@@ -54,7 +54,7 @@
 .anti-code-block__code {
     font-size: var(--text-s, var(--text));
     line-height: 1.6;
-    color: var(--colorway-hard-contrast, #0f172a);
+    color: var(--palette-hard-contrast, #0f172a);
 }
 
 /* ==========================================================================
@@ -64,7 +64,7 @@
 .anti-code-block--has-line-numbers .anti-code-block__line::before {
     width: 3ch;
     margin-right: var(--space-m, var(--space));
-    color: var(--colorway-soft-contrast, #e2e8f0);
+    color: var(--palette-soft-contrast, #e2e8f0);
     font-size: var(--text-xs, var(--text));
 }
 

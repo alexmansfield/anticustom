@@ -15,7 +15,7 @@
  * @var string $subtitle  Supporting text below the title
  * @var string $align     Text alignment: inherit|left|center|right
  * @var string $size      Size variant: s|m|l
- * @var string $colorway  Color scheme: inherit|default|base|primary|secondary
+ * @var string $palette  Color scheme: inherit|default|base|primary|secondary
  */
 
 // Extract props with defaults
@@ -24,7 +24,7 @@ $title    = $props['title'] ?? '';
 $subtitle = $props['subtitle'] ?? '';
 $align    = $props['align'] ?? 'center';
 $size     = $props['size'] ?? 'm';
-$colorway = $props['colorway'] ?? 'inherit';
+$palette = $props['palette'] ?? 'inherit';
 
 // Nothing to render if all fields are empty
 if (empty($eyebrow) && empty($title) && empty($subtitle)) {
@@ -33,7 +33,7 @@ if (empty($eyebrow) && empty($title) && empty($subtitle)) {
 
 // Build data attributes (omit data-align for "inherit" so it inherits from parent)
 $attrs = anti_attrs([
-    'data-colorway' => (!empty($colorway) && $colorway !== 'inherit') ? $colorway : false,
+    'data-palette' => (!empty($palette) && $palette !== 'inherit') ? $palette : false,
     'data-align'    => $align !== 'inherit' ? $align : null,
     'data-size'     => $size !== 'm' ? $size : null,
 ]);

@@ -1,17 +1,17 @@
 /**
  * Hero Style: Aristotle
  *
- * Background and text color from colorway tokens.
+ * Background and text color from palette tokens.
  * Bottom border to anchor the section visually.
  *
  * @package Anticustom
  */
 
 .anti-hero {
-    color: var(--colorway-hard-contrast, #0f172a);
-    border-bottom: var(--border-m, var(--border)) solid var(--colorway-soft-contrast, #e2e8f0);
+    color: var(--palette-hard-contrast, #0f172a);
+    border-bottom: var(--border-m, var(--border)) solid var(--palette-soft-contrast, #e2e8f0);
 }
 
-.anti-hero[data-colorway] {
-    background-color: var(--colorway-base, #ffffff);
+.anti-hero[data-palette] {
+    background-color: var(--palette-surface, #ffffff);
 }

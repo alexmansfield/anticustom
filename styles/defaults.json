@@ -69,20 +69,30 @@
       "ultra-dark": { "value": 10, "position": 1, "spec": true },
       "black": { "value": 0, "position": 0 }
     },
-    "colorways": {
+    "palettes": {
       "default": {
-        "base": "var(--neutral-ultra-light)",
+        "surface": "var(--neutral-ultra-light)",
+        "ultra-soft-contrast": "var(--neutral-semi-light)",
+        "soft-contrast": "var(--neutral-semi-dark)",
         "hard-contrast": "var(--neutral-dark)",
-        "contrast": "var(--neutral)",
-        "soft-contrast": "var(--neutral-light)",
-        "accent": "var(--primary)"
+        "ultra-hard-contrast": "var(--neutral-ultra-dark)",
+        "accent": "var(--primary)",
+        "accent-on": "#ffffff",
+        "info": "var(--info-ultra-light)",
+        "info-on": "var(--info-dark)",
+        "success": "var(--success-ultra-light)",
+        "success-on": "var(--success-dark)",
+        "warning": "var(--warning-ultra-light)",
+        "warning-on": "var(--warning-dark)",
+        "danger": "var(--danger-ultra-light)",
+        "danger-on": "var(--danger-dark)"
       },
       "primary": {
-        "base": "var(--primary)",
-        "hard-contrast": "#ffffff",
-        "contrast": "var(--primary-light)",
+        "surface": "var(--primary)",
         "soft-contrast": "var(--primary-semi-light)",
-        "accent": "var(--primary-dark)"
+        "hard-contrast": "#ffffff",
+        "accent": "var(--primary-dark)",
+        "accent-on": "#ffffff"
       }
     }
   },

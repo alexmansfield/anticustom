@@ -79,9 +79,9 @@
       "tab": "settings"
     },
     {
-      "name": "colorway",
-      "type": "colorway",
-      "label": "Colorway",
+      "name": "palette",
+      "type": "palette",
+      "label": "Palette",
       "description": "Color scheme for this boolean",
       "default": "inherit",
       "tab": "settings"
@@ -99,8 +99,8 @@
     "space-xs",
     "space-s",
     "space-m",
-    "colorway-base",
-    "colorway-hard-contrast",
-    "colorway-soft-contrast"
+    "palette-surface",
+    "palette-hard-contrast",
+    "palette-soft-contrast"
   ]
 }

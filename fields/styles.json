@@ -1,11 +1,11 @@
 {
-  "$comment": "Global named-style registry for formatted fields (ADR 0014). Each style becomes one CSS class: .anti-style-<name>. Component schemas opt in per field via leantext.styles. CSS values should reference design tokens (colorway vars respond to data-colorway).",
+  "$comment": "Global named-style registry for formatted fields (ADR 0014). Each style becomes one CSS class: .anti-style-<name>. Component schemas opt in per field via leantext.styles. CSS values should reference design tokens (palette vars respond to data-palette).",
   "styles": {
     "highlight": {
       "label": "Highlight",
       "css": {
-        "background": "var(--colorway-soft-contrast)",
-        "color": "var(--colorway-hard-contrast)",
+        "background": "var(--palette-soft-contrast)",
+        "color": "var(--palette-hard-contrast)",
         "border-radius": "var(--radius-s, 0.25rem)",
         "padding": "0 0.15em"
       }
@@ -13,7 +13,7 @@
     "accent": {
       "label": "Accent",
       "css": {
-        "color": "var(--colorway-accent)",
+        "color": "var(--palette-accent)",
         "font-weight": "var(--font-weight-medium)"
       }
     }

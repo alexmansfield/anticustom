@@ -79,7 +79,7 @@ $samples = [
     'hero' => [
         'alignment' => 'center',
         'size' => 'sm',
-        'colorway' => 'primary',
+        'palette' => 'primary',
         'children' => [
             [
                 'type' => 'intro',
@@ -96,7 +96,7 @@ $samples = [
                     'text' => 'Primary Action',
                     'url' => '#',
                     'variant' => 'solid',
-                    'colorway' => 'primary',
+                    'palette' => 'primary',
                 ],
             ],
         ],
@@ -109,7 +109,7 @@ $samples = [
         'size' => 'm',
     ],
     'section' => [
-        'colorway' => 'default',
+        'palette' => 'default',
         'padding_top' => 'l',
         'padding_bottom' => 'l',
         'gap' => 'm',

@@ -1,7 +1,7 @@
 /**
  * Intro Style: Default
  *
- * Clean typography with colorway-aware colors.
+ * Clean typography with palette-aware colors.
  *
  * @package Anticustom
  */
@@ -9,24 +9,24 @@
 .anti-intro {
     /* Padding drawn directly (interface apparatus retired, palette-model M1) */
     padding: var(--space-l, var(--space));
-    color: var(--colorway-hard-contrast, #0f172a);
+    color: var(--palette-hard-contrast, #0f172a);
 }
 
-.anti-intro[data-colorway] {
-    background-color: var(--colorway-base, #ffffff);
+.anti-intro[data-palette] {
+    background-color: var(--palette-surface, #ffffff);
 }
 
 .anti-intro__eyebrow {
     font-weight: 600;
-    color: var(--colorway-accent);
+    color: var(--palette-accent);
 }
 
 .anti-intro__title {
     font-weight: var(--h2-weight, 700);
-    color: var(--colorway-hard-contrast);
+    color: var(--palette-hard-contrast);
 }
 
 .anti-intro__subtitle {
-    color: var(--colorway-hard-contrast);
+    color: var(--palette-hard-contrast);
     opacity: 0.8;
 }

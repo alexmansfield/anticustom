@@ -2,7 +2,7 @@
  * Select Style: Plato
  *
  * Clean selects with subtle focus rings and smooth transitions.
- * Uses design tokens from the colorway system.
+ * Uses design tokens from the palette system.
  *
  * @package Anticustom
  */
@@ -26,8 +26,8 @@
     --anti-select-option-inline-gap: var(--space-s, var(--space));
     --anti-select-option-font: var(--text-m, var(--text));
 
-    background-color: var(--colorway-base, #ffffff);
-    color: var(--colorway-hard-contrast, #0f172a);
+    background-color: var(--palette-surface, #ffffff);
+    color: var(--palette-hard-contrast, #0f172a);
 }
 
 /* ==========================================================================
@@ -36,7 +36,7 @@
 
 .anti-select__label,
 .anti-select__legend {
-    color: var(--colorway-hard-contrast, #0f172a);
+    color: var(--palette-hard-contrast, #0f172a);
 }
 
 .anti-select__required {
@@ -48,10 +48,10 @@
    ========================================================================== */
 
 .anti-select__control {
-    border: var(--border-m, var(--border)) solid var(--colorway-soft-contrast, #cbd5e1);
-    background-color: var(--colorway-base, #ffffff);
+    border: var(--border-m, var(--border)) solid var(--palette-soft-contrast, #cbd5e1);
+    background-color: var(--palette-surface, #ffffff);
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 5l3 3 3-3' stroke='%2364748b' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-    color: var(--colorway-hard-contrast, #0f172a);
+    color: var(--palette-hard-contrast, #0f172a);
     border-radius: var(--radius-m, var(--radius));
 }
 
@@ -60,12 +60,12 @@
    ========================================================================== */
 
 .anti-select__control:focus {
-    border-color: var(--colorway-hard-contrast, #3b82f6);
+    border-color: var(--palette-hard-contrast, #3b82f6);
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
 }
 
 .anti-select__input:focus-visible {
-    outline: var(--border-m, var(--border)) solid var(--colorway-hard-contrast, #3b82f6);
+    outline: var(--border-m, var(--border)) solid var(--palette-hard-contrast, #3b82f6);
     outline-offset: var(--border-m, var(--border));
 }
 
@@ -90,16 +90,16 @@
     --anti-select-btngroup-gap: var(--space-xxs, var(--space));
     --anti-select-btn-padding: var(--space-xxs, var(--space)) var(--space-s, var(--space));
     --anti-select-btn-border: var(--border-m, var(--border));
-    --anti-select-btn-border-color: var(--colorway-soft-contrast, #cbd5e1);
+    --anti-select-btn-border-color: var(--palette-soft-contrast, #cbd5e1);
     --anti-select-btn-font: var(--text-s, var(--text));
-    --anti-select-btn-hover-border: var(--colorway-hard-contrast, #3b82f6);
-    --anti-select-btn-active-bg: var(--colorway-hard-contrast, #3b82f6);
-    --anti-select-btn-active-color: var(--colorway-base, #ffffff);
-    --anti-select-btn-active-border: var(--colorway-hard-contrast, #3b82f6);
+    --anti-select-btn-hover-border: var(--palette-hard-contrast, #3b82f6);
+    --anti-select-btn-active-bg: var(--palette-hard-contrast, #3b82f6);
+    --anti-select-btn-active-color: var(--palette-surface, #ffffff);
+    --anti-select-btn-active-border: var(--palette-hard-contrast, #3b82f6);
 }
 
 .anti-select--button-group .anti-select__btn:focus-visible {
-    outline: var(--border-m, var(--border)) solid var(--colorway-hard-contrast, #3b82f6);
+    outline: var(--border-m, var(--border)) solid var(--palette-hard-contrast, #3b82f6);
     outline-offset: var(--border-m, var(--border));
 }
 
@@ -112,7 +112,7 @@
    ========================================================================== */
 
 .anti-select__option-label {
-    color: var(--colorway-hard-contrast, #0f172a);
+    color: var(--palette-hard-contrast, #0f172a);
 }
 
 /* ==========================================================================
@@ -120,7 +120,7 @@
    ========================================================================== */
 
 .anti-select__helper {
-    color: var(--colorway-soft-contrast, #64748b);
+    color: var(--palette-soft-contrast, #64748b);
 }
 
 .anti-select__error {

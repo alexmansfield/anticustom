@@ -303,6 +303,64 @@ check('pinned ramp still carries no states', !isset($rampKeys['brandx-dark-hover
     'even a pinned stop emits no interaction state (ADR 0026 amends 0019)');
 
 // ═════════════════════════════════════════════════
+// M3 — Palette tier: contrast scale + intents + states + bindings (ADR 0015/16/20/26)
+// ═════════════════════════════════════════════════
+
+// Surface-anchored contrast scale (ADR 0015): surface + 4 steps, no middle.
+foreach (['surface', 'ultra-soft-contrast', 'soft-contrast', 'hard-contrast', 'ultra-hard-contrast'] as $step) {
+    check("palette contrast step --palette-{$step}", isset($keys["palette-{$step}"]), 'not emitted');
+}
+
+// Intents are two tokens — fill + authored -on (ADR 0016/0020) — plus accent peer.
+foreach (['accent', 'info', 'success', 'warning', 'danger'] as $intent) {
+    check("palette intent --palette-{$intent} + -on",
+        isset($keys["palette-{$intent}"]) && isset($keys["palette-{$intent}-on"]),
+        'intent fill and its -on foreground must both emit');
+}
+
+// The colorway vocabulary is fully retired (ADR 0015 rename).
+check('no --colorway-* survives in emitted CSS', strpos($css, '--colorway-') === false,
+    'a colorway token still emits');
+check('no [data-colorway] selector survives', strpos($css, 'data-colorway') === false,
+    'region theming should switch on [data-palette]');
+
+// Interaction states are palette-tier color-mix (ADR 0026), pole by lightness:
+// a light fill mixes toward white, a dark fill toward black.
+check('light fill (surface) hover mixes toward white',
+    strpos($css, '--palette-surface-hover: color-mix(in srgb, var(--palette-surface), white 12%);') !== false,
+    'a light slot should shift outward toward white on hover');
+check('dark fill (hard-contrast) hover mixes toward black',
+    strpos($css, '--palette-hard-contrast-hover: color-mix(in srgb, var(--palette-hard-contrast), black 12%);') !== false,
+    'a dark slot should mix toward black');
+check('active is a larger mix than hover',
+    strpos($css, '--palette-surface-active: color-mix(in srgb, var(--palette-surface), white 20%);') !== false,
+    'active should be a hair stronger (20%) than hover (12%)');
+check('-on foregrounds carry no interaction state', !isset($keys['palette-accent-on-hover']),
+    '-on is orthogonal to states (ADR 0026) — must not emit -on-hover');
+
+// Intent binding rules map generic --intent* to the surrounding palette (ADR 0016).
+check('intent binding rule emitted for success',
+    preg_match('/\[data-intent="success"\]\s*\{[^}]*--intent:\s*var\(--palette-success\)[^}]*--intent-on:\s*var\(--palette-success-on\)/s', $css) === 1,
+    'a [data-intent] binding rule should map --intent/--intent-on to the palette slot');
+
+// A non-default palette emits a [data-palette] region block, dense (inherits
+// unspecified slots from default so the region is self-contained pre-sparse).
+check('non-default palette emits [data-palette] region',
+    strpos($css, '[data-palette="primary"] {') !== false);
+check('dense region inherits unspecified slot from default',
+    preg_match('/\[data-palette="primary"\]\s*\{[^}]*--palette-info:\s*var\(--info-ultra-light\)/s', $css) === 1,
+    'a slot the region omits should fall back to the default palette value (dense)');
+
+// No component CSS still references the retired --colorway-* vocabulary.
+$sweepCss = '';
+foreach (glob(dirname(__DIR__) . '/components/*/styles/*.css') as $file) {
+    $sweepCss .= file_get_contents($file) . "\n";
+}
+check('no component references retired --colorway-*',
+    strpos($sweepCss, '--colorway-') === false,
+    'a component CSS file still references a --colorway-* token');
+
+// ═════════════════════════════════════════════════
 // M3 — OKLCH ramp math (isolated port #29; docs/research/oklch-generation.md)
 // ═════════════════════════════════════════════════
 

@@ -23,16 +23,16 @@
     --anti-card-link-size: var(--text-s, var(--text));
     --anti-card-grid-gap: var(--space-l, var(--space));
 
-    color: var(--colorway-hard-contrast, #0f172a);
+    color: var(--palette-hard-contrast, #0f172a);
     overflow: hidden;
     padding: 0;
     /* Chrome drawn directly (interface apparatus retired, palette-model M1) */
-    border: var(--border-s, var(--border)) solid var(--colorway-soft-contrast, #e2e8f0);
+    border: var(--border-s, var(--border)) solid var(--palette-soft-contrast, #e2e8f0);
     border-radius: var(--radius-l, var(--radius));
 }
 
-.anti-card[data-colorway] {
-    background-color: var(--colorway-base, #ffffff);
+.anti-card[data-palette] {
+    background-color: var(--palette-surface, #ffffff);
 }
 
 /* ==========================================================================
@@ -40,7 +40,7 @@
    ========================================================================== */
 
 .anti-card__image {
-    background-color: var(--colorway-soft-contrast, #f8fafc);
+    background-color: var(--palette-soft-contrast, #f8fafc);
 }
 
 /* ==========================================================================
@@ -49,11 +49,11 @@
 
 .anti-card__title {
     font-weight: var(--h4-weight, 600);
-    color: var(--colorway-hard-contrast, #0f172a);
+    color: var(--palette-hard-contrast, #0f172a);
 }
 
 .anti-card__description {
-    color: var(--colorway-contrast, #475569);
+    color: var(--palette-hard-contrast, #475569);
 }
 
 /* ==========================================================================
@@ -61,8 +61,8 @@
    ========================================================================== */
 
 .anti-card__icon {
-    border: var(--border-m, var(--border)) solid var(--colorway-accent, #2563eb);
-    color: var(--colorway-accent, #2563eb);
+    border: var(--border-m, var(--border)) solid var(--palette-accent, #2563eb);
+    color: var(--palette-accent, #2563eb);
     border-radius: var(--radius-full, var(--radius));
 }
 
@@ -71,7 +71,7 @@
    ========================================================================== */
 
 .anti-card__link {
-    color: var(--colorway-accent, #2563eb);
+    color: var(--palette-accent, #2563eb);
 }
 
 /* ==========================================================================

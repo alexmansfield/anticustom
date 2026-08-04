@@ -8,13 +8,13 @@
 
 .anti-testimonial {
     --anti-testimonial-padding: var(--space-l, var(--space));
-    color: var(--colorway-hard-contrast, #0f172a);
+    color: var(--palette-hard-contrast, #0f172a);
     border-radius: var(--radius-l, var(--radius));
     box-shadow: var(--shadow-m, var(--shadow));
 }
 
-.anti-testimonial[data-colorway] {
-    background-color: var(--colorway-base, #ffffff);
+.anti-testimonial[data-palette] {
+    background-color: var(--palette-surface, #ffffff);
 }
 
 /* ==========================================================================
@@ -22,7 +22,7 @@
    ========================================================================== */
 
 .anti-testimonial__star {
-    color: var(--colorway-soft-contrast, #d1d5db);
+    color: var(--palette-soft-contrast, #d1d5db);
 }
 
 .anti-testimonial__star--filled {
@@ -35,7 +35,7 @@
 
 .anti-testimonial__quote p {
     font-size: var(--text-l, var(--text));
-    color: var(--colorway-contrast, #374151);
+    color: var(--palette-hard-contrast, #374151);
     font-style: italic;
 }
 
@@ -44,20 +44,20 @@
    ========================================================================== */
 
 .anti-testimonial__avatar--placeholder {
-    background-color: var(--colorway-accent, #2563eb);
-    color: var(--colorway-base, #ffffff);
+    background-color: var(--palette-accent, #2563eb);
+    color: var(--palette-surface, #ffffff);
     font-size: var(--text-l, var(--text));
 }
 
 .anti-testimonial__name {
     font-size: var(--text-m, var(--text));
     font-weight: 600;
-    color: var(--colorway-hard-contrast, #0f172a);
+    color: var(--palette-hard-contrast, #0f172a);
 }
 
 .anti-testimonial__role {
     font-size: var(--text-s, var(--text));
-    color: var(--colorway-contrast, #6b7280);
+    color: var(--palette-hard-contrast, #6b7280);
 }
 
 /* ==========================================================================

@@ -117,9 +117,9 @@
       "tab": "settings"
     },
     {
-      "name": "colorway",
-      "type": "colorway",
-      "label": "Colorway",
+      "name": "palette",
+      "type": "palette",
+      "label": "Palette",
       "description": "Color scheme for this button",
       "default": "inherit",
       "tab": "settings"
@@ -147,7 +147,7 @@
     "radius-l",
     "shadow-m",
     "shadow-l",
-    "colorway-base",
-    "colorway-hard-contrast"
+    "palette-surface",
+    "palette-hard-contrast"
   ]
 }

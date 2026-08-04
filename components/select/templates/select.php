@@ -18,7 +18,7 @@
  * @var string $error_text  Error message (runtime)
  * @var bool   $required    Whether field is required
  * @var bool   $disabled    Whether field is disabled
- * @var string $colorway    Color scheme override
+ * @var string $palette    Color scheme override
  * @var string $class       Additional CSS classes
  */
 
@@ -33,16 +33,16 @@ $helper_text = $props['helper_text'] ?? '';
 $error_text  = $props['error_text'] ?? '';
 $required    = $props['required'] ?? false;
 $disabled    = $props['disabled'] ?? false;
-$colorway    = $props['colorway'] ?? 'inherit';
+$palette    = $props['palette'] ?? 'inherit';
 $class       = $props['class'] ?? '';
 
 // Generate unique ID
 $id = $name ? 'select-' . $name : 'select-' . uniqid();
 $has_error = !empty($error_text);
 
-// Build colorway attribute
-$colorway_attr = (!empty($colorway) && $colorway !== 'inherit')
-    ? ' data-colorway="' . attr_escape($colorway) . '"'
+// Build palette attribute
+$palette_attr = (!empty($palette) && $palette !== 'inherit')
+    ? ' data-palette="' . attr_escape($palette) . '"'
     : '';
 
 // Build CSS classes
@@ -66,7 +66,7 @@ if (is_string($options)) {
 }
 ?>
 <?php if ($display === 'dropdown') : ?>
-<div class="<?php echo attr_escape($classes); ?>"<?php echo $colorway_attr; ?><?php echo !empty($editable) ? ' ' . $editable : ''; ?>>
+<div class="<?php echo attr_escape($classes); ?>"<?php echo $palette_attr; ?><?php echo !empty($editable) ? ' ' . $editable : ''; ?>>
     <label class="anti-select__label" for="<?php echo attr_escape($id); ?>">
         <?php echo html_escape($label); ?>
 <?php if ($required) : ?>
@@ -103,7 +103,7 @@ if (is_string($options)) {
 <?php endif; ?>
 </div>
 <?php elseif ($display === 'button-group') : ?>
-<fieldset class="<?php echo attr_escape($classes); ?>"<?php echo $colorway_attr; ?><?php echo !empty($editable) ? ' ' . $editable : ''; ?><?php echo $describedby_attr; ?><?php if ($has_error) : ?> aria-invalid="true"<?php endif; ?>>
+<fieldset class="<?php echo attr_escape($classes); ?>"<?php echo $palette_attr; ?><?php echo !empty($editable) ? ' ' . $editable : ''; ?><?php echo $describedby_attr; ?><?php if ($has_error) : ?> aria-invalid="true"<?php endif; ?>>
     <legend class="anti-select__legend">
         <?php echo html_escape($label); ?>
 <?php if ($required) : ?>
@@ -147,7 +147,7 @@ if (is_string($options)) {
     $input_type = ($display === 'radio') ? 'radio' : 'checkbox';
     $input_name = ($display === 'checkbox') ? $name . '[]' : $name;
 ?>
-<fieldset class="<?php echo attr_escape($classes); ?>"<?php echo $colorway_attr; ?><?php echo !empty($editable) ? ' ' . $editable : ''; ?><?php echo $describedby_attr; ?><?php if ($has_error) : ?> aria-invalid="true"<?php endif; ?>>
+<fieldset class="<?php echo attr_escape($classes); ?>"<?php echo $palette_attr; ?><?php echo !empty($editable) ? ' ' . $editable : ''; ?><?php echo $describedby_attr; ?><?php if ($has_error) : ?> aria-invalid="true"<?php endif; ?>>
     <legend class="anti-select__legend">
         <?php echo html_escape($label); ?>
 <?php if ($required) : ?>

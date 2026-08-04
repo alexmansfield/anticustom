@@ -578,13 +578,13 @@ function emit_pick_one_family(array $family, string $keyPrefix, string $alias, s
  * No interaction states emit at this tier (ADR 0026): `-hover`/`-active` live
  * only at the palette tier, whose consumers are the sole internal reference set.
  */
-function emit_ramp(array $colors, array $stops): array {
-    $lines = [];
+function resolve_ramp(array $colors, array $stops): array {
+    $map = [];
     foreach ($colors as $name => $data) {
         $hex = $data['value'] ?? null;
         if ($hex === null) continue;
 
-        $lines[] = "    --{$name}: {$hex};";
+        $map[$name] = $hex;
 
         $pins = $data['pins'] ?? [];
         foreach ($stops as $stopName => $stopData) {
@@ -601,8 +601,125 @@ function emit_ramp(array $colors, array $stops): array {
                 $val = color_shade($hex, $L);
             }
 
-            $lines[] = "    --{$name}-{$stopName}: {$val};";
+            $map["{$name}-{$stopName}"] = $val;
         }
+    }
+    return $map;
+}
+
+function emit_ramp(array $colors, array $stops): array {
+    $map = resolve_ramp($colors, $stops);
+    $lines = [];
+    foreach ($colors as $name => $data) {
+        if (!isset($map[$name])) continue;
+        $lines[] = "    --{$name}: {$map[$name]};";
+        foreach ($stops as $stopName => $_) {
+            if (isset($map["{$name}-{$stopName}"])) {
+                $lines[] = "    --{$name}-{$stopName}: {$map["{$name}-{$stopName}"]};";
+            }
+        }
+    }
+    return $lines;
+}
+
+// ============================================================================
+// Palette-tier emission (ADR 0015 / 0016 / 0020 / 0026)
+//
+// A palette is a data-driven set of slots: the surface-anchored contrast scale
+// plus hued intents. The generator does not hardcode a slot list — it iterates
+// each palette's own keys (ADR 0015). A key `X-on` / `X-hover` / `X-active`
+// whose prefix `X` is also a key is an *attribute* of slot X (an authored `-on`,
+// or a hand-authored state override per the ADR 0012 hybrid hatch); every other
+// key is a fill slot. Interaction states are generator-authored `color-mix()`
+// off the resolved role color (ADR 0026) unless the data overrides them.
+// ============================================================================
+
+const STATE_MIX = ['hover' => 12, 'active' => 20];
+
+/** The fill slots of a palette (keys that are not an -on/-hover/-active of another key). */
+function palette_slots(array $palette): array {
+    $slots = [];
+    foreach ($palette as $key => $_) {
+        if (preg_match('/^(.*)-(on|hover|active)$/', $key, $m) && isset($palette[$m[1]])) {
+            continue;
+        }
+        $slots[] = $key;
+    }
+    return $slots;
+}
+
+/** Resolve a palette value (`#hex` or `var(--rampKey)`) to a hex, or null. */
+function resolve_palette_hex(string $value, array $rampMap): ?string {
+    $value = trim($value);
+    if (preg_match('/^#[0-9a-fA-F]{6}$/', $value)) return $value;
+    if (preg_match('/^var\(\s*--([a-z0-9-]+)\s*\)$/i', $value, $m)) return $rampMap[$m[1]] ?? null;
+    return null;
+}
+
+/**
+ * Pick the color-mix pole for a slot's interaction state (ADR 0026, v1 rule):
+ * shift outward by lightness — a light fill (resolved OKLCH L > 0.5) mixes
+ * toward white, a dark fill toward black. Unresolvable values default to black.
+ * (Chroma-floor reversal is deferred to the state-derivation effort.)
+ */
+function palette_state_pole(string $value, array $rampMap): string {
+    $hex = resolve_palette_hex($value, $rampMap);
+    if ($hex === null) return 'black';
+    [$L] = hex_to_oklch($hex);
+    return $L > 0.5 ? 'white' : 'black';
+}
+
+/**
+ * Emit one palette block. Dense: every slot of the canonical set ($default's
+ * slots) emits, falling back to the default palette's value where this palette
+ * omits it — so a `[data-palette]` region is fully self-contained (M3.5/3.6 add
+ * component fallbacks and flip this to sparse). `-on` emits when authored;
+ * `-hover`/`-active` emit a data override if present, else a color-mix.
+ */
+function emit_palette_block(array $palette, array $default, array $rampMap): array {
+    $lines = [];
+    foreach (palette_slots($default) as $slot) {
+        $value = $palette[$slot] ?? $default[$slot] ?? null;
+        if ($value === null) continue;
+
+        $lines[] = "    --palette-{$slot}: {$value};";
+
+        $on = $palette["{$slot}-on"] ?? $default["{$slot}-on"] ?? null;
+        if ($on !== null) {
+            $lines[] = "    --palette-{$slot}-on: {$on};";
+        }
+
+        foreach (STATE_MIX as $state => $pct) {
+            $override = $palette["{$slot}-{$state}"] ?? $default["{$slot}-{$state}"] ?? null;
+            if ($override !== null) {
+                $lines[] = "    --palette-{$slot}-{$state}: {$override};";
+            } else {
+                $pole = palette_state_pole($value, $rampMap);
+                $lines[] = "    --palette-{$slot}-{$state}: color-mix(in srgb, var(--palette-{$slot}), {$pole} {$pct}%);";
+            }
+        }
+    }
+    return $lines;
+}
+
+/**
+ * Emit one `[data-intent="X"]` binding rule per intent (a slot with an authored
+ * `-on` sibling — the partner key is the signal that a slot is a fill, ADR 0020).
+ * The rule maps the generic `--intent*` names an element like a badge references
+ * to the surrounding palette's role tokens, so an intent stays inside whatever
+ * palette contains it (ADR 0016).
+ */
+function emit_intent_bindings(array $default): array {
+    $lines = [];
+    foreach (palette_slots($default) as $slot) {
+        if (!isset($default["{$slot}-on"])) continue;
+        $lines[] = "[data-intent=\"{$slot}\"] {";
+        $lines[] = "    --intent: var(--palette-{$slot});";
+        $lines[] = "    --intent-on: var(--palette-{$slot}-on);";
+        $lines[] = "    --intent-hover: var(--palette-{$slot}-hover);";
+        $lines[] = "    --intent-active: var(--palette-{$slot}-active);";
+        $lines[] = '}';
+        $lines[] = '';
     }
     return $lines;
 }
@@ -623,7 +740,7 @@ if (realpath(get_included_files()[0] ?? '') !== realpath(__FILE__)) {
 // ============================================================================
 
 $rootVars = [];
-$colorwayBlocks = [];
+$paletteBlocks = [];
 
 // Global per-device viewport anchors (ADR 0018); the fluid clamps interpolate
 // between these two widths. Validated distinct (divide-by-zero guard).
@@ -717,19 +834,6 @@ $rootVars[] = '    /* Font weights */';
 $rootVars[] = '    --font-weight-medium: 500;';
 
 // ============================================================================
-// Palette bridge (M1)
-//
-// The full palette shape (contrast steps, intents, state tier) lands in M3.
-// M1 emits only the one guaranteed palette key — the surface slot — so the
-// base-spec guarantee holds and the interface retirement's stale surface ref
-// has a live token to point at.
-// ============================================================================
-
-$rootVars[] = '';
-$rootVars[] = '    /* Palette bridge (M1 surface slot; full palette shape lands in M3) */';
-$rootVars[] = '    --palette-surface: var(--colorway-base);';
-
-// ============================================================================
 // Ramp tier (ADR 0025/0019/0026): flat source colors × the stop scale, dense
 // (presence-is-membership, no `enabled`), key-identity `--{color}-{stop}`, no
 // interaction states — those emit only at the palette tier (ADR 0026, below).
@@ -737,6 +841,7 @@ $rootVars[] = '    --palette-surface: var(--colorway-base);';
 
 $rampColors = $tokens['color']['colors'] ?? [];
 $rampStops = $tokens['color']['stops'] ?? [];
+$rampMap = resolve_ramp($rampColors, $rampStops);   // for palette state-pole resolution
 
 $rootVars[] = '';
 $rootVars[] = '    /* Colors (ramp tier) */';
@@ -745,44 +850,33 @@ foreach (emit_ramp($rampColors, $rampStops) as $line) {
 }
 
 // ============================================================================
-// Colorways (unchanged in M1 — renamed/remapped to the palette break in M3)
+// Palette tier (ADR 0015/0016/0020/0026): data-driven surface-anchored contrast
+// scale + hued intents. The default palette lands at :root; others at
+// [data-palette="X"]. Interaction states are palette-tier color-mix (ADR 0026);
+// intents also emit a [data-intent="X"] binding rule. Dense for now — M3.5/3.6
+// add component fallbacks then flip to sparse.
 // ============================================================================
 
-$colorways = $tokens['color']['colorways'] ?? [];
+$palettes = $tokens['color']['palettes'] ?? [];
+$defaultPalette = $palettes['default'] ?? [];
 
-$colorwayTokens = ['base', 'hard-contrast', 'contrast', 'soft-contrast', 'accent'];
+foreach ($palettes as $paletteName => $paletteData) {
+    $lines = emit_palette_block($paletteData, $defaultPalette, $rampMap);
+    if (empty($lines)) continue;
 
-foreach ($colorways as $wayName => $wayData) {
-    $lines = [];
-
-    foreach ($colorwayTokens as $token) {
-        $val = $wayData[$token] ?? null;
-        if ($val === null) continue;
-
-        $lines[] = "    --colorway-{$token}: {$val};";
-
-        // Auto-derive hover/active (allow explicit override)
-        foreach (['hover', 'active'] as $state) {
-            $overrideKey = "{$token}-{$state}";
-            if (isset($wayData[$overrideKey])) {
-                $lines[] = "    --colorway-{$overrideKey}: {$wayData[$overrideKey]};";
-            } else {
-                $lines[] = "    --colorway-{$overrideKey}: " . colorway_derive_state($val, $state) . ";";
-            }
-        }
+    $selector = ($paletteName === 'default') ? ':root' : "[data-palette=\"{$paletteName}\"]";
+    $paletteBlocks[] = "{$selector} {";
+    foreach ($lines as $line) {
+        $paletteBlocks[] = $line;
     }
+    $paletteBlocks[] = '}';
+    $paletteBlocks[] = '';
+}
 
-    if (!empty($lines)) {
-        $selector = ($wayName === 'default')
-            ? ':root'
-            : "[data-colorway=\"{$wayName}\"]";
-        $colorwayBlocks[] = "{$selector} {";
-        foreach ($lines as $line) {
-            $colorwayBlocks[] = $line;
-        }
-        $colorwayBlocks[] = '}';
-        $colorwayBlocks[] = '';
-    }
+// One binding rule per intent, so an element carrying data-intent picks up the
+// surrounding palette's role tokens through the generic --intent* names.
+foreach (emit_intent_bindings($defaultPalette) as $line) {
+    $paletteBlocks[] = $line;
 }
 
 // ============================================================================
@@ -802,9 +896,9 @@ $output .= ":root {\n";
 $output .= implode("\n", $rootVars) . "\n";
 $output .= "}\n";
 
-if (!empty($colorwayBlocks)) {
-    $output .= "\n/* Colorways */\n\n";
-    $output .= implode("\n", $colorwayBlocks) . "\n";
+if (!empty($paletteBlocks)) {
+    $output .= "\n/* Palettes */\n\n";
+    $output .= implode("\n", $paletteBlocks) . "\n";
 }
 
 // Named-style classes (fields/styles.json) — appended here so production

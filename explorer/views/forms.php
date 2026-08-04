@@ -4,7 +4,7 @@
  */
 
 anti_component('section', [
-    'colorway' => 'default',
+    'palette' => 'default',
     'padding_top' => 'xxl',
     'padding_bottom' => 'xxl',
     'gap' => 'm',

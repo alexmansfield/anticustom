@@ -10,7 +10,7 @@
  * @var string $prefix      Text before value (e.g., $)
  * @var string $suffix      Text after value (e.g., +, %)
  * @var string $description Additional context
- * @var string $colorway    Color scheme: inherit|default|base|primary|secondary
+ * @var string $palette    Color scheme: inherit|default|base|primary|secondary
  */
 
 // Extract props with defaults
@@ -19,7 +19,7 @@ $label       = $props['label'] ?? 'Happy Customers';
 $prefix      = $props['prefix'] ?? '';
 $suffix      = $props['suffix'] ?? '+';
 $description = $props['description'] ?? '';
-$colorway    = $props['colorway'] ?? 'inherit';
+$palette    = $props['palette'] ?? 'inherit';
 
 // Build CSS classes
 $classes = anti_classes([
@@ -27,12 +27,12 @@ $classes = anti_classes([
 ]);
 
 // Build data attributes (skip if 'inherit' - let it inherit from parent)
-$colorway_attr = (!empty($colorway) && $colorway !== 'inherit')
-    ? ' data-colorway="' . attr_escape($colorway) . '"'
+$palette_attr = (!empty($palette) && $palette !== 'inherit')
+    ? ' data-palette="' . attr_escape($palette) . '"'
     : '';
 ?>
 
-<div class="<?php echo attr_escape($classes); ?>"<?php echo !empty($editable) ? ' ' . $editable : ''; ?><?php echo $colorway_attr; ?>>
+<div class="<?php echo attr_escape($classes); ?>"<?php echo !empty($editable) ? ' ' . $editable : ''; ?><?php echo $palette_attr; ?>>
     <div class="anti-stats__value">
         <?php if (!empty($prefix)) : ?>
             <span class="anti-stats__prefix"><?php echo html_escape($prefix); ?></span>

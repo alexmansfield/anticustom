@@ -25,7 +25,7 @@
    ========================================================================== */
 
 .anti-badge {
-    background-color: var(--colorway-base, #ffffff);
-    color: var(--colorway-hard-contrast, #0f172a);
-    border: var(--border-s, var(--border)) solid var(--colorway-soft-contrast, #e2e8f0);
+    background-color: var(--intent, var(--palette-surface, #ffffff));
+    color: var(--intent-on, var(--palette-hard-contrast, #0f172a));
+    border: var(--border-s, var(--border)) solid var(--intent, var(--palette-soft-contrast, #e2e8f0));
 }

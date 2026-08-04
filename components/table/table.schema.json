@@ -198,9 +198,9 @@
       }
     },
     {
-      "name": "colorway",
-      "type": "colorway",
-      "label": "Colorway",
+      "name": "palette",
+      "type": "palette",
+      "label": "Palette",
       "description": "Color scheme for this component",
       "default": "inherit"
     }
@@ -215,7 +215,7 @@
     "radius-m",
     "neutral-light",
     "neutral-ultra-light",
-    "colorway-base",
-    "colorway-hard-contrast"
+    "palette-surface",
+    "palette-hard-contrast"
   ]
 }

@@ -22,12 +22,12 @@
     --anti-card-link-size: var(--text-s, var(--text));
     --anti-card-grid-gap: var(--space-l, var(--space));
 
-    color: var(--colorway-hard-contrast, #0f172a);
+    color: var(--palette-hard-contrast, #0f172a);
     overflow: hidden;
 }
 
-.anti-card[data-colorway] {
-    background-color: var(--colorway-base, #ffffff);
+.anti-card[data-palette] {
+    background-color: var(--palette-surface, #ffffff);
 }
 
 /* ==========================================================================
@@ -35,7 +35,7 @@
    ========================================================================== */
 
 .anti-card__image {
-    background-color: var(--colorway-soft-contrast, #f8fafc);
+    background-color: var(--palette-soft-contrast, #f8fafc);
 }
 
 .anti-card__image img {
@@ -52,11 +52,11 @@
 
 .anti-card__title {
     font-weight: var(--h4-weight, 600);
-    color: var(--colorway-hard-contrast, #0f172a);
+    color: var(--palette-hard-contrast, #0f172a);
 }
 
 .anti-card__description {
-    color: var(--colorway-contrast, #475569);
+    color: var(--palette-hard-contrast, #475569);
 }
 
 /* ==========================================================================
@@ -64,8 +64,8 @@
    ========================================================================== */
 
 .anti-card__icon {
-    background-color: var(--colorway-accent, #2563eb);
-    color: var(--colorway-hard-contrast, #ffffff);
+    background-color: var(--palette-accent, #2563eb);
+    color: var(--palette-hard-contrast, #ffffff);
     border-radius: var(--radius-m, var(--radius));
 }
 
@@ -74,7 +74,7 @@
    ========================================================================== */
 
 .anti-card__link {
-    color: var(--colorway-accent, #2563eb);
+    color: var(--palette-accent, #2563eb);
     transition: gap 200ms ease;
 }
 

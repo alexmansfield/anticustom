@@ -12,11 +12,11 @@
    ========================================================================== */
 
 .anti-table {
-    color: var(--colorway-hard-contrast, #0f172a);
+    color: var(--palette-hard-contrast, #0f172a);
 }
 
-.anti-table-wrap[data-colorway] .anti-table {
-    background-color: var(--colorway-base, #ffffff);
+.anti-table-wrap[data-palette] .anti-table {
+    background-color: var(--palette-surface, #ffffff);
 }
 
 /* ==========================================================================
@@ -29,9 +29,9 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.03em;
-    background-color: var(--colorway-base, #ffffff);
-    color: var(--colorway-hard-contrast, #0f172a);
-    border-bottom: var(--border-s, var(--border)) solid var(--colorway-soft-contrast, #0f172a);
+    background-color: var(--palette-surface, #ffffff);
+    color: var(--palette-hard-contrast, #0f172a);
+    border-bottom: var(--border-s, var(--border)) solid var(--palette-soft-contrast, #0f172a);
 }
 
 /* ==========================================================================
@@ -41,8 +41,8 @@
 .anti-table__td {
     padding: var(--space-s, var(--space)) var(--space-m, var(--space));
     font-size: var(--text-m, var(--text));
-    color: var(--colorway-hard-contrast, #0f172a);
-    border-bottom: var(--border-s, var(--border)) solid var(--colorway-soft-contrast, #e2e8f0);
+    color: var(--palette-hard-contrast, #0f172a);
+    border-bottom: var(--border-s, var(--border)) solid var(--palette-soft-contrast, #e2e8f0);
 }
 
 /* ==========================================================================
@@ -50,8 +50,8 @@
    ========================================================================== */
 
 .anti-table__row--selected .anti-table__td {
-    background-color: var(--colorway-base, #f8fafc);
-    color: var(--colorway-hard-contrast, inherit);
+    background-color: var(--palette-surface, #f8fafc);
+    color: var(--palette-hard-contrast, inherit);
 }
 
 /* ==========================================================================
@@ -69,16 +69,16 @@
 .anti-table__empty-title {
     font-size: var(--text-m, var(--text));
     font-weight: 600;
-    color: var(--colorway-hard-contrast, #0f172a);
+    color: var(--palette-hard-contrast, #0f172a);
 }
 
 .anti-table__empty-text {
     font-size: var(--text-s, var(--text));
-    color: var(--colorway-contrast, #475569);
+    color: var(--palette-hard-contrast, #475569);
 }
 
 .anti-table__empty-icon {
-    color: var(--colorway-soft-contrast, #e2e8f0);
+    color: var(--palette-soft-contrast, #e2e8f0);
 }
 
 /* ==========================================================================
@@ -94,13 +94,13 @@
    ========================================================================== */
 
 .anti-table-wrap {
-    color: var(--colorway-hard-contrast, #0f172a);
+    color: var(--palette-hard-contrast, #0f172a);
     border-radius: var(--radius-l, var(--radius));
-    border: var(--border-s, var(--border)) solid var(--colorway-soft-contrast, #e2e8f0);
+    border: var(--border-s, var(--border)) solid var(--palette-soft-contrast, #e2e8f0);
 }
 
-.anti-table-wrap[data-colorway] {
-    background-color: var(--colorway-base, #ffffff);
+.anti-table-wrap[data-palette] {
+    background-color: var(--palette-surface, #ffffff);
 }
 
 .anti-table__body .anti-table__row:last-child .anti-table__td {

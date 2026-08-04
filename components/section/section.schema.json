@@ -10,9 +10,9 @@
   },
   "fields": [
     {
-      "name": "colorway",
-      "type": "colorway",
-      "label": "Colorway",
+      "name": "palette",
+      "type": "palette",
+      "label": "Palette",
       "description": "Color scheme for this section and its children",
       "default": "default"
     },

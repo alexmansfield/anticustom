@@ -57,9 +57,9 @@
       "tab": "settings"
     },
     {
-      "name": "colorway",
-      "type": "colorway",
-      "label": "Colorway",
+      "name": "palette",
+      "type": "palette",
+      "label": "Palette",
       "description": "Color scheme for this component",
       "default": "inherit",
       "tab": "settings"
@@ -72,9 +72,9 @@
     "space-s",
     "space-m",
     "radius-m",
-    "colorway-base",
-    "colorway-hard-contrast",
-    "colorway-contrast",
-    "colorway-soft-contrast"
+    "palette-surface",
+    "palette-hard-contrast",
+    "palette-hard-contrast",
+    "palette-soft-contrast"
   ]
 }

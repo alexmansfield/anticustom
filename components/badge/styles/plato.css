@@ -2,7 +2,7 @@
  * Badge Style: Default
  *
  * Pill-shaped badges with semantic color variants.
- * Uses colorway system for variant colors and design tokens for sizing.
+ * Uses palette intents for variant colors and design tokens for sizing.
  *
  * @package Anticustom
  */
@@ -21,10 +21,10 @@
 }
 
 /* ==========================================================================
-   Colors (inherited from colorway)
+   Colors (from the surrounding intent; default = neutral surface/text)
    ========================================================================== */
 
 .anti-badge {
-    background-color: var(--colorway-base);
-    color: var(--colorway-hard-contrast);
+    background-color: var(--intent, var(--palette-surface));
+    color: var(--intent-on, var(--palette-hard-contrast));
 }
