@@ -48,69 +48,6 @@ if ($tokens === null) {
 }
 
 // ============================================================================
-// Color conversion helpers
-// ============================================================================
-
-function hex_to_hsl(string $hex): array {
-    $hex = ltrim($hex, '#');
-    $r = hexdec(substr($hex, 0, 2)) / 255;
-    $g = hexdec(substr($hex, 2, 2)) / 255;
-    $b = hexdec(substr($hex, 4, 2)) / 255;
-
-    $max = max($r, $g, $b);
-    $min = min($r, $g, $b);
-    $l = ($max + $min) / 2;
-
-    if ($max === $min) {
-        return [0, 0, $l * 100];
-    }
-
-    $d = $max - $min;
-    $s = $l > 0.5 ? $d / (2 - $max - $min) : $d / ($max + $min);
-
-    if ($max === $r) {
-        $h = (($g - $b) / $d + ($g < $b ? 6 : 0)) / 6;
-    } elseif ($max === $g) {
-        $h = (($b - $r) / $d + 2) / 6;
-    } else {
-        $h = (($r - $g) / $d + 4) / 6;
-    }
-
-    return [round($h * 360, 1), round($s * 100, 1), round($l * 100, 1)];
-}
-
-function hsl_to_hex(float $h, float $s, float $l): string {
-    $h /= 360;
-    $s /= 100;
-    $l /= 100;
-
-    if ($s == 0) {
-        $r = $g = $b = $l;
-    } else {
-        $q = $l < 0.5 ? $l * (1 + $s) : $l + $s - $l * $s;
-        $p = 2 * $l - $q;
-        $r = hue_to_rgb($p, $q, $h + 1/3);
-        $g = hue_to_rgb($p, $q, $h);
-        $b = hue_to_rgb($p, $q, $h - 1/3);
-    }
-
-    return sprintf('#%02x%02x%02x',
-        (int) round($r * 255),
-        (int) round($g * 255),
-        (int) round($b * 255)
-    );
-}
-
-function hue_to_rgb(float $p, float $q, float $t): float {
-    if ($t < 0) $t += 1;
-    if ($t > 1) $t -= 1;
-    if ($t < 1/6) return $p + ($q - $p) * 6 * $t;
-    if ($t < 1/2) return $q;
-    if ($t < 2/3) return $p + ($q - $p) * (2/3 - $t) * 6;
-    return $p;
-}
-
-// ============================================================================
 // OKLCH working space (ADR 0025 ramp math; #29 / docs/research/oklch-generation.md)
 //
 // sRGB is converted to OKLCH for ramp generation because OKLab lightness is
@@ -281,63 +218,6 @@ function oklch_to_hex(float $L, float $C, float $H): string {
 function color_shade(string $hex, float $targetLightness): string {
     [, $C, $H] = hex_to_oklch($hex);
     return oklch_to_hex($targetLightness / 100.0, $C, $H);
-}
-
-// ============================================================================
-// Interaction state helpers (hover/active)
-// ============================================================================
-
-const HOVER_LOWER_BOUND = 25;
-const HOVER_UPPER_BOUND = 75;
-const HOVER_SHIFT = 5;
-const ACTIVE_SHIFT = 10;
-
-/**
- * Compute hover and active hex variants for a given color.
- *
- * Shift direction depends on lightness band:
- *   0–25%  (dark)       → toward center (+)
- *   25–50% (mid-dark)   → toward edge (−)
- *   50–75% (mid-light)  → toward edge (+)
- *   75–100% (light)     → toward center (−)
- */
-function color_interaction_shifts(string $hex): array {
-    [$h, $s, $l] = hex_to_hsl($hex);
-
-    if ($l <= HOVER_LOWER_BOUND) {
-        $dir = 1;   // lighten
-    } elseif ($l <= 50) {
-        $dir = -1;  // darken
-    } elseif ($l <= HOVER_UPPER_BOUND) {
-        $dir = 1;   // lighten
-    } else {
-        $dir = -1;  // darken
-    }
-
-    $hoverL = max(0, min(100, $l + $dir * HOVER_SHIFT));
-    $activeL = max(0, min(100, $l + $dir * ACTIVE_SHIFT));
-
-    return [
-        'hover'  => hsl_to_hex($h, $s, $hoverL),
-        'active' => hsl_to_hex($h, $s, $activeL),
-    ];
-}
-
-/**
- * Derive a hover/active value from a colorway token value.
- *
- * If the value is a var() reference, append -hover/-active to the variable name.
- * If the value is a raw hex, compute the shift directly.
- */
-function colorway_derive_state(string $value, string $state): string {
-    if (preg_match('/^var\(--(.+)\)$/', $value, $m)) {
-        return "var(--{$m[1]}-{$state})";
-    }
-    if (preg_match('/^#[0-9a-fA-F]{6}$/', $value)) {
-        $shifts = color_interaction_shifts($value);
-        return $shifts[$state];
-    }
-    return $value;
 }
 
 // ============================================================================
