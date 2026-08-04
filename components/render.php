@@ -73,6 +73,25 @@ if (!function_exists('url_escape')) {
     }
 }
 
+if (!function_exists('anti_heading_level')) {
+    /**
+     * Clamp a `level` prop to a safe heading tag.
+     *
+     * `level` (ADR 0028) flows straight into a tag name, so it must be an
+     * allowlisted value — never raw prop text. Anything outside h1–h6/p
+     * (unset, malformed, injection attempt) falls back to $default.
+     *
+     * @param mixed  $level   The level prop value.
+     * @param string $default The component's default tag (e.g. 'h2', 'h3').
+     * @return string A tag from {h1,h2,h3,h4,h5,h6,p}.
+     */
+    function anti_heading_level($level, string $default = 'h2'): string
+    {
+        $allowed = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p'];
+        return in_array($level, $allowed, true) ? $level : $default;
+    }
+}
+
 // === Component Discovery ===
 
 if (!function_exists('scan_components')) {

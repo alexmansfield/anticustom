@@ -6,13 +6,19 @@
  * Only renders elements that have content.
  *
  * Tag logic:
- * - Eyebrow present → eyebrow is <h2>, title and subtitle are <p>
- * - Eyebrow absent  → title promotes to <h2>, subtitle is <p>
+ * - Eyebrow present → eyebrow is the heading, title and subtitle are <p>
+ * - Eyebrow absent  → title promotes to the heading, subtitle is <p>
+ *
+ * The heading element's tag is the `level` field (h1–h6, or p). `level` sets
+ * the tag of whichever element is promoted to the heading, not a fixed one, so
+ * it composes with eyebrow-promotion. `p` keeps the heading styling (the class
+ * carries it) while leaving the document outline.
  *
  * Props:
  * @var string $eyebrow  Optional eyebrow label (renders first)
  * @var string $title     Main title text
  * @var string $subtitle  Supporting text below the title
+ * @var string $level     Heading tag for the promoted element: h1–h6|p
  * @var string $align     Text alignment: inherit|left|center|right
  * @var string $size      Size variant: s|m|l
  * @var string $palette  Color scheme: inherit|default|base|primary|secondary
@@ -22,6 +28,7 @@
 $eyebrow  = $props['eyebrow'] ?? '';
 $title    = $props['title'] ?? '';
 $subtitle = $props['subtitle'] ?? '';
+$level    = anti_heading_level($props['level'] ?? 'h2', 'h2');
 $align    = $props['align'] ?? 'center';
 $size     = $props['size'] ?? 'm';
 $palette = $props['palette'] ?? 'inherit';
@@ -38,8 +45,10 @@ $attrs = anti_attrs([
     'data-size'     => $size !== 'm' ? $size : null,
 ]);
 
-// Determine title tag: h2 if eyebrow is absent, p if eyebrow is present
-$title_tag = !empty($eyebrow) ? 'p' : 'h2';
+// The promoted heading takes $level; the demoted sibling stays <p>.
+// Eyebrow, when present, is the heading; otherwise the title is.
+$eyebrow_tag = $level;
+$title_tag   = !empty($eyebrow) ? 'p' : $level;
 
 $classes = anti_classes([
     'anti-intro' => true,
@@ -48,7 +57,7 @@ $classes = anti_classes([
 
 <div class="<?php echo $classes; ?>" <?php echo $attrs; ?><?php echo !empty($editable) ? ' ' . $editable : ''; ?>>
     <?php if (!empty($eyebrow)) : ?>
-        <h2 class="anti-intro__eyebrow"><?php echo anti_field_html($props, 'eyebrow'); ?></h2>
+        <<?php echo $eyebrow_tag; ?> class="anti-intro__eyebrow"><?php echo anti_field_html($props, 'eyebrow'); ?></<?php echo $eyebrow_tag; ?>>
     <?php endif; ?>
 
     <?php if (!empty($title)) : ?>

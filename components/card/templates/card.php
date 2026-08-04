@@ -17,11 +17,13 @@
  * @var string $link_text      CTA link text
  * @var string $image_position Image placement: top|left|right
  * @var string $image_ratio    Aspect ratio: auto|16:9|4:3|square
+ * @var string $level          Heading tag for the title: h1–h6|p
  * @var string $palette       Color scheme: inherit|default|base|primary|secondary
  */
 
 // Extract props with defaults
 $title          = $props['title'] ?? 'Card Title';
+$level          = anti_heading_level($props['level'] ?? 'h3', 'h3');
 $description    = $props['description'] ?? '';
 $image          = $props['image'] ?? '';
 $image_alt      = $props['image_alt'] ?? '';
@@ -85,7 +87,7 @@ $link_attr = $has_link ? ' href="' . url_escape($link_url) . '"' : '';
             </div>
         <?php endif; ?>
 
-        <h3 class="anti-card__title"><?php echo anti_field_html($props, 'title'); ?></h3>
+        <<?php echo $level; ?> class="anti-card__title"><?php echo anti_field_html($props, 'title'); ?></<?php echo $level; ?>>
 
         <?php if (!empty($description)) : ?>
             <p class="anti-card__description"><?php echo anti_field_html($props, 'description'); ?></p>

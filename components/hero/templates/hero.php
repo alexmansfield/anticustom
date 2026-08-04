@@ -9,11 +9,16 @@
  * land in a form that fits).
  *
  * Tag logic (mirrors intro):
- * - Eyebrow present → eyebrow is <h2>, title is <p>
- * - Eyebrow absent  → title promotes to <h2>
+ * - Eyebrow present → eyebrow is the heading, title is <p>
+ * - Eyebrow absent  → title promotes to the heading
+ *
+ * The heading element's tag is the `level` field (h1–h6, or p), set on whichever
+ * element is promoted to the heading. `p` keeps the heading styling while leaving
+ * the document outline.
  *
  * Props:
  * @var string $eyebrow               Optional eyebrow label above the title
+ * @var string $level                 Heading tag for the promoted element: h1–h6|p
  * @var string $title                 Main headline
  * @var string $subtitle              Supporting text below the title
  * @var string $primary_cta_text      Primary call-to-action label (empty hides it)
@@ -32,6 +37,7 @@
 $eyebrow               = $props['eyebrow'] ?? '';
 $title                 = $props['title'] ?? '';
 $subtitle              = $props['subtitle'] ?? '';
+$level                 = anti_heading_level($props['level'] ?? 'h2', 'h2');
 $primary_cta_text      = $props['primary_cta_text'] ?? '';
 $primary_cta_url       = $props['primary_cta_url'] ?? '';
 $primary_cta_variant   = $props['primary_cta_variant'] ?? 'solid';
@@ -43,8 +49,10 @@ $size                  = $props['size'] ?? 'lg';
 $background_image      = $props['background_image'] ?? '';
 $palette              = $props['palette'] ?? 'default';
 
-// Determine title tag: h2 if eyebrow is absent, p if eyebrow is present
-$title_tag = !empty($eyebrow) ? 'p' : 'h2';
+// The promoted heading takes $level; the demoted sibling stays <p>.
+// Eyebrow, when present, is the heading; otherwise the title is.
+$eyebrow_tag = $level;
+$title_tag   = !empty($eyebrow) ? 'p' : $level;
 
 // Buttons match the hero scale: small heroes take medium buttons
 $cta_size = $size === 'sm' ? 'm' : 'l';
@@ -81,7 +89,7 @@ $attrs = anti_attrs([
             <?php if (!empty($eyebrow) || !empty($title) || !empty($subtitle)) : ?>
                 <div class="anti-intro" data-size="l">
                     <?php if (!empty($eyebrow)) : ?>
-                        <h2 class="anti-intro__eyebrow"><?php echo html_escape($eyebrow); ?></h2>
+                        <<?php echo $eyebrow_tag; ?> class="anti-intro__eyebrow"><?php echo html_escape($eyebrow); ?></<?php echo $eyebrow_tag; ?>>
                     <?php endif; ?>
 
                     <?php if (!empty($title)) : ?>

@@ -268,6 +268,73 @@ echo "boolean/native .. {$nat_result}\n";
 if ($native_ok) $passed++; else { $failed++; $errors[] = "boolean/native: {$nat_result}"; }
 
 // ─────────────────────────────────────────────────
+// Test: Heading level (ADR 0028)
+// ─────────────────────────────────────────────────
+// `level` sets the tag of the post-promotion heading element (h1–h6 or p),
+// composing with eyebrow-promotion; `p` keeps the heading styling but leaves
+// the outline; out-of-range values clamp to the component default.
+
+/** Render a component to an HTML string. */
+function render_html(string $name, array $props): string
+{
+    ob_start();
+    anti_component($name, $props);
+    return ob_get_clean();
+}
+
+/** Record a boolean assertion in the shared pass/fail tally. */
+function check(string $label, bool $ok): void
+{
+    global $passed, $failed, $errors;
+    echo str_pad("{$label} ", 20, '.') . ' ' . ($ok ? 'OK' : 'FAIL') . "\n";
+    if ($ok) { $passed++; } else { $failed++; $errors[] = "{$label}: assertion failed"; }
+}
+
+// Intro — no eyebrow: title carries the level; default is h2.
+$h = render_html('intro', ['title' => 'Default Level']);
+check('intro/level-default', strpos($h, '<h2 class="anti-intro__title"') !== false);
+
+// Intro — no eyebrow, level=h1: title promotes to h1, no stray h2 heading.
+$h = render_html('intro', ['title' => 'Page Title', 'level' => 'h1']);
+check('intro/level-h1', strpos($h, '<h1 class="anti-intro__title"') !== false
+    && strpos($h, '<h2') === false);
+
+// Intro — eyebrow present: eyebrow is the heading (takes level), title demotes to <p>.
+$h = render_html('intro', ['eyebrow' => 'Label', 'title' => 'Body', 'level' => 'h1']);
+check('intro/level-eyebrow', strpos($h, '<h1 class="anti-intro__eyebrow"') !== false
+    && strpos($h, '<p class="anti-intro__title"') !== false);
+
+// Intro — level=p: title styled as heading but out of the outline (no h-tag heading).
+$h = render_html('intro', ['title' => 'Rank Without Level', 'level' => 'p']);
+check('intro/level-p', strpos($h, '<p class="anti-intro__title"') !== false
+    && !preg_match('/<h[1-6]/', $h));
+
+// Intro — out-of-range level clamps to the h2 default (no injection).
+$h = render_html('intro', ['title' => 'Guarded', 'level' => 'script']);
+check('intro/level-clamp', strpos($h, '<h2 class="anti-intro__title"') !== false
+    && strpos($h, '<script') === false);
+
+// Card — default is h3; level overrides the title tag.
+$h = render_html('card', ['title' => 'Card Default']);
+check('card/level-default', strpos($h, '<h3 class="anti-card__title"') !== false);
+
+$h = render_html('card', ['title' => 'Promoted', 'level' => 'h2']);
+check('card/level-h2', strpos($h, '<h2 class="anti-card__title"') !== false);
+
+$h = render_html('card', ['title' => 'Styled p', 'level' => 'p']);
+check('card/level-p', strpos($h, '<p class="anti-card__title"') !== false
+    && !preg_match('/<h[1-6]/', $h));
+
+// Hero — mirrors intro promotion; title takes the level when no eyebrow.
+$h = render_html('hero', ['title' => 'Hero Title', 'level' => 'h1']);
+check('hero/level-h1', strpos($h, '<h1 class="anti-intro__title"') !== false);
+
+// Hero — eyebrow present: eyebrow takes the level, title demotes to <p>.
+$h = render_html('hero', ['eyebrow' => 'Kicker', 'title' => 'Hero Body', 'level' => 'h1']);
+check('hero/level-eyebrow', strpos($h, '<h1 class="anti-intro__eyebrow"') !== false
+    && strpos($h, '<p class="anti-intro__title"') !== false);
+
+// ─────────────────────────────────────────────────
 // Summary
 // ─────────────────────────────────────────────────
 echo "\n" . str_repeat('─', 40) . "\n";
