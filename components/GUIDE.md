@@ -133,11 +133,45 @@ $classes = anti_classes([
 | `attr_escape($val)` | Escape for HTML attributes |
 | `html_escape($val)` | Escape for HTML content |
 | `url_escape($val)` | Escape for URL contexts |
+| `anti_heading_level($val, $default)` | Clamp a `level` prop to a safe tag (`h1`–`h6`/`p`) |
 | `anti_component($type, $props)` | Render a child component |
 | `anti_get_schema($name)` | Load a component schema (cached) |
 | `resolve_child_props($schema, $i, $props)` | Merge slot defaults with child props |
 | `anti_interpolate($template, $data)` | Replace `{field}` placeholders |
 | `anti_interpolate_props($props, $data)` | Recursively interpolate all string values |
+
+## Semantic heading level (ADR 0028)
+
+`intro`, `card`, and `hero` expose a `level` field (`h1`–`h6`, or `p`) that sets
+the **semantic tag** of their heading. This is a third, independent axis:
+
+- **Visual style** — the `.anti-*__title` class (→ `--h2` etc, ADR 0022).
+- **Token identity** — `--{key}` (ADR 0027).
+- **Semantic element** — the `level` field (this ADR).
+
+None is derived from another: an `h2` that looks like heading-4, or a `p` carrying
+heading styling, are both expressible. anticustom **never auto-derives** the level
+from nesting or section depth (the document-outline algorithm is dead); the human
+and per-component defaults set it, and outline correctness is *validated* later
+(the layout-tier `heading-order` failure state, not built here).
+
+Rules:
+
+- The level sets the tag of the **post-promotion heading** — in `intro`/`hero`,
+  whichever of eyebrow/title is currently the heading takes `<{level}>`; the
+  demoted sibling stays `<p>`. So `level` composes with eyebrow-promotion.
+- `p` styles the text as a heading (the class carries the look) but leaves the
+  **document outline** — rank without level, the honest fix for heading-spam
+  (a twelve-card grid needn't emit twelve outline headings).
+- Per-component defaults: `intro` `h2`, `hero` `h2`, `card` `h3`.
+- Templates must route the prop through `anti_heading_level()` — `level` becomes
+  a raw tag name, so it is allowlisted, never trusted:
+
+```php
+$level = anti_heading_level($props['level'] ?? 'h3', 'h3');
+// ...
+<<?php echo $level; ?> class="anti-card__title">…</<?php echo $level; ?>>
+```
 
 ## Composition Pattern
 
