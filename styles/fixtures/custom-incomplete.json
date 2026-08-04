@@ -1,0 +1,17 @@
+{
+  "_note": "Fixture: mode:custom but the custom store is missing size key `l` (present in `sizes`). Invalid data — the generator must error, not silently backfill from scale math (ADR 0018 protects ADR 0017's always-full emission).",
+  "viewport": { "mobile": 390, "desktop": 1440 },
+  "spacing": {
+    "mode": "custom",
+    "default": "m",
+    "sizes": {
+      "s": { "position": -1 },
+      "m": { "position": 0 },
+      "l": { "position": 1 }
+    },
+    "custom": {
+      "s": { "mobile": 6, "desktop": 8 },
+      "m": { "mobile": 16, "desktop": 16 }
+    }
+  }
+}

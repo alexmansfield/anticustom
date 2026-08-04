@@ -1,92 +1,52 @@
 {
+  "viewport": {
+    "mobile": 390,
+    "desktop": 1440
+  },
   "typography": {
     "headings": {
+      "mode": "scale",
       "default": "h6",
-      "ratio": 1.618,
+      "scale": {
+        "mobile": { "value": 15, "ratio": 1.5 },
+        "desktop": { "value": 16, "ratio": 1.618 }
+      },
       "sizes": {
-        "h1": {
-          "position": 5,
-          "spec": true,
-          "lineHeight": 1.2,
-          "letterSpacing": -0.02,
-          "weight": 700
-        },
-        "h2": {
-          "position": 4,
-          "spec": true,
-          "lineHeight": 1.25,
-          "letterSpacing": -0.02,
-          "weight": 700
-        },
-        "h3": {
-          "position": 3,
-          "spec": true,
-          "lineHeight": 1.3,
-          "letterSpacing": -0.01,
-          "weight": 600
-        },
-        "h4": {
-          "position": 2,
-          "spec": true,
-          "lineHeight": 1.35,
-          "letterSpacing": -0.01,
-          "weight": 600
-        },
-        "h5": {
-          "position": 1,
-          "spec": true,
-          "lineHeight": 1.4,
-          "letterSpacing": 0,
-          "weight": 600
-        },
-        "h6": {
-          "position": 0,
-          "spec": true,
-          "value": 16,
-          "lineHeight": 1.4,
-          "letterSpacing": 0,
-          "weight": 600
-        }
+        "h1": { "position": 5, "spec": true },
+        "h2": { "position": 4, "spec": true },
+        "h3": { "position": 3, "spec": true },
+        "h4": { "position": 2, "spec": true },
+        "h5": { "position": 1, "spec": true },
+        "h6": { "position": 0, "spec": true }
+      },
+      "style": {
+        "leading": 8,
+        "letterSpacingSlope": -0.022,
+        "letterSpacingConstant": 0.35,
+        "weight": 600
+      },
+      "customStyle": {
+        "h1": { "lineHeight": 1.2, "letterSpacing": -0.02, "weight": 700 },
+        "h2": { "lineHeight": 1.25, "letterSpacing": -0.02, "weight": 700 },
+        "h3": { "lineHeight": 1.3, "letterSpacing": -0.01, "weight": 600 },
+        "h4": { "lineHeight": 1.35, "letterSpacing": -0.01, "weight": 600 },
+        "h5": { "lineHeight": 1.4, "letterSpacing": 0, "weight": 600 },
+        "h6": { "lineHeight": 1.4, "letterSpacing": 0, "weight": 600 }
       }
     },
     "text": {
+      "mode": "scale",
       "default": "m",
-      "ratio": 1.125,
+      "scale": {
+        "mobile": { "value": 15, "ratio": 1.2 },
+        "desktop": { "value": 16, "ratio": 1.2 }
+      },
       "sizes": {
-        "xl": {
-          "position": 2,
-          "lineHeight": 1.5,
-          "letterSpacing": 0,
-          "weight": 400
-        },
-        "l": {
-          "position": 1,
-          "spec": true,
-          "lineHeight": 1.5,
-          "letterSpacing": 0,
-          "weight": 400
-        },
-        "m": {
-          "position": 0,
-          "spec": true,
-          "value": 16,
-          "lineHeight": 1.5,
-          "letterSpacing": 0,
-          "weight": 400
-        },
-        "s": {
-          "position": -1,
-          "spec": true,
-          "lineHeight": 1.5,
-          "letterSpacing": 0,
-          "weight": 400
-        },
-        "xs": {
-          "position": -2,
-          "lineHeight": 1.5,
-          "letterSpacing": 0,
-          "weight": 400
-        }
+        "xl": { "position": 2 },
+        "l": { "position": 1, "spec": true },
+        "m": { "position": 0, "spec": true },
+        "s": { "position": -1, "spec": true },
+        "xs": { "position": -2 }
       }
     }
   },
@@ -188,36 +148,20 @@
     }
   },
   "spacing": {
+    "mode": "scale",
     "default": "m",
-    "ratio": 1.5,
+    "scale": {
+      "mobile": { "value": 12, "ratio": 1.5 },
+      "desktop": { "value": 16, "ratio": 1.5 }
+    },
     "sizes": {
-      "xxs": {
-        "position": -3
-      },
-      "xs": {
-        "position": -2,
-        "spec": true
-      },
-      "s": {
-        "position": -1,
-        "spec": true
-      },
-      "m": {
-        "position": 0,
-        "spec": true,
-        "value": 16
-      },
-      "l": {
-        "position": 1,
-        "spec": true
-      },
-      "xl": {
-        "position": 2,
-        "spec": true
-      },
-      "xxl": {
-        "position": 3
-      }
+      "xxs": { "position": -3 },
+      "xs": { "position": -2, "spec": true },
+      "s": { "position": -1, "spec": true },
+      "m": { "position": 0, "spec": true },
+      "l": { "position": 1, "spec": true },
+      "xl": { "position": 2, "spec": true },
+      "xxl": { "position": 3 }
     }
   },
   "borders": {

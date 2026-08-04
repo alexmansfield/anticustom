@@ -8,7 +8,9 @@ The size families follow the **palette-model emission model** (ADRs 0015–0028)
 
 - **Open ordered sets** — a family lists its steps in `sizes`; *presence is membership*. There is no `enabled` flag. A step a spec omits simply does not emit.
 - **Key-identity naming** — the emitted variable is exactly `--{key}`. The spec author owns the namespace; the generator adds no prefix of its own.
-- **Anchor-as-origin** — a scale family's `default` step is its anchor. That step's `value` *is* the scale origin; every other step is `anchorValue * ratio^(position − anchorPosition)`. There is no separate `baseSize`.
+- **Anchor-as-origin** — a scale family's `default` step is its anchor. Every other step is `anchorValue * ratio^(position − anchorPosition)`. There is no separate `baseSize`.
+- **Per-device anchors + fluid clamps** (M2, ADR 0018) — each scale family carries a `mode: scale | custom` and *per-device* anchors under `scale.{mobile,desktop}.{value,ratio}`. Every px-length token compiles to a `clamp()` interpolating between the two anchors across a global `viewport` range — no media queries. Equal anchors collapse to a static value.
+- **Derived heading typography** (M2, ADR 0022) — scale-mode headings derive `--h{n}-line-height` / `--h{n}-letter-spacing` as `calc()` forms keyed to the computed size (the `em` term tracks the fluid size for free), plus one authored `--h{n}-weight`.
 - **Bare aliases** — each family emits a bare alias (`--space`, `--text`, `--border`, `--radius`, `--shadow`) that components fall back to, so an incomplete spec degrades gracefully instead of producing a broken `var()`.
 
 ## Quick Start
@@ -27,60 +29,78 @@ php styles/generate.php path/to/custom-tokens.json --output dist/tokens.css
 php styles/verify.php
 ```
 
+## Viewport range (`viewport`)
+
+A single global block sets the two widths every fluid scale interpolates between:
+
+```json
+"viewport": { "mobile": 390, "desktop": 1440 }
+```
+
+It lives outside the per-axis panels (ADR 0018) and must be **distinct** — equal anchors zero the fluid-slope denominator and are a generate error. Widening `desktop` flattens every clamp's slope at once.
+
 ## Token Categories
 
 ### Spacing (`--space-{key}` + bare `--space`)
 
-Open scale family. Every key in `sizes` emits `--space-{key}`; the `default` step is the anchor (origin), and its `value` seeds the scale. Other steps: `anchorValue * ratio^(position − anchorPosition)`, rounded to an integer.
+Open scale family. Every key in `sizes` emits `--space-{key}` as a fluid `clamp()`. In `mode: scale`, each step is computed *per device* — `scale.{device}.value * scale.{device}.ratio^(position − anchorPosition)` — then the mobile and desktop results become the clamp bounds (rounded to an integer). At the factory viewport (390 → 1440) and anchors (mobile 12/1.5, desktop 16/1.5):
 
-| Variable | Position | Value | Spec? |
-|----------|----------|-------|-------|
-| `--space-xxs` | -3 | 5px | custom |
-| `--space-xs` | -2 | 7px | spec |
-| `--space-s` | -1 | 11px | spec |
-| `--space-m` | 0 (anchor) | 16px | spec |
-| `--space-l` | +1 | 24px | spec |
-| `--space-xl` | +2 | 36px | spec |
-| `--space-xxl` | +3 | 54px | custom |
-| `--space` | — | `var(--space-m)` | alias |
+| Variable | Position | Mobile → Desktop | Emitted | Spec? |
+|----------|----------|------------------|---------|-------|
+| `--space-xxs` | -3 | 4 → 5px | `clamp(4px, …, 5px)` | custom |
+| `--space-xs` | -2 | 5 → 7px | `clamp(5px, …, 7px)` | spec |
+| `--space-s` | -1 | 8 → 11px | `clamp(8px, …, 11px)` | spec |
+| `--space-m` | 0 (anchor) | 12 → 16px | `clamp(12px, …, 16px)` | spec |
+| `--space-l` | +1 | 18 → 24px | `clamp(18px, …, 24px)` | spec |
+| `--space-xl` | +2 | 27 → 36px | `clamp(27px, …, 36px)` | spec |
+| `--space-xxl` | +3 | 41 → 54px | `clamp(41px, …, 54px)` | custom |
+| `--space` | — | — | `var(--space-m)` | alias |
 
-**JSON path:** `spacing.default`, `spacing.ratio`, `spacing.sizes.{key}.position`, `spacing.sizes.{default}.value`
+**JSON path:** `spacing.mode`, `spacing.default`, `spacing.scale.{mobile,desktop}.{value,ratio}`, `spacing.sizes.{key}.position`, and (custom mode) `spacing.custom.{key}.{mobile,desktop}`
 
 The `spec` column classifies base-spec tokens vs custom tokens riding the same ramp (ADR 0023). Both emit identically — the classification is guaranteed-key bookkeeping, asserted by `styles/verify.php`.
 
 ### Text Sizes (`--text-{key}` + bare `--text`)
 
-Open scale family, same shape as spacing but kept to one decimal place (finer type steps).
+Open scale family, same shape as spacing but kept to one decimal place (finer type steps). Factory anchors: mobile 15/1.2, desktop 16/1.2.
 
-| Variable | Position | Value | Spec? |
-|----------|----------|-------|-------|
-| `--text-xs` | -2 | 12.6px | custom |
-| `--text-s` | -1 | 14.2px | spec |
-| `--text-m` | 0 (anchor) | 16px | spec |
-| `--text-l` | +1 | 18px | spec |
-| `--text-xl` | +2 | 20.3px | custom |
+| Variable | Position | Mobile → Desktop | Spec? |
+|----------|----------|------------------|-------|
+| `--text-xs` | -2 | 10.4 → 11.1px | custom |
+| `--text-s` | -1 | 12.5 → 13.3px | spec |
+| `--text-m` | 0 (anchor) | 15 → 16px | spec |
+| `--text-l` | +1 | 18 → 19.2px | spec |
+| `--text-xl` | +2 | 21.6 → 23px | custom |
 | `--text` | — | `var(--text-m)` | alias |
 
-**JSON path:** `typography.text.default`, `typography.text.ratio`, `typography.text.sizes.{key}`
+**JSON path:** `typography.text.mode`, `typography.text.default`, `typography.text.scale.{mobile,desktop}.{value,ratio}`, `typography.text.sizes.{key}`
 
-Per-step `lineHeight` / `letterSpacing` / `weight` are carried in `defaults.json` as the (inactive) custom-store seed but are **not emitted** in M1 — derived typography lands in M2 (ADR 0022).
+Text carries no derived line-height/letter-spacing — that model is heading-only for now (ADR 0022 scopes the `typography.text` axis out).
 
-### Headings (`--h{n}`)
+### Headings (`--h{n}` + derived typography)
 
-Symmetric open set: keys `h1`–`h6` emit `--h1`–`--h6` (ADR 0027 amends 0024 — headings drop rank-emission; `position` orders the scale math, the key names the token). Anchor is `h6` (position 0); h1 is largest. No bare alias — h1–h6 are guaranteed present.
+Symmetric open set: keys `h1`–`h6` emit `--h1`–`--h6` (ADR 0027 amends 0024 — `position` orders the scale math, the key names the token). Anchor is `h6` (position 0); h1 is largest. No bare alias — h1–h6 are guaranteed present. Factory anchors: mobile 15/1.5, desktop 16/1.618.
 
-| Variable | Position | Value |
-|----------|----------|-------|
-| `--h6` | 0 (anchor) | 16px |
-| `--h5` | 1 | 26px |
-| `--h4` | 2 | 42px |
-| `--h3` | 3 | 68px |
-| `--h2` | 4 | 110px |
-| `--h1` | 5 | 177px |
+| Variable | Position | Mobile → Desktop |
+|----------|----------|------------------|
+| `--h6` | 0 (anchor) | 15 → 16px |
+| `--h5` | 1 | 23 → 26px |
+| `--h4` | 2 | 34 → 42px |
+| `--h3` | 3 | 51 → 68px |
+| `--h2` | 4 | 76 → 110px |
+| `--h1` | 5 | 114 → 177px |
 
-**JSON path:** `typography.headings.default`, `typography.headings.ratio`, `typography.headings.sizes.h{n}.position`
+Each level also emits **derived typography** (ADR 0022), driven by the `style` knobs `{ leading, letterSpacingSlope, letterSpacingConstant, weight }`:
 
-Per-level line-height/letter-spacing/weight are migrated into `defaults.json` but dormant until M2 (ADR 0022 derived heading typography).
+```css
+--h1-line-height: calc(1em + 8px);          /* text's own size + fixed leading */
+--h1-letter-spacing: calc(-0.022em + 0.35px);
+--h1-weight: 600;                           /* one authored weight for all levels */
+```
+
+Because line-height is affine in font size, small headings run loose and display sizes tight automatically — and it stays correct when the scale is retuned. The `em` term tracks the fluid clamp for free.
+
+**JSON path:** `typography.headings.mode`, `.default`, `.scale.{mobile,desktop}.{value,ratio}`, `.sizes.h{n}.position`, `.style.{leading,letterSpacingSlope,letterSpacingConstant,weight}`, and (custom mode) `.custom.h{n}.{mobile,desktop}` + `.customStyle.h{n}.{lineHeight,letterSpacing,weight}`
 
 ### Radius (`--radius-{key}` + bare `--radius`)
 
@@ -191,22 +211,32 @@ Components pick the token that matches their semantic role: surface components u
 
 ## Scale Calculation
 
-Spacing, text, and headings use the anchor-relative formula:
+Spacing, text, and headings compute each step *per device* with the anchor-relative formula:
 
 ```
-value = anchorValue * ratio^(position − anchorPosition)
+deviceValue = scale.{device}.value * scale.{device}.ratio^(position − anchorPosition)
 ```
 
-where `anchorValue` / `anchorPosition` come from the `default` (anchor) step. The anchor step itself resolves to `anchorValue`. Changing the anchor value shifts all steps uniformly; changing `ratio` adjusts the contrast between steps. A ratio of 1.5 means each step is 1.5× the previous.
+where `anchorPosition` comes from the `default` (anchor) step. The mobile and desktop results are then folded into a `clamp()` whose middle term is the line through `(viewport.mobile, mobileValue)` and `(viewport.desktop, desktopValue)`, computed in PHP so the output is deterministic and server-side verifiable:
+
+```
+clamp(min, calc(intercept·px + slope·vw), max)
+```
+
+Equal device values emit a plain static px value instead of a degenerate clamp. Changing an anchor shifts that device's steps uniformly; changing a `ratio` adjusts the contrast between steps; widening the `viewport` range flattens the slope.
+
+### Modes (ADR 0018)
+
+Each scale family is either `mode: scale` (systematic, two anchors) or `mode: custom` (hand-authored per-size `{mobile, desktop}` pairs). The two stores coexist in the data; `mode` points at the one the generator reads, and the inactive store is invisible — never emitted, never a fallback. Switching `scale → custom` seeds any missing custom key from the current scale computation (an editor-side contract), so the switch is nondestructive. **An incomplete custom store while `mode: custom` is invalid data — the generator errors rather than backfilling from scale math**, protecting the always-full-emission guarantee. The verify layer asserts both this and viewport distinctness.
 
 ## How to Customize
 
 1. Copy `defaults.json` to a new file (e.g., `my-tokens.json`)
-2. Edit values — set the anchor step's `value`, change `ratio`, add or drop steps (presence is membership), re-point `default`, add colors
+2. Edit values — set per-device anchors under `scale.{mobile,desktop}`, change a `ratio`, tune the `viewport` range, add or drop steps (presence is membership), re-point `default`, adjust heading `style` knobs, add colors
 3. Run `php styles/generate.php my-tokens.json --output dist/tokens.css`
-4. Optionally run `php styles/verify.php` to check the base-spec guarantee and fallback contract still hold
+4. Optionally run `php styles/verify.php` to check the base-spec guarantee, the fallback contract, store completeness, and viewport distinctness
 
-To drop a step, remove it from `sizes` — it stops emitting, and any component reference degrades to the family's bare alias. (Per-step *custom values* that opt out of the scale are an M2 feature, `mode: scale | custom`.)
+To hand-author a size that opts out of the scale, set the family's `mode` to `custom` and edit its `custom.{key}.{mobile,desktop}` pairs. To drop a step, remove it from `sizes` — it stops emitting, and any component reference degrades to the family's bare alias.
 
 ## Component CSS Usage
 

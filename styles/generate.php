@@ -190,37 +190,184 @@ function scale_value(float $anchorValue, float $ratio, int $position, int $ancho
 }
 
 /**
- * Emit an open-set scale family (spacing / text / headings).
+ * Format a numeric px/coefficient value: trim trailing zeros, fold −0 to 0.
+ */
+function num($v): string {
+    $s = rtrim(rtrim(sprintf('%.4f', (float) $v), '0'), '.');
+    return ($s === '' || $s === '-0') ? '0' : $s;
+}
+
+/**
+ * Read + validate the global viewport anchors (ADR 0018). The two viewport
+ * widths must be distinct — an equal pair zeroes the fluid-slope denominator.
+ * A missing block falls back to the factory pair.
+ */
+function read_viewport(array $tokens): array {
+    $vp = $tokens['viewport'] ?? [];
+    $mobile = (int) ($vp['mobile'] ?? 390);
+    $desktop = (int) ($vp['desktop'] ?? 1440);
+    if ($mobile === $desktop) {
+        fprintf(STDERR, "Error: viewport anchors must be distinct (mobile === desktop === %d)\n", $mobile);
+        exit(1);
+    }
+    return [$mobile, $desktop];
+}
+
+/**
+ * Compile a px-length token from its two per-device anchors (ADR 0018).
  *
- * Every key in `sizes` emits `--{keyPrefix}{key}` (presence is membership).
- * The `default` step is the anchor: its `value` is the origin and every other
- * step scales off it by `ratio^(position − anchorPosition)`. When $alias is
- * non-null, a bare scale alias `--{alias}` is emitted pointing at the anchor
- * step (ADR 0024) — the chained-fallback target components degrade to.
+ * Equal anchors emit a plain static value; distinct anchors emit a clamp()
+ * whose preferred middle term is the line through (vpMobile, mobileVal) and
+ * (vpDesktop, desktopVal), computed here so the synced output is deterministic
+ * and server-side verifiable. Outer bounds swap when mobile > desktop.
  *
  * $round true  → integer px (spacing, headings)
  * $round false → 1-decimal px (text), preserving the finer type steps
  */
-function emit_scale_family(array $family, string $keyPrefix, ?string $alias, bool $round): array {
-    $lines = [];
+function fluid_clamp(float $mobileVal, float $desktopVal, int $vpMobile, int $vpDesktop, bool $round): string {
+    $m = $round ? round($mobileVal) : round($mobileVal, 1);
+    $d = $round ? round($desktopVal) : round($desktopVal, 1);
+
+    if ($m === $d) {
+        return num($m) . 'px';
+    }
+
+    $min = min($m, $d);
+    $max = max($m, $d);
+    $slope = ($d - $m) / ($vpDesktop - $vpMobile);   // px per px of viewport width
+    $intercept = $m - $slope * $vpMobile;            // px at viewport 0
+    $vwCoeff = $slope * 100;                          // 100vw === viewport width
+
+    $sign = $vwCoeff < 0 ? '-' : '+';
+    $preferred = 'calc(' . num($intercept) . 'px ' . $sign . ' ' . num(abs($vwCoeff)) . 'vw)';
+
+    return 'clamp(' . num($min) . 'px, ' . $preferred . ', ' . num($max) . 'px)';
+}
+
+/**
+ * Per-size compiled px values for a scale family, keyed by size name, honoring
+ * `mode` (ADR 0018):
+ *   scale  → each size computed from the per-device anchor + ratio at its
+ *            position; the anchor step (default) is the origin.
+ *   custom → each size read straight from the `custom` store's {mobile,desktop}
+ *            pair. An incomplete store is invalid data: every emitted size key
+ *            must be present with both device values or generation errors —
+ *            no silent backfill from scale math (protects ADR 0017's full set).
+ *
+ * Returns [sizeKey => [mobileVal, desktopVal]] in `sizes` order.
+ */
+function resolve_scale_sizes(array $family, string $label): array {
     $sizes = $family['sizes'] ?? [];
-    $ratio = (float) ($family['ratio'] ?? 1);
+    $mode = $family['mode'] ?? 'scale';
     $anchorKey = $family['default'] ?? null;
-    $anchor = ($anchorKey !== null) ? ($sizes[$anchorKey] ?? []) : [];
-    $anchorValue = (float) ($anchor['value'] ?? 16);
-    $anchorPos = (int) ($anchor['position'] ?? 0);
+    $anchorPos = (int) ($sizes[$anchorKey]['position'] ?? 0);
+
+    $out = [];
+
+    if ($mode === 'custom') {
+        $store = $family['custom'] ?? [];
+        foreach ($sizes as $key => $data) {
+            $pair = $store[$key] ?? null;
+            if (!is_array($pair) || !isset($pair['mobile'], $pair['desktop'])) {
+                fprintf(STDERR, "Error: %s is mode:custom but the custom store is missing '%s' (both mobile and desktop required)\n", $label, $key);
+                exit(1);
+            }
+            $out[$key] = [(float) $pair['mobile'], (float) $pair['desktop']];
+        }
+        return $out;
+    }
+
+    $scale = $family['scale'] ?? [];
+    $mMob = (float) ($scale['mobile']['value'] ?? 16);
+    $rMob = (float) ($scale['mobile']['ratio'] ?? 1);
+    $mDesk = (float) ($scale['desktop']['value'] ?? 16);
+    $rDesk = (float) ($scale['desktop']['ratio'] ?? 1);
 
     foreach ($sizes as $key => $data) {
         $pos = (int) ($data['position'] ?? 0);
-        $val = scale_value($anchorValue, $ratio, $pos, $anchorPos);
-        $val = $round ? round($val) : round($val, 1);
-        $lines[] = "    --{$keyPrefix}{$key}: {$val}px;";
+        $out[$key] = [
+            scale_value($mMob, $rMob, $pos, $anchorPos),
+            scale_value($mDesk, $rDesk, $pos, $anchorPos),
+        ];
+    }
+    return $out;
+}
+
+/**
+ * Emit an open-set scale family (spacing / text / headings) as fluid clamps.
+ *
+ * Every key in `sizes` emits `--{keyPrefix}{key}` (presence is membership).
+ * When $alias is non-null, a bare scale alias `--{alias}` is emitted pointing
+ * at the anchor step (ADR 0024) — the chained-fallback target components
+ * degrade to.
+ */
+function emit_scale_family(array $family, string $keyPrefix, ?string $alias, bool $round, array $viewport, string $label): array {
+    [$vpMobile, $vpDesktop] = $viewport;
+    $lines = [];
+    $sizes = $family['sizes'] ?? [];
+    $anchorKey = $family['default'] ?? null;
+
+    foreach (resolve_scale_sizes($family, $label) as $key => [$mob, $desk]) {
+        $value = fluid_clamp($mob, $desk, $vpMobile, $vpDesktop, $round);
+        $lines[] = "    --{$keyPrefix}{$key}: {$value};";
     }
 
     if ($alias !== null && $anchorKey !== null && isset($sizes[$anchorKey])) {
         $lines[] = "    --{$alias}: var(--{$keyPrefix}{$anchorKey});";
     }
 
+    return $lines;
+}
+
+/**
+ * Emit derived per-level heading typography (ADR 0022).
+ *
+ * Scale mode derives line-height and letter-spacing from each level's *computed
+ * size* via affine calc() forms (the `em` term tracks the fluid size for free),
+ * plus one authored weight for all levels — the knobs live in `style`:
+ *   line-height    = calc(1em + <leading>px)
+ *   letter-spacing = calc(<slope>em + <constant>px)
+ *   weight         = <weight>
+ * Custom mode reads per-level blocks from `customStyle` instead; an incomplete
+ * store is invalid data and errors, mirroring the size store's completeness
+ * guarantee.
+ */
+function emit_heading_typography(array $family, string $label): array {
+    $sizes = $family['sizes'] ?? [];
+    $mode = $family['mode'] ?? 'scale';
+    $lines = [];
+
+    if ($mode === 'custom') {
+        $store = $family['customStyle'] ?? [];
+        foreach (array_keys($sizes) as $key) {
+            $block = $store[$key] ?? null;
+            if (!is_array($block) || !isset($block['lineHeight'], $block['letterSpacing'], $block['weight'])) {
+                fprintf(STDERR, "Error: %s is mode:custom but customStyle is missing '%s' (lineHeight, letterSpacing, weight required)\n", $label, $key);
+                exit(1);
+            }
+            $lines[] = "    --{$key}-line-height: " . num($block['lineHeight']) . ";";
+            $ls = (float) $block['letterSpacing'];
+            $lines[] = "    --{$key}-letter-spacing: " . num($ls) . "em;";
+            $lines[] = "    --{$key}-weight: " . (int) $block['weight'] . ";";
+        }
+        return $lines;
+    }
+
+    $style = $family['style'] ?? [];
+    $leading = (float) ($style['leading'] ?? 8);
+    $slope = (float) ($style['letterSpacingSlope'] ?? 0);
+    $const = (float) ($style['letterSpacingConstant'] ?? 0);
+    $weight = (int) ($style['weight'] ?? 600);
+
+    $lineHeight = 'calc(1em + ' . num($leading) . 'px)';
+    $lsSign = $const < 0 ? '-' : '+';
+    $letterSpacing = 'calc(' . num($slope) . 'em ' . $lsSign . ' ' . num(abs($const)) . 'px)';
+
+    foreach (array_keys($sizes) as $key) {
+        $lines[] = "    --{$key}-line-height: {$lineHeight};";
+        $lines[] = "    --{$key}-letter-spacing: {$letterSpacing};";
+        $lines[] = "    --{$key}-weight: {$weight};";
+    }
     return $lines;
 }
 
@@ -255,12 +402,16 @@ function emit_pick_one_family(array $family, string $keyPrefix, string $alias, s
 $rootVars = [];
 $colorwayBlocks = [];
 
+// Global per-device viewport anchors (ADR 0018); the fluid clamps interpolate
+// between these two widths. Validated distinct (divide-by-zero guard).
+$viewport = read_viewport($tokens);
+
 // ============================================================================
 // Spacing (open scale family: --space-{k} + bare --space alias)
 // ============================================================================
 
 $rootVars[] = '    /* Spacing */';
-foreach (emit_scale_family($tokens['spacing'] ?? [], 'space-', 'space', true) as $line) {
+foreach (emit_scale_family($tokens['spacing'] ?? [], 'space-', 'space', true, $viewport, 'spacing') as $line) {
     $rootVars[] = $line;
 }
 
@@ -270,20 +421,23 @@ foreach (emit_scale_family($tokens['spacing'] ?? [], 'space-', 'space', true) as
 
 $rootVars[] = '';
 $rootVars[] = '    /* Text */';
-foreach (emit_scale_family($tokens['typography']['text'] ?? [], 'text-', 'text', false) as $line) {
+foreach (emit_scale_family($tokens['typography']['text'] ?? [], 'text-', 'text', false, $viewport, 'typography.text') as $line) {
     $rootVars[] = $line;
 }
 
 // ============================================================================
 // Heading sizes (symmetric open set: h{n} emits --h{n}, position orders the
 // math — ADR 0027 amends 0024). No bare alias: h1–h6 are guaranteed present.
-// Per-level line-height/letter-spacing/weight are migrated in defaults.json as
-// the (inactive) custom-store seed but not emitted until M2 (ADR 0022).
+// Sizes compile to fluid clamps; per-level line-height/letter-spacing/weight
+// are derived from the computed size (ADR 0022).
 // ============================================================================
 
 $rootVars[] = '';
 $rootVars[] = '    /* Headings */';
-foreach (emit_scale_family($tokens['typography']['headings'] ?? [], '', null, true) as $line) {
+foreach (emit_scale_family($tokens['typography']['headings'] ?? [], '', null, true, $viewport, 'typography.headings') as $line) {
+    $rootVars[] = $line;
+}
+foreach (emit_heading_typography($tokens['typography']['headings'] ?? [], 'typography.headings') as $line) {
     $rootVars[] = $line;
 }
 

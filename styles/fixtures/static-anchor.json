@@ -1,15 +1,14 @@
 {
-  "_note": "Fixture: a spec listing only s/m/l spacing steps. Proves presence-is-membership — exactly those three emit, nothing for the absent steps.",
+  "_note": "Fixture: scale mode with equal per-device anchors and ratios. Every step computes the same value at both viewports, so each token emits a static px value, not a degenerate clamp (ADR 0018).",
   "viewport": { "mobile": 390, "desktop": 1440 },
   "spacing": {
     "mode": "scale",
     "default": "m",
     "scale": {
-      "mobile": { "value": 12, "ratio": 1.5 },
+      "mobile": { "value": 16, "ratio": 1.5 },
       "desktop": { "value": 16, "ratio": 1.5 }
     },
     "sizes": {
-      "s": { "position": -1 },
       "m": { "position": 0 },
       "l": { "position": 1 }
     }

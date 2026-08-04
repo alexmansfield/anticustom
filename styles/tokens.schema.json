@@ -2,8 +2,16 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "name": "style-panel",
   "label": "Style Editor Panel",
-  "version": "3.0.0",
-  "description": "Design token editor for typography, colors, spacing, borders, and effects (palette-model open-set emission)",
+  "version": "4.0.0",
+  "description": "Design token editor for typography, colors, spacing, borders, and effects (palette-model open-set emission, per-device fluid scales)",
+  "viewport": {
+    "label": "Viewport Range",
+    "hint": "The two widths every fluid scale interpolates between.",
+    "unit": "px",
+    "step": 1,
+    "min": 240,
+    "max": 2560
+  },
   "icons": {
     "typography": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polyline points=\"4 7 4 4 20 4 20 7\"></polyline><line x1=\"9\" y1=\"20\" x2=\"15\" y2=\"20\"></line><line x1=\"12\" y1=\"4\" x2=\"12\" y2=\"20\"></line></svg>",
     "colors": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"8\" y=\"1\" width=\"8\" height=\"18\" rx=\"2\" transform=\"rotate(-25 12 19)\" fill=\"var(--icon-fill, white)\"></rect><rect x=\"8\" y=\"1\" width=\"8\" height=\"18\" rx=\"2\" transform=\"rotate(0 12 19)\" fill=\"var(--icon-fill, white)\"></rect><rect x=\"8\" y=\"1\" width=\"8\" height=\"18\" rx=\"2\" transform=\"rotate(25 12 19)\" fill=\"var(--icon-fill, white)\"></rect></svg>",
@@ -29,7 +37,14 @@
               "alias": null,
               "unit": "px",
               "anchor": { "label": "Anchor Size", "min": 8, "max": 48, "step": 1, "unit": "px" },
-              "ratio": { "label": "Type Scale", "min": 1, "max": 2, "step": 0.001, "presets": "typeScales" }
+              "ratio": { "label": "Type Scale", "min": 1, "max": 2, "step": 0.001, "presets": "typeScales" },
+              "derivedHeadings": true,
+              "style": [
+                { "id": "leading", "label": "Leading", "min": 0, "max": 24, "step": 0.5, "unit": "px", "hint": "Added on top of each heading's own height — not the gap between lines." },
+                { "id": "letterSpacingSlope", "label": "Letter-spacing Slope", "min": -0.05, "max": 0.02, "step": 0.001, "unit": "em" },
+                { "id": "letterSpacingConstant", "label": "Letter-spacing Constant", "min": -1, "max": 2, "step": 0.05, "unit": "px" },
+                { "id": "weight", "label": "Weight", "min": 100, "max": 900, "step": 100 }
+              ]
             }
           ],
           "resetButton": {

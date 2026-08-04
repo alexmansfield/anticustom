@@ -105,7 +105,7 @@ const UI_ICONS = {
 // ============================================
 // Settings version — bump when structure changes
 // ============================================
-const SETTINGS_VERSION = 3;
+const SETTINGS_VERSION = 4;
 
 // ============================================
 // Alpine.js Component Registration
@@ -349,10 +349,34 @@ function registerStylePanel() {
         },
 
         // ============================================
-        // Size-family helpers (open sets, key-identity, anchor-as-origin)
+        // Global viewport anchors (ADR 0018) — the two widths every scale
+        // family's fluid clamps interpolate between. Lives outside the axes.
         // ============================================
 
-        /** The settings object for a size family (its { default, ratio?, sizes }). */
+        viewport() {
+            return this.settings.viewport || { mobile: 390, desktop: 1440 };
+        },
+
+        setViewport(device, value) {
+            if (!this.settings.viewport) this.settings.viewport = { mobile: 390, desktop: 1440 };
+            this.settings.viewport[device] = parseInt(value, 10) || 0;
+            this.applyAllSettings();   // every scale family's clamp depends on this
+            this.markChanged();
+        },
+
+        /** True when the active panel contains any scale section (viewport UI). */
+        get panelHasScale() {
+            const panel = this.getCurrentPanel();
+            if (!panel) return false;
+            const tabs = panel.tabs || [panel];
+            return tabs.some(t => (t.sections || [t]).some(s => this.getSectionType(s) === 'scale'));
+        },
+
+        // ============================================
+        // Size-family helpers (open sets, key-identity, per-device anchors)
+        // ============================================
+
+        /** The settings object for a size family ({ mode, default, scale, sizes, custom }). */
         familyOf(section) {
             return this.getByPath(section.settingsKey) || {};
         },
@@ -367,10 +391,8 @@ function registerStylePanel() {
             return `--${section.cssPrefix || ''}${key}`;
         },
 
-        /** A scale family's anchor step (the origin) — its value / position. */
-        anchorValue(section) {
-            const fam = this.familyOf(section);
-            return fam.sizes?.[fam.default]?.value ?? 16;
+        familyMode(section) {
+            return this.familyOf(section).mode || 'scale';
         },
 
         anchorPosition(section) {
@@ -378,13 +400,66 @@ function registerStylePanel() {
             return fam.sizes?.[fam.default]?.position ?? 0;
         },
 
-        /** Computed px for a scale step: anchorValue * ratio^(pos − anchorPos). */
-        computeSize(section, key) {
-            const fam = this.familyOf(section);
-            const pos = fam.sizes?.[key]?.position ?? 0;
-            const raw = this.anchorValue(section) * Math.pow(fam.ratio ?? 1, pos - this.anchorPosition(section));
+        /** Per-device anchor value / ratio from the family's scale block. */
+        deviceAnchor(section, device) {
+            return this.familyOf(section).scale?.[device]?.value ?? 16;
+        },
+        deviceRatio(section, device) {
+            return this.familyOf(section).scale?.[device]?.ratio ?? 1;
+        },
+
+        roundSize(section, raw) {
             // Text keeps a decimal (finer type steps); spacing/headings round to int.
             return section.cssPrefix === 'text-' ? Math.round(raw * 10) / 10 : Math.round(raw);
+        },
+
+        /** Computed px for a scale step at one device: anchor * ratio^(pos − anchorPos). */
+        computeDeviceSize(section, key, device) {
+            const fam = this.familyOf(section);
+            const pos = fam.sizes?.[key]?.position ?? 0;
+            const raw = this.deviceAnchor(section, device) * Math.pow(this.deviceRatio(section, device), pos - this.anchorPosition(section));
+            return this.roundSize(section, raw);
+        },
+
+        /** The two device px values for a step, honoring mode (scale vs custom). */
+        deviceValues(section, key) {
+            const fam = this.familyOf(section);
+            if (this.familyMode(section) === 'custom') {
+                const pair = fam.custom?.[key] || {};
+                return {
+                    mobile: pair.mobile ?? this.computeDeviceSize(section, key, 'mobile'),
+                    desktop: pair.desktop ?? this.computeDeviceSize(section, key, 'desktop'),
+                };
+            }
+            return {
+                mobile: this.computeDeviceSize(section, key, 'mobile'),
+                desktop: this.computeDeviceSize(section, key, 'desktop'),
+            };
+        },
+
+        // ---- generate.php mirror: num() + fluid clamp() ----
+        numFmt(v) {
+            return (Math.round(v * 10000) / 10000).toString();
+        },
+
+        /** Mirror of generate.php fluid_clamp(): static when anchors equal, else clamp. */
+        fluidClamp(mob, desk, round) {
+            const m = round ? Math.round(mob) : Math.round(mob * 10) / 10;
+            const d = round ? Math.round(desk) : Math.round(desk * 10) / 10;
+            if (m === d) return `${this.numFmt(m)}px`;
+            const vp = this.viewport();
+            const min = Math.min(m, d), max = Math.max(m, d);
+            const slope = (d - m) / (vp.desktop - vp.mobile);
+            const intercept = m - slope * vp.mobile;
+            const vw = slope * 100;
+            const sign = vw < 0 ? '-' : '+';
+            return `clamp(${this.numFmt(min)}px, calc(${this.numFmt(intercept)}px ${sign} ${this.numFmt(Math.abs(vw))}vw), ${this.numFmt(max)}px)`;
+        },
+
+        /** The emitted CSS value for a scale step (clamp or static), mode-aware. */
+        sizeCssValue(section, key) {
+            const { mobile, desktop } = this.deviceValues(section, key);
+            return this.fluidClamp(mobile, desktop, section.cssPrefix !== 'text-');
         },
 
         // ============================================
@@ -393,27 +468,124 @@ function registerStylePanel() {
 
         applyScale(section) {
             for (const key of this.sizeKeys(section)) {
-                this.applyCSSVariable(this.itemCssName(section, key), `${this.computeSize(section, key)}px`);
+                this.applyCSSVariable(this.itemCssName(section, key), this.sizeCssValue(section, key));
             }
             const fam = this.familyOf(section);
             if (section.alias && fam.default) {
                 this.applyCSSVariable(`--${section.alias}`, `var(--${section.cssPrefix}${fam.default})`);
             }
+            if (section.derivedHeadings) this.applyHeadingTypography(section);
         },
 
-        setAnchor(section, value) {
+        setDeviceAnchor(section, device, value) {
             const fam = this.familyOf(section);
-            if (!fam.sizes?.[fam.default]) return;
-            fam.sizes[fam.default].value = parseFloat(value);
+            if (!fam.scale) fam.scale = {};
+            if (!fam.scale[device]) fam.scale[device] = {};
+            fam.scale[device].value = parseFloat(value);
             this.applyScale(section);
             this.markChanged();
         },
 
-        setRatio(section, value) {
+        setDeviceRatio(section, device, value) {
             const fam = this.familyOf(section);
-            fam.ratio = parseFloat(value);
+            if (!fam.scale) fam.scale = {};
+            if (!fam.scale[device]) fam.scale[device] = {};
+            fam.scale[device].ratio = parseFloat(value);
             this.applyScale(section);
             this.markChanged();
+        },
+
+        // ---- mode switching (ADR 0018): nondestructive; seed per-key on → custom ----
+        setMode(section, mode) {
+            const fam = this.familyOf(section);
+            if (mode === 'custom') {
+                if (!fam.custom) fam.custom = {};
+                for (const key of this.sizeKeys(section)) {
+                    if (!fam.custom[key]) {
+                        fam.custom[key] = {
+                            mobile: this.computeDeviceSize(section, key, 'mobile'),
+                            desktop: this.computeDeviceSize(section, key, 'desktop'),
+                        };
+                    }
+                }
+                if (section.derivedHeadings) this.seedCustomStyle(section);
+            }
+            fam.mode = mode;
+            this.applyScale(section);
+            this.markChanged();
+        },
+
+        setCustomSize(section, key, device, value) {
+            const fam = this.familyOf(section);
+            if (!fam.custom) fam.custom = {};
+            if (!fam.custom[key]) fam.custom[key] = {};
+            fam.custom[key][device] = parseFloat(value);
+            this.applyScale(section);
+            this.markChanged();
+        },
+
+        /** Custom-store value for a step/device, falling back to the scale computation. */
+        customValue(section, key, device) {
+            const pair = this.familyOf(section).custom?.[key];
+            return pair?.[device] ?? this.computeDeviceSize(section, key, device);
+        },
+
+        // ---- derived heading typography (ADR 0022) ----
+        headingStyle(section) {
+            return this.familyOf(section).style || {};
+        },
+
+        setHeadingStyle(section, knob, value) {
+            const fam = this.familyOf(section);
+            if (!fam.style) fam.style = {};
+            fam.style[knob] = parseFloat(value);
+            this.applyScale(section);
+            this.markChanged();
+        },
+
+        applyHeadingTypography(section) {
+            const fam = this.familyOf(section);
+            if (this.familyMode(section) === 'custom') {
+                const store = fam.customStyle || {};
+                for (const key of this.sizeKeys(section)) {
+                    const b = store[key] || {};
+                    this.applyCSSVariable(`--${key}-line-height`, `${this.numFmt(b.lineHeight ?? 1.2)}`);
+                    this.applyCSSVariable(`--${key}-letter-spacing`, `${this.numFmt(b.letterSpacing ?? 0)}em`);
+                    this.applyCSSVariable(`--${key}-weight`, `${b.weight ?? 600}`);
+                }
+                return;
+            }
+            const s = this.headingStyle(section);
+            const leading = s.leading ?? 8;
+            const slope = s.letterSpacingSlope ?? 0;
+            const constant = s.letterSpacingConstant ?? 0;
+            const weight = s.weight ?? 600;
+            const lh = `calc(1em + ${this.numFmt(leading)}px)`;
+            const lsSign = constant < 0 ? '-' : '+';
+            const ls = `calc(${this.numFmt(slope)}em ${lsSign} ${this.numFmt(Math.abs(constant))}px)`;
+            for (const key of this.sizeKeys(section)) {
+                this.applyCSSVariable(`--${key}-line-height`, lh);
+                this.applyCSSVariable(`--${key}-letter-spacing`, ls);
+                this.applyCSSVariable(`--${key}-weight`, `${weight}`);
+            }
+        },
+
+        /** Seed customStyle from the derived formulas at each level's desktop size. */
+        seedCustomStyle(section) {
+            const fam = this.familyOf(section);
+            if (!fam.customStyle) fam.customStyle = {};
+            const s = this.headingStyle(section);
+            const leading = s.leading ?? 8, slope = s.letterSpacingSlope ?? 0,
+                  constant = s.letterSpacingConstant ?? 0, weight = s.weight ?? 600;
+            for (const key of this.sizeKeys(section)) {
+                if (fam.customStyle[key]) continue;
+                const sizePx = this.computeDeviceSize(section, key, 'desktop') || 16;
+                fam.customStyle[key] = {
+                    lineHeight: Math.round(((sizePx + leading) / sizePx) * 100) / 100,
+                    letterSpacing: Math.round((slope + constant / sizePx) * 1000) / 1000,
+                    weight,
+                };
+            }
         },
 
         // ============================================
@@ -978,6 +1150,27 @@ const getPanelHTML = () => `
             <main class="anti-settings__content">
                 <div class="anti-settings__panel" x-show="activeCategory">
 
+                    <!-- Global viewport anchors (ADR 0018) — shared by every scale family -->
+                    <template x-if="panelHasScale && schema.viewport">
+                        <div class="anti-device-block anti-viewport-block">
+                            <div class="anti-section-title anti-device-block__title" x-text="schema.viewport.label"></div>
+                            <div class="anti-control-hint" x-show="schema.viewport.hint" x-text="schema.viewport.hint"></div>
+                            <template x-for="device in ['mobile', 'desktop']" :key="device">
+                                <div class="anti-size-section is-enabled">
+                                    <div class="anti-size-header">
+                                        <span class="anti-size-name" x-text="device.charAt(0).toUpperCase() + device.slice(1)"></span>
+                                        <div class="anti-control-value">
+                                            <input type="number" :step="schema.viewport.step"
+                                                :value="viewport()[device]"
+                                                @change="setViewport(device, $event.target.value)">
+                                            <span x-text="schema.viewport.unit"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </template>
+
                     <template x-for="section in currentSections" :key="section.id">
                         <div>
 
@@ -986,66 +1179,146 @@ const getPanelHTML = () => `
                                 <div>
                                     <div class="anti-section-title" x-text="section.label"></div>
 
-                                    <!-- Anchor size (the scale origin) -->
-                                    <div class="anti-size-section is-enabled">
-                                        <div class="anti-size-header">
-                                            <span class="anti-size-name" x-text="section.anchor.label"></span>
-                                        </div>
-                                        <div class="anti-size-controls" style="display: block;">
-                                            <div class="anti-control-row">
-                                                <input type="range" class="anti-range"
-                                                    :min="section.anchor.min" :max="section.anchor.max" :step="section.anchor.step"
-                                                    :value="anchorValue(section)"
-                                                    @input="setAnchor(section, $event.target.value)">
-                                                <div class="anti-control-value">
-                                                    <input type="number" :step="section.anchor.step"
-                                                        :value="anchorValue(section)"
-                                                        @change="setAnchor(section, $event.target.value)">
-                                                    <span x-show="section.anchor.unit" x-text="section.anchor.unit"></span>
-                                                </div>
-                                            </div>
-                                        </div>
+                                    <!-- Mode switch: systematic scale vs hand-authored custom (ADR 0018) -->
+                                    <div class="anti-mode-switch">
+                                        <button class="anti-mode-switch__btn"
+                                            :class="{ 'is-active': familyMode(section) === 'scale' }"
+                                            @click="setMode(section, 'scale')">Scale</button>
+                                        <button class="anti-mode-switch__btn"
+                                            :class="{ 'is-active': familyMode(section) === 'custom' }"
+                                            @click="setMode(section, 'custom')">Custom</button>
                                     </div>
 
-                                    <!-- Ratio -->
-                                    <div class="anti-size-section is-enabled">
-                                        <div class="anti-size-header">
-                                            <span class="anti-size-name" x-text="section.ratio.label"></span>
-                                        </div>
-                                        <div class="anti-size-controls" style="display: block;">
-                                            <div class="anti-control-row">
-                                                <input type="range" class="anti-range"
-                                                    :min="section.ratio.min" :max="section.ratio.max" :step="section.ratio.step"
-                                                    :value="familyOf(section).ratio"
-                                                    @input="setRatio(section, $event.target.value)">
-                                                <div class="anti-control-value">
-                                                    <input type="number" :step="section.ratio.step"
-                                                        :value="familyOf(section).ratio"
-                                                        @change="setRatio(section, $event.target.value)">
+                                    <!-- ---------- SCALE MODE ---------- -->
+                                    <template x-if="familyMode(section) === 'scale'">
+                                        <div>
+                                            <!-- Per-device anchor + ratio (mobile / desktop) -->
+                                            <template x-for="device in ['mobile', 'desktop']" :key="device">
+                                                <div class="anti-device-block">
+                                                    <div class="anti-section-title anti-device-block__title"
+                                                        x-text="device.charAt(0).toUpperCase() + device.slice(1)"></div>
+
+                                                    <div class="anti-size-section is-enabled">
+                                                        <div class="anti-size-header">
+                                                            <span class="anti-size-name" x-text="section.anchor.label"></span>
+                                                        </div>
+                                                        <div class="anti-size-controls" style="display: block;">
+                                                            <div class="anti-control-row">
+                                                                <input type="range" class="anti-range"
+                                                                    :min="section.anchor.min" :max="section.anchor.max" :step="section.anchor.step"
+                                                                    :value="deviceAnchor(section, device)"
+                                                                    @input="setDeviceAnchor(section, device, $event.target.value)">
+                                                                <div class="anti-control-value">
+                                                                    <input type="number" :step="section.anchor.step"
+                                                                        :value="deviceAnchor(section, device)"
+                                                                        @change="setDeviceAnchor(section, device, $event.target.value)">
+                                                                    <span x-show="section.anchor.unit" x-text="section.anchor.unit"></span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="anti-size-section is-enabled">
+                                                        <div class="anti-size-header">
+                                                            <span class="anti-size-name" x-text="section.ratio.label"></span>
+                                                        </div>
+                                                        <div class="anti-size-controls" style="display: block;">
+                                                            <div class="anti-control-row">
+                                                                <input type="range" class="anti-range"
+                                                                    :min="section.ratio.min" :max="section.ratio.max" :step="section.ratio.step"
+                                                                    :value="deviceRatio(section, device)"
+                                                                    @input="setDeviceRatio(section, device, $event.target.value)">
+                                                                <div class="anti-control-value">
+                                                                    <input type="number" :step="section.ratio.step"
+                                                                        :value="deviceRatio(section, device)"
+                                                                        @change="setDeviceRatio(section, device, $event.target.value)">
+                                                                </div>
+                                                            </div>
+                                                            <template x-if="section.ratio.presets">
+                                                                <select class="anti-select" style="margin-top: 12px;"
+                                                                    @change="setDeviceRatio(section, device, $event.target.value)">
+                                                                    <option value="">Custom</option>
+                                                                    <template x-for="preset in (schema.presets[section.ratio.presets] || [])" :key="presetValue(preset)">
+                                                                        <option :value="presetValue(preset)" x-text="presetLabel(preset)"
+                                                                            :selected="deviceRatio(section, device) === presetValue(preset)"></option>
+                                                                    </template>
+                                                                </select>
+                                                            </template>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <template x-if="section.ratio.presets">
-                                                <select class="anti-select" style="margin-top: 12px;"
-                                                    @change="setRatio(section, $event.target.value)">
-                                                    <option value="">Custom</option>
-                                                    <template x-for="preset in (schema.presets[section.ratio.presets] || [])" :key="presetValue(preset)">
-                                                        <option :value="presetValue(preset)" x-text="presetLabel(preset)"
-                                                            :selected="familyOf(section).ratio === presetValue(preset)"></option>
+                                            </template>
+
+                                            <!-- Derived heading typography knobs (ADR 0022) -->
+                                            <template x-if="section.derivedHeadings && section.style">
+                                                <div class="anti-device-block">
+                                                    <div class="anti-section-title anti-device-block__title">Typography</div>
+                                                    <template x-for="knob in section.style" :key="knob.id">
+                                                        <div class="anti-size-section is-enabled">
+                                                            <div class="anti-size-header">
+                                                                <span class="anti-size-name" x-text="knob.label"></span>
+                                                            </div>
+                                                            <div class="anti-size-controls" style="display: block;">
+                                                                <div class="anti-control-row">
+                                                                    <input type="range" class="anti-range"
+                                                                        :min="knob.min" :max="knob.max" :step="knob.step"
+                                                                        :value="headingStyle(section)[knob.id]"
+                                                                        @input="setHeadingStyle(section, knob.id, $event.target.value)">
+                                                                    <div class="anti-control-value">
+                                                                        <input type="number" :step="knob.step"
+                                                                            :value="headingStyle(section)[knob.id]"
+                                                                            @change="setHeadingStyle(section, knob.id, $event.target.value)">
+                                                                        <span x-show="knob.unit" x-text="knob.unit"></span>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="anti-control-hint" x-show="knob.hint" x-text="knob.hint"></div>
+                                                            </div>
+                                                        </div>
                                                     </template>
-                                                </select>
+                                                </div>
+                                            </template>
+
+                                            <!-- Computed steps (read-only; fluid mobile → desktop) -->
+                                            <div class="anti-section-title" style="margin-top: 12px;">Steps</div>
+                                            <template x-for="key in sizeKeys(section)" :key="key">
+                                                <div class="anti-size-section is-enabled">
+                                                    <div class="anti-size-header">
+                                                        <span class="anti-size-name" x-text="getItemLabel(key)"></span>
+                                                        <span class="anti-size-computed"
+                                                            x-text="computeDeviceSize(section, key, 'mobile') + ' → ' + computeDeviceSize(section, key, 'desktop') + (section.unit || '')"></span>
+                                                    </div>
+                                                </div>
                                             </template>
                                         </div>
-                                    </div>
+                                    </template>
 
-                                    <!-- Computed steps (read-only; presence in sizes is membership) -->
-                                    <div class="anti-section-title" style="margin-top: 12px;">Steps</div>
-                                    <template x-for="key in sizeKeys(section)" :key="key">
-                                        <div class="anti-size-section is-enabled">
-                                            <div class="anti-size-header">
-                                                <span class="anti-size-name" x-text="getItemLabel(key)"></span>
-                                                <span class="anti-size-computed"
-                                                    x-text="computeSize(section, key) + (section.unit || '')"></span>
+                                    <!-- ---------- CUSTOM MODE ---------- -->
+                                    <template x-if="familyMode(section) === 'custom'">
+                                        <div>
+                                            <div class="anti-control-hint" style="margin-bottom: 8px;">
+                                                Hand-authored per-size values. Seeded from the scale on switch; edits here don't re-derive.
                                             </div>
+                                            <template x-for="key in sizeKeys(section)" :key="key">
+                                                <div class="anti-size-section is-enabled">
+                                                    <div class="anti-size-header">
+                                                        <span class="anti-size-name" x-text="getItemLabel(key)"></span>
+                                                    </div>
+                                                    <div class="anti-size-controls" style="display: block;">
+                                                        <template x-for="device in ['mobile', 'desktop']" :key="device">
+                                                            <div class="anti-control-row">
+                                                                <label class="anti-control-label" style="min-width: 60px;"
+                                                                    x-text="device.charAt(0).toUpperCase() + device.slice(1)"></label>
+                                                                <div class="anti-control-value">
+                                                                    <input type="number" :step="section.cssPrefix === 'text-' ? 0.1 : 1"
+                                                                        :value="customValue(section, key, device)"
+                                                                        @change="setCustomSize(section, key, device, $event.target.value)">
+                                                                    <span x-show="section.unit" x-text="section.unit"></span>
+                                                                </div>
+                                                            </div>
+                                                        </template>
+                                                    </div>
+                                                </div>
+                                            </template>
                                         </div>
                                     </template>
                                 </div>
