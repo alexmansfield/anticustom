@@ -43,14 +43,14 @@
    ========================================================================== */
 
 .anti-button--solid {
-    background-color: var(--palette-hard-contrast);
-    color: var(--palette-surface);
-    border: var(--border-m, var(--border)) solid var(--palette-hard-contrast);
+    background-color: var(--palette-hard-contrast, #0f172a);
+    color: var(--palette-surface, #ffffff);
+    border: var(--border-m, var(--border)) solid var(--palette-hard-contrast, #0f172a);
 }
 
 .anti-button--solid:hover {
-    background-color: var(--palette-hard-contrast-hover);
-    border-color: var(--palette-hard-contrast-hover);
+    background-color: var(--palette-hard-contrast-hover, var(--palette-hard-contrast, #0f172a));
+    border-color: var(--palette-hard-contrast-hover, var(--palette-hard-contrast, #0f172a));
 }
 
 .anti-button--solid:active {
@@ -63,13 +63,13 @@
 
 .anti-button--outline {
     background-color: transparent;
-    color: var(--palette-hard-contrast);
-    border: var(--border-m, var(--border)) solid var(--palette-hard-contrast);
+    color: var(--palette-hard-contrast, #0f172a);
+    border: var(--border-m, var(--border)) solid var(--palette-hard-contrast, #0f172a);
 }
 
 .anti-button--outline:hover {
-    background-color: var(--palette-hard-contrast);
-    color: var(--palette-surface);
+    background-color: var(--palette-hard-contrast, #0f172a);
+    color: var(--palette-surface, #ffffff);
 }
 
 .anti-button--outline:active {
@@ -82,12 +82,12 @@
 
 .anti-button--ghost {
     background-color: transparent;
-    color: var(--palette-hard-contrast);
+    color: var(--palette-hard-contrast, #0f172a);
     border: var(--border-m, var(--border)) solid transparent;
 }
 
 .anti-button--ghost:hover {
-    background-color: var(--palette-surface-hover);
+    background-color: var(--palette-surface-hover, var(--palette-surface, #ffffff));
 }
 
 .anti-button--ghost:active {

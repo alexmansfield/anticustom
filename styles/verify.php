@@ -343,13 +343,16 @@ check('intent binding rule emitted for success',
     preg_match('/\[data-intent="success"\]\s*\{[^}]*--intent:\s*var\(--palette-success\)[^}]*--intent-on:\s*var\(--palette-success-on\)/s', $css) === 1,
     'a [data-intent] binding rule should map --intent/--intent-on to the palette slot');
 
-// A non-default palette emits a [data-palette] region block, dense (inherits
-// unspecified slots from default so the region is self-contained pre-sparse).
-check('non-default palette emits [data-palette] region',
-    strpos($css, '[data-palette="primary"] {') !== false);
-check('dense region inherits unspecified slot from default',
-    preg_match('/\[data-palette="primary"\]\s*\{[^}]*--palette-info:\s*var\(--info-ultra-light\)/s', $css) === 1,
-    'a slot the region omits should fall back to the default palette value (dense)');
+// A non-default palette emits a [data-palette] region block, sparse (ADR 0015):
+// only its own slots emit; omitted slots inherit from :root via the cascade.
+preg_match('/\[data-palette="primary"\]\s*\{(.*?)\}/s', $css, $primaryBlock);
+$primaryBody = $primaryBlock[1] ?? '';
+check('non-default palette emits [data-palette] region', $primaryBody !== '');
+check('sparse region emits its own slot (surface)',
+    strpos($primaryBody, '--palette-surface:') !== false);
+check('sparse region omits slots it does not define (info inherits via cascade)',
+    strpos($primaryBody, '--palette-info:') === false,
+    'present-keys-only: a slot the region does not define must not emit (ADR 0015 sparse)');
 
 // No component CSS still references the retired --colorway-* vocabulary.
 $sweepCss = '';
@@ -359,6 +362,25 @@ foreach (glob(dirname(__DIR__) . '/components/*/styles/*.css') as $file) {
 check('no component references retired --colorway-*',
     strpos($sweepCss, '--colorway-') === false,
     'a component CSS file still references a --colorway-* token');
+
+// Permanent fallback-presence guard (M3.7, extends the 1.7 mechanism to the
+// palette tier). Palette/intent tokens emit sparsely (ADR 0015) — a bare
+// `var(--palette-x)` referencing a slot a palette omits resolves to nothing, so
+// every component palette/intent ref must carry a fallback. A ref *with* a
+// fallback has a comma; the regex matches only the bare (comma-less) form.
+$paletteBareRefs = function (string $css): array {
+    preg_match_all('/var\(\s*--(palette-[a-z0-9-]+|intent(?:-[a-z]+)?)\s*\)/i', $css, $m);
+    return array_values(array_unique($m[0]));
+};
+$bare = $paletteBareRefs($sweepCss);
+check('no component palette/intent ref is bare (fallback contract, ADR 0015)',
+    empty($bare),
+    'bare refs (need a fallback): ' . implode(', ', $bare));
+
+// Guard has teeth: a planted bare ref is detected.
+check('guard teeth: a bare palette ref is caught',
+    count($paletteBareRefs('.x { color: var(--palette-soft-contrast); background: var(--intent); }')) === 2,
+    'the bare-ref guard failed to flag a planted violation');
 
 // ═════════════════════════════════════════════════
 // M3 — OKLCH ramp math (isolated port #29; docs/research/oklch-generation.md)

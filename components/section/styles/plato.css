@@ -7,9 +7,9 @@
  */
 
 .anti-section {
-    color: var(--palette-hard-contrast);
+    color: var(--palette-hard-contrast, #0f172a);
 }
 
 .anti-section[data-palette] {
-    background-color: var(--palette-surface);
+    background-color: var(--palette-surface, #ffffff);
 }

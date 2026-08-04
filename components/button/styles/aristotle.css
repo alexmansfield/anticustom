@@ -37,8 +37,8 @@
 }
 
 .anti-button--solid:hover {
-    background-color: var(--palette-hard-contrast-hover);
-    border-color: var(--palette-hard-contrast-hover);
+    background-color: var(--palette-hard-contrast-hover, var(--palette-hard-contrast, #0f172a));
+    border-color: var(--palette-hard-contrast-hover, var(--palette-hard-contrast, #0f172a));
 }
 
 .anti-button--solid:active {

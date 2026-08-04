@@ -18,15 +18,15 @@
 
 .anti-intro__eyebrow {
     font-weight: 600;
-    color: var(--palette-accent);
+    color: var(--palette-accent, var(--palette-hard-contrast, #0f172a));
 }
 
 .anti-intro__title {
     font-weight: var(--h2-weight, 700);
-    color: var(--palette-hard-contrast);
+    color: var(--palette-hard-contrast, #0f172a);
 }
 
 .anti-intro__subtitle {
-    color: var(--palette-hard-contrast);
+    color: var(--palette-hard-contrast, #0f172a);
     opacity: 0.8;
 }

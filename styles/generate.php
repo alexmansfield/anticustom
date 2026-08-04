@@ -550,29 +550,27 @@ function palette_state_pole(string $value, array $rampMap): string {
 }
 
 /**
- * Emit one palette block. Dense: every slot of the canonical set ($default's
- * slots) emits, falling back to the default palette's value where this palette
- * omits it — so a `[data-palette]` region is fully self-contained (M3.5/3.6 add
- * component fallbacks and flip this to sparse). `-on` emits when authored;
- * `-hover`/`-active` emit a data override if present, else a color-mix.
+ * Emit one palette block, sparse (ADR 0015): only the palette's *own* slots
+ * emit — a `[data-palette]` region omitting a slot inherits it from the default
+ * palette through the CSS cascade (and, for a slot no palette defines, the
+ * component's `var()` fallback catches it — the mandatory contract enforced by
+ * the M3.7 guard). `-on` emits when authored; `-hover`/`-active` emit a data
+ * override if present, else a generator color-mix (ADR 0026).
  */
-function emit_palette_block(array $palette, array $default, array $rampMap): array {
+function emit_palette_block(array $palette, array $rampMap): array {
     $lines = [];
-    foreach (palette_slots($default) as $slot) {
-        $value = $palette[$slot] ?? $default[$slot] ?? null;
-        if ($value === null) continue;
+    foreach (palette_slots($palette) as $slot) {
+        $value = $palette[$slot];
 
         $lines[] = "    --palette-{$slot}: {$value};";
 
-        $on = $palette["{$slot}-on"] ?? $default["{$slot}-on"] ?? null;
-        if ($on !== null) {
-            $lines[] = "    --palette-{$slot}-on: {$on};";
+        if (isset($palette["{$slot}-on"])) {
+            $lines[] = "    --palette-{$slot}-on: {$palette["{$slot}-on"]};";
         }
 
         foreach (STATE_MIX as $state => $pct) {
-            $override = $palette["{$slot}-{$state}"] ?? $default["{$slot}-{$state}"] ?? null;
-            if ($override !== null) {
-                $lines[] = "    --palette-{$slot}-{$state}: {$override};";
+            if (isset($palette["{$slot}-{$state}"])) {
+                $lines[] = "    --palette-{$slot}-{$state}: {$palette["{$slot}-{$state}"]};";
             } else {
                 $pole = palette_state_pole($value, $rampMap);
                 $lines[] = "    --palette-{$slot}-{$state}: color-mix(in srgb, var(--palette-{$slot}), {$pole} {$pct}%);";
@@ -741,7 +739,7 @@ $palettes = $tokens['color']['palettes'] ?? [];
 $defaultPalette = $palettes['default'] ?? [];
 
 foreach ($palettes as $paletteName => $paletteData) {
-    $lines = emit_palette_block($paletteData, $defaultPalette, $rampMap);
+    $lines = emit_palette_block($paletteData, $rampMap);
     if (empty($lines)) continue;
 
     $selector = ($paletteName === 'default') ? ':root' : "[data-palette=\"{$paletteName}\"]";
