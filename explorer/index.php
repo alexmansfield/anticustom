@@ -73,10 +73,20 @@ $navItems = [
     <script defer src="vendor/alpine.min.js"></script>
 </head>
 <body>
-    <!-- Schema + defaults inlined for panel.js (styles/ is outside document root) -->
+    <!-- Schema + defaults + followed spec inlined for panel.js (styles/ is outside document root) -->
     <script>
         window.ANTI_SCHEMA = <?php echo file_get_contents(__DIR__ . '/../styles/tokens.schema.json'); ?>;
         window.ANTI_DEFAULTS = <?php echo file_get_contents(__DIR__ . '/../styles/defaults.json'); ?>;
+        <?php
+        // The spec the site follows (ADR 0023) — the editor reads it to mark which
+        // token rows are spec-guaranteed (non-deletable) vs custom, and to seed
+        // default labels. Missing/unfollowed → null (every row is then custom).
+        $anti_site = json_decode(file_get_contents(__DIR__ . '/../styles/defaults.json'), true);
+        $anti_spec_name = $anti_site['spec'] ?? null;
+        $anti_spec_path = $anti_spec_name ? __DIR__ . '/../styles/specs/' . $anti_spec_name . '.json' : null;
+        $anti_spec_json = ($anti_spec_path && is_file($anti_spec_path)) ? file_get_contents($anti_spec_path) : 'null';
+        ?>
+        window.ANTI_SPEC = <?php echo $anti_spec_json; ?>;
     </script>
     <!-- Panel JS injects sidebar into body -->
     <script defer src="<?php echo explorer_asset('js/panel.js'); ?>"></script>
