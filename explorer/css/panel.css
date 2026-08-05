@@ -1274,11 +1274,20 @@
    (M5.2 / ADR 0023). Rows can carry a label input + actions, so headers wrap.
    ========================================================================== */
 
+/* Pinned view toolbar (peer of tabs/content, so it never scrolls away) */
+.anti-panel .anti-settings__toolbar {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--anti-border);
+    background: var(--anti-bg);
+}
+
 .anti-panel .anti-tokennames-toggle {
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-bottom: 14px;
     font-size: 12px;
     color: var(--anti-text-muted);
     cursor: pointer;
@@ -1328,6 +1337,48 @@
     white-space: nowrap;
 }
 
+.anti-panel .anti-token-rename {
+    display: inline-flex;
+    align-items: center;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 11px;
+    background: var(--anti-control-bg);
+    border: 1px solid transparent;
+    border-radius: 3px;
+    padding: 0 3px 0 5px;
+}
+
+.anti-panel .anti-token-rename:hover {
+    border-color: var(--anti-control-border);
+}
+
+.anti-panel .anti-token-rename:focus-within {
+    border-color: var(--anti-accent);
+}
+
+.anti-panel .anti-token-rename__prefix {
+    color: var(--anti-text-muted);
+    white-space: nowrap;
+}
+
+.anti-panel .anti-token-rename__key {
+    width: 5ch;
+    min-width: 3ch;
+    max-width: 12ch;
+    padding: 1px 2px;
+    font-family: inherit;
+    font-size: inherit;
+    color: var(--anti-text);
+    background: transparent;
+    border: none;
+    border-radius: 2px;
+}
+
+.anti-panel .anti-token-rename__key:focus {
+    outline: none;
+    background: var(--anti-panel-bg, rgba(0, 0, 0, 0.15));
+}
+
 .anti-panel .anti-token-badge {
     font-size: 9px;
     text-transform: uppercase;
@@ -1353,16 +1404,6 @@
     align-items: center;
     gap: 6px;
     margin-left: auto;
-}
-
-.anti-panel .anti-token-alias {
-    font-size: 11px;
-    padding: 2px 4px;
-    max-width: 92px;
-    color: var(--anti-text);
-    background: var(--anti-control-bg);
-    border: 1px solid var(--anti-control-border);
-    border-radius: 4px;
 }
 
 .anti-panel .anti-token-del {

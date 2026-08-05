@@ -110,26 +110,6 @@ foreach ($specKeys as $k) {
 }
 
 // ─────────────────────────────────────────────────
-// M5 — aliasing degrades correctly (ADR 0023). A lean site satisfies a wider
-// spec by pointing one token at another; the aliased token emits as a var()
-// pointer to a present sibling, so the promise is kept even where the value is
-// not independently designed.
-// ─────────────────────────────────────────────────
-$aliasCss  = generate_css(fixture('alias-site.json'));
-$aliasKeys = emitted_keys($aliasCss);
-check('alias: --space-xl points at its sibling',
-    preg_match('/--space-xl:\s*var\(--space-l\)/', $aliasCss) === 1,
-    'aliased scale token should emit var(--space-l)');
-check('alias: alias target --space-l resolves', isset($aliasKeys['space-l']),
-    'alias target absent — the aliased token would degrade to nothing');
-check('alias: aliased step is not also computed',
-    strpos($aliasCss, '--space-xl: clamp') === false,
-    'an aliased scale step must not also emit a computed clamp');
-check('alias: --radius-xl points at its sibling (pick-one)',
-    preg_match('/--radius-xl:\s*var\(--radius-m\)/', $aliasCss) === 1,
-    'aliased pick-one token should emit var(--radius-m)');
-
-// ─────────────────────────────────────────────────
 // M5 — the mechanical extends stamp (ADR 0023, spec_extends_stamp). A successor
 // retaining every seed token extends it; dropping one breaks the edge; a
 // greenfield publish extends nothing. Same pure rule styles/spec.php publishes

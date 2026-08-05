@@ -359,7 +359,6 @@ function resolve_scale_sizes(array $family, string $label): array {
     if ($mode === 'custom') {
         $store = $family['custom'] ?? [];
         foreach ($sizes as $key => $data) {
-            if (isset($data['alias'])) continue;   // aliased steps point at a sibling, not a value
             $pair = $store[$key] ?? null;
             if (!is_array($pair) || !isset($pair['mobile'], $pair['desktop'])) {
                 fprintf(STDERR, "Error: %s is mode:custom but the custom store is missing '%s' (both mobile and desktop required)\n", $label, $key);
@@ -377,7 +376,6 @@ function resolve_scale_sizes(array $family, string $label): array {
     $rDesk = (float) ($scale['desktop']['ratio'] ?? 1);
 
     foreach ($sizes as $key => $data) {
-        if (isset($data['alias'])) continue;   // aliased steps are emitted as var() pointers, not computed
         $pos = (int) ($data['position'] ?? 0);
         $out[$key] = [
             scale_value($mMob, $rMob, $pos, $anchorPos),
@@ -402,14 +400,7 @@ function emit_scale_family(array $family, string $keyPrefix, ?string $alias, boo
     $anchorKey = $family['default'] ?? null;
 
     $resolved = resolve_scale_sizes($family, $label);
-    foreach ($sizes as $key => $data) {
-        // Aliasing (ADR 0023): a lean site satisfies a wider spec by pointing one
-        // token at another — `"xxl": {"alias":"xl"}` emits `var(--space-xl)`, so an
-        // undesigned step degrades to its sibling's value instead of going missing.
-        if (isset($data['alias'])) {
-            $lines[] = "    --{$keyPrefix}{$key}: var(--{$keyPrefix}{$data['alias']});";
-            continue;
-        }
+    foreach (array_keys($sizes) as $key) {
         if (!isset($resolved[$key])) continue;
         [$mob, $desk] = $resolved[$key];
         $value = fluid_clamp($mob, $desk, $vpMobile, $vpDesktop, $round);
@@ -443,8 +434,7 @@ function emit_heading_typography(array $family, string $label): array {
 
     if ($mode === 'custom') {
         $store = $family['customStyle'] ?? [];
-        foreach ($sizes as $key => $sizeData) {
-            if (isset($sizeData['alias'])) continue;   // aliased heading rides its sibling's size var
+        foreach (array_keys($sizes) as $key) {
             $block = $store[$key] ?? null;
             if (!is_array($block) || !isset($block['lineHeight'], $block['letterSpacing'], $block['weight'])) {
                 fprintf(STDERR, "Error: %s is mode:custom but customStyle is missing '%s' (lineHeight, letterSpacing, weight required)\n", $label, $key);
@@ -468,8 +458,7 @@ function emit_heading_typography(array $family, string $label): array {
     $lsSign = $const < 0 ? '-' : '+';
     $letterSpacing = 'calc(' . num($slope) . 'em ' . $lsSign . ' ' . num(abs($const)) . 'px)';
 
-    foreach ($sizes as $key => $sizeData) {
-        if (isset($sizeData['alias'])) continue;   // aliased heading rides its sibling's size var
+    foreach (array_keys($sizes) as $key) {
         $lines[] = "    --{$key}-line-height: {$lineHeight};";
         $lines[] = "    --{$key}-letter-spacing: {$letterSpacing};";
         $lines[] = "    --{$key}-weight: {$weight};";
@@ -489,10 +478,6 @@ function emit_pick_one_family(array $family, string $keyPrefix, string $alias, s
     $sizes = $family['sizes'] ?? [];
 
     foreach ($sizes as $key => $data) {
-        if (isset($data['alias'])) {   // aliasing (ADR 0023): point one step at a sibling
-            $lines[] = "    --{$keyPrefix}{$key}: var(--{$keyPrefix}{$data['alias']});";
-            continue;
-        }
         if (!isset($data['value'])) continue;
         $lines[] = "    --{$keyPrefix}{$key}: {$data['value']}{$unit};";
     }
