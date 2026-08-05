@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "name": "style-panel",
   "label": "Style Editor Panel",
-  "version": "5.0.0",
+  "version": "6.0.0",
   "description": "Design token editor for typography, colors, spacing, borders, and effects (palette-model open-set emission, OKLCH ramp + palette tiers, per-device fluid scales)",
   "viewport": {
     "label": "Viewport Range",

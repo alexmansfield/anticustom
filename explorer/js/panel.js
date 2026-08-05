@@ -120,7 +120,7 @@ const UI_ICONS = {
 // ============================================
 // Settings version — bump when structure changes
 // ============================================
-const SETTINGS_VERSION = 5;
+const SETTINGS_VERSION = 6;
 
 // ============================================
 // Alpine.js Component Registration
@@ -152,6 +152,13 @@ function registerStylePanel() {
         settings: {},
         defaultSettings: {},
 
+        // Spec lifecycle (ADR 0023): the followed spec drives which token rows are
+        // spec-guaranteed (non-deletable) vs custom, and seeds default labels.
+        spec: null,
+        showTokenNames: false,       // CSS var names hidden by default (ADR 0023)
+        addingStepFor: null,         // settingsKey of the family currently adding a custom token
+        newStepKey: '',              // in-progress custom-token key
+
         // ============================================
         // Initialization
         // ============================================
@@ -170,6 +177,10 @@ function registerStylePanel() {
             // step in `sizes` is a member; scale families carry `default`/`ratio`).
             this.settings = JSON.parse(JSON.stringify(rawDefaults));
             this.defaultSettings = JSON.parse(JSON.stringify(this.settings));
+
+            // Followed spec (ADR 0023) + show-token-names preference
+            this.spec = window.ANTI_SPEC || null;
+            this.showTokenNames = localStorage.getItem('antiExplorer_tokenNames') === 'true';
 
             // Load saved settings from localStorage
             const saved = localStorage.getItem('antiExplorer_data');
@@ -388,6 +399,16 @@ function registerStylePanel() {
             return tabs.some(t => (t.sections || [t]).some(s => this.getSectionType(s) === 'scale'));
         },
 
+        /** True when the active panel has any size family (scale/pickone/composite) —
+         *  the families that carry per-token spec rows and the token-names toggle. */
+        get panelHasSizeTokens() {
+            const panel = this.getCurrentPanel();
+            if (!panel) return false;
+            const tabs = panel.tabs || [panel];
+            return tabs.some(t => (t.sections || [t]).some(s =>
+                ['scale', 'pickone', 'composite'].includes(this.getSectionType(s))));
+        },
+
         // ============================================
         // Size-family helpers (open sets, key-identity, per-device anchors)
         // ============================================
@@ -405,6 +426,136 @@ function registerStylePanel() {
         /** Emitted variable name for a step — key-identity `--{cssPrefix}{key}`. */
         itemCssName(section, key) {
             return `--${section.cssPrefix || ''}${key}`;
+        },
+
+        // ============================================
+        // Spec lifecycle (ADR 0023): spec vs custom rows, labels, aliasing.
+        // A step's emitted key (cssPrefix + key) decides membership; the followed
+        // spec (window.ANTI_SPEC) is the source of truth, mirroring styles/verify.
+        // ============================================
+
+        /** The followed spec's guaranteed token keys as a Set (emitted `--{key}` names). */
+        specKeySet() {
+            return new Set(Object.keys(this.spec?.tokens || {}));
+        },
+
+        /** True when a step is defined by the followed spec (guaranteed, non-deletable). */
+        isSpecStep(section, key) {
+            return this.specKeySet().has(`${section.cssPrefix || ''}${key}`);
+        },
+
+        /** The spec's default label for a step's emitted key, if the spec defines one. */
+        specLabel(section, key) {
+            return this.spec?.tokens?.[`${section.cssPrefix || ''}${key}`]?.label || null;
+        },
+
+        /** Display label for a step: site override → spec default → uppercased key. */
+        stepLabel(section, key) {
+            const site = this.familyOf(section).sizes?.[key]?.label;
+            return site || this.specLabel(section, key) || this.getItemLabel(key);
+        },
+
+        setStepLabel(section, key, value) {
+            const fam = this.familyOf(section);
+            if (!fam.sizes?.[key]) return;
+            const v = (value || '').trim();
+            // Relabeling touches nothing downstream (the variable is the spec's, not
+            // the label's) — store a site override, or clear it to fall back to spec.
+            if (v && v !== this.specLabel(section, key) && v !== this.getItemLabel(key)) {
+                fam.sizes[key].label = v;
+            } else {
+                delete fam.sizes[key].label;
+            }
+            this.markChanged();
+        },
+
+        toggleTokenNames() {
+            this.showTokenNames = !this.showTokenNames;
+            localStorage.setItem('antiExplorer_tokenNames', this.showTokenNames.toString());
+        },
+
+        // ---- aliasing (ADR 0023): point one step at a sibling's value ----
+
+        aliasOf(section, key) {
+            return this.familyOf(section).sizes?.[key]?.alias || null;
+        },
+
+        /** Sibling step keys a step may alias to (any other member without a cycle). */
+        aliasTargets(section, key) {
+            return this.sizeKeys(section).filter(k => k !== key && this.aliasOf(section, k) !== key);
+        },
+
+        setAlias(section, key, target) {
+            const fam = this.familyOf(section);
+            if (!fam.sizes?.[key]) return;
+            if (target) {
+                fam.sizes[key].alias = target;   // generator prefers alias; position/value stay dormant
+            } else {
+                delete fam.sizes[key].alias;
+            }
+            this.applyFamily(section);
+            this.markChanged();
+        },
+
+        // ---- custom token add / delete (spec rows are non-deletable) ----
+
+        startAddStep(section) {
+            this.addingStepFor = section.settingsKey;
+            this.newStepKey = '';
+        },
+        cancelAddStep() {
+            this.addingStepFor = null;
+            this.newStepKey = '';
+        },
+
+        /** Create a custom token. Scale steps get a position past the current max;
+         *  pick-one/composite steps get a seeded value so they emit immediately. */
+        addCustomStep(section) {
+            const fam = this.familyOf(section);
+            const raw = (this.newStepKey || '').trim().toLowerCase();
+            const key = raw.replace(/[^a-z0-9-]/g, '');
+            if (!key) { this.showNotification('Enter a token key', 'error'); return; }
+            if (fam.sizes?.[key]) { this.showNotification(`"${key}" already exists`, 'error'); return; }
+            if (!fam.sizes) fam.sizes = {};
+
+            const type = this.getSectionType(section);
+            if (type === 'scale') {
+                const maxPos = Math.max(0, ...this.sizeKeys(section).map(k => fam.sizes[k].position ?? 0));
+                fam.sizes[key] = { position: maxPos + 1 };
+            } else if (type === 'composite') {
+                const seed = {};
+                for (const f of section.composite.fields) seed[f.id] = f.id === 'opacity' ? 0.1 : 0;
+                fam.sizes[key] = seed;
+            } else { // pickone
+                fam.sizes[key] = { value: section.value?.min ?? 1 };
+            }
+            this.cancelAddStep();
+            this.applyFamily(section);
+            this.markChanged();
+        },
+
+        /** Delete a step — refused for spec tokens (ADR 0023: they're guaranteed). */
+        deleteStep(section, key) {
+            if (this.isSpecStep(section, key)) {
+                this.showNotification(`"${this.stepLabel(section, key)}" is defined by the ${this.spec?.name} spec — removing it would take your site out of spec.`, 'error');
+                return;
+            }
+            const fam = this.familyOf(section);
+            if (!fam.sizes?.[key]) return;
+            delete fam.sizes[key];
+            if (fam.custom) delete fam.custom[key];
+            if (fam.customStyle) delete fam.customStyle[key];
+            if (fam.default === key) fam.default = this.sizeKeys(section)[0];   // keep an anchor
+            this.applyFamily(section);
+            this.markChanged();
+        },
+
+        /** Re-apply whichever emission a family uses (used after structural edits). */
+        applyFamily(section) {
+            const type = this.getSectionType(section);
+            if (type === 'scale') this.applyScale(section);
+            else if (type === 'pickone') this.applyPickOne(section);
+            else if (type === 'composite') this.applyComposite(section);
         },
 
         familyMode(section) {
@@ -484,7 +635,9 @@ function registerStylePanel() {
 
         applyScale(section) {
             for (const key of this.sizeKeys(section)) {
-                this.applyCSSVariable(this.itemCssName(section, key), this.sizeCssValue(section, key));
+                const alias = this.aliasOf(section, key);
+                const value = alias ? `var(--${section.cssPrefix}${alias})` : this.sizeCssValue(section, key);
+                this.applyCSSVariable(this.itemCssName(section, key), value);
             }
             const fam = this.familyOf(section);
             if (section.alias && fam.default) {
@@ -629,7 +782,9 @@ function registerStylePanel() {
         applyPickOne(section) {
             const fam = this.familyOf(section);
             for (const [key, data] of Object.entries(fam.sizes || {})) {
-                if (data.value !== undefined) {
+                if (data.alias) {
+                    this.applyCSSVariable(this.itemCssName(section, key), `var(--${section.cssPrefix}${data.alias})`);
+                } else if (data.value !== undefined) {
                     this.applyCSSVariable(this.itemCssName(section, key), `${data.value}${section.unit || ''}`);
                 }
             }
@@ -678,7 +833,9 @@ function registerStylePanel() {
 
         applyComposite(section) {
             for (const key of this.sizeKeys(section)) {
-                this.applyCSSVariable(this.itemCssName(section, key), this.compositeValue(section, key));
+                const alias = this.aliasOf(section, key);
+                const value = alias ? `var(--${section.cssPrefix}${alias})` : this.compositeValue(section, key);
+                this.applyCSSVariable(this.itemCssName(section, key), value);
             }
             this.applyAlias(section);
         },
@@ -1241,6 +1398,17 @@ const getPanelHTML = () => `
                         </div>
                     </template>
 
+                    <!-- Show token names (ADR 0023): CSS var names hidden by default -->
+                    <template x-if="panelHasSizeTokens">
+                        <label class="anti-tokennames-toggle">
+                            <span class="anti-toggle">
+                                <input type="checkbox" :checked="showTokenNames" @change="toggleTokenNames()">
+                                <span class="anti-toggle-slider"></span>
+                            </span>
+                            <span>Show token names</span>
+                        </label>
+                    </template>
+
                     <template x-for="section in currentSections" :key="section.id">
                         <div>
 
@@ -1358,20 +1526,43 @@ const getPanelHTML = () => `
                                                 <div class="anti-size-section is-enabled"
                                                     :class="{ 'is-anchor': familyOf(section).default === key }">
                                                     <div class="anti-size-header">
-                                                        <span class="anti-size-name" x-text="getItemLabel(key)"></span>
+                                                        <span class="anti-size-name anti-token-meta">
+                                                            <input class="anti-token-label" type="text" :value="stepLabel(section, key)" @change="setStepLabel(section, key, $event.target.value)">
+                                                            <code class="anti-token-name" x-show="showTokenNames" x-text="itemCssName(section, key)"></code>
+                                                            <span class="anti-token-badge" :class="isSpecStep(section, key) ? 'is-spec' : 'is-custom'" x-text="isSpecStep(section, key) ? 'spec' : 'custom'" :title="isSpecStep(section, key) ? ('Defined by the ' + (spec ? spec.name : '') + ' spec — non-deletable') : 'Custom token'"></span>
+                                                        </span>
                                                         <span class="anti-size-meta">
                                                             <span class="anti-size-computed"
-                                                                x-text="computeDeviceSize(section, key, 'mobile') + ' → ' + computeDeviceSize(section, key, 'desktop') + (section.unit || '')"></span>
-                                                            <label class="anti-default-radio">
+                                                                x-text="aliasOf(section, key) ? ('= ' + itemCssName(section, aliasOf(section, key))) : (computeDeviceSize(section, key, 'mobile') + ' → ' + computeDeviceSize(section, key, 'desktop') + (section.unit || ''))"></span>
+                                                            <label class="anti-default-radio" x-show="!aliasOf(section, key)">
                                                                 <input type="radio" :name="section.id + '-anchor'"
                                                                     :checked="familyOf(section).default === key"
                                                                     @change="setScaleAnchor(section, key)">
                                                                 <span>Anchor</span>
                                                             </label>
                                                         </span>
+                                                        <span class="anti-token-actions">
+                                                            <select class="anti-token-alias" @change="setAlias(section, key, $event.target.value)" :title="'Alias ' + itemCssName(section, key)">
+                                                                <option value="" :selected="!aliasOf(section, key)">value</option>
+                                                                <template x-for="t in aliasTargets(section, key)" :key="t">
+                                                                    <option :value="t" :selected="aliasOf(section, key) === t" x-text="'= ' + t"></option>
+                                                                </template>
+                                                            </select>
+                                                            <button class="anti-token-del" type="button" x-show="!isSpecStep(section, key)" @click="deleteStep(section, key)" title="Delete custom token">✕</button>
+                                                        </span>
                                                     </div>
                                                 </div>
                                             </template>
+
+                                            <!-- Add a custom token (open-set; spec tokens are non-deletable, ADR 0023) -->
+                                            <div class="anti-add-token">
+                                                <button class="anti-btn anti-btn--sm" type="button" x-show="addingStepFor !== section.settingsKey" @click="startAddStep(section)">+ Add custom token</button>
+                                                <div class="anti-add-token__form" x-show="addingStepFor === section.settingsKey">
+                                                    <input type="text" class="anti-add-token__key" placeholder="key, e.g. xxl" x-model="newStepKey" @keydown.enter="addCustomStep(section)" @keydown.escape="cancelAddStep()">
+                                                    <button class="anti-btn anti-btn--sm" type="button" @click="addCustomStep(section)">Add</button>
+                                                    <button class="anti-btn anti-btn--sm anti-btn--ghost" type="button" @click="cancelAddStep()">Cancel</button>
+                                                </div>
+                                            </div>
                                         </div>
                                     </template>
 
@@ -1384,7 +1575,11 @@ const getPanelHTML = () => `
                                             <template x-for="key in sizeKeys(section)" :key="key">
                                                 <div class="anti-size-section is-enabled">
                                                     <div class="anti-size-header">
-                                                        <span class="anti-size-name" x-text="getItemLabel(key)"></span>
+                                                        <span class="anti-size-name anti-token-meta">
+                                                            <input class="anti-token-label" type="text" :value="stepLabel(section, key)" @change="setStepLabel(section, key, $event.target.value)">
+                                                            <code class="anti-token-name" x-show="showTokenNames" x-text="itemCssName(section, key)"></code>
+                                                            <span class="anti-token-badge" :class="isSpecStep(section, key) ? 'is-spec' : 'is-custom'" x-text="isSpecStep(section, key) ? 'spec' : 'custom'"></span>
+                                                        </span>
                                                     </div>
                                                     <div class="anti-size-controls" style="display: block;">
                                                         <template x-for="device in ['mobile', 'desktop']" :key="device">
@@ -1414,15 +1609,28 @@ const getPanelHTML = () => `
                                     <template x-for="key in sizeKeys(section)" :key="key">
                                         <div class="anti-size-section is-enabled">
                                             <div class="anti-size-header">
-                                                <span class="anti-size-name" x-text="getItemLabel(key)"></span>
-                                                <label class="anti-default-radio">
+                                                <span class="anti-size-name anti-token-meta">
+                                                    <input class="anti-token-label" type="text" :value="stepLabel(section, key)" @change="setStepLabel(section, key, $event.target.value)">
+                                                    <code class="anti-token-name" x-show="showTokenNames" x-text="itemCssName(section, key)"></code>
+                                                    <span class="anti-token-badge" :class="isSpecStep(section, key) ? 'is-spec' : 'is-custom'" x-text="isSpecStep(section, key) ? 'spec' : 'custom'"></span>
+                                                </span>
+                                                <label class="anti-default-radio" x-show="!aliasOf(section, key)">
                                                     <input type="radio" :name="section.id + '-default'"
                                                         :checked="familyOf(section).default === key"
                                                         @change="setDefault(section, key)">
                                                     <span>Default</span>
                                                 </label>
+                                                <span class="anti-token-actions">
+                                                    <select class="anti-token-alias" @change="setAlias(section, key, $event.target.value)" :title="'Alias ' + itemCssName(section, key)">
+                                                        <option value="" :selected="!aliasOf(section, key)">value</option>
+                                                        <template x-for="t in aliasTargets(section, key)" :key="t">
+                                                            <option :value="t" :selected="aliasOf(section, key) === t" x-text="'= ' + t"></option>
+                                                        </template>
+                                                    </select>
+                                                    <button class="anti-token-del" type="button" x-show="!isSpecStep(section, key)" @click="deleteStep(section, key)" title="Delete custom token">✕</button>
+                                                </span>
                                             </div>
-                                            <div class="anti-size-controls">
+                                            <div class="anti-size-controls" x-show="!aliasOf(section, key)">
                                                 <div class="anti-control-row">
                                                     <input type="range" class="anti-range"
                                                         :min="section.value.min" :max="section.value.max" :step="section.value.step"
@@ -1438,6 +1646,16 @@ const getPanelHTML = () => `
                                             </div>
                                         </div>
                                     </template>
+
+                                    <!-- Add a custom token (open-set; spec tokens are non-deletable, ADR 0023) -->
+                                    <div class="anti-add-token">
+                                        <button class="anti-btn anti-btn--sm" type="button" x-show="addingStepFor !== section.settingsKey" @click="startAddStep(section)">+ Add custom token</button>
+                                        <div class="anti-add-token__form" x-show="addingStepFor === section.settingsKey">
+                                            <input type="text" class="anti-add-token__key" placeholder="key, e.g. xl" x-model="newStepKey" @keydown.enter="addCustomStep(section)" @keydown.escape="cancelAddStep()">
+                                            <button class="anti-btn anti-btn--sm" type="button" @click="addCustomStep(section)">Add</button>
+                                            <button class="anti-btn anti-btn--sm anti-btn--ghost" type="button" @click="cancelAddStep()">Cancel</button>
+                                        </div>
+                                    </div>
                                 </div>
                             </template>
 
@@ -1448,15 +1666,28 @@ const getPanelHTML = () => `
                                     <template x-for="key in sizeKeys(section)" :key="key">
                                         <div class="anti-size-section is-enabled">
                                             <div class="anti-size-header">
-                                                <span class="anti-size-name" x-text="getItemLabel(key)"></span>
-                                                <label class="anti-default-radio">
+                                                <span class="anti-size-name anti-token-meta">
+                                                    <input class="anti-token-label" type="text" :value="stepLabel(section, key)" @change="setStepLabel(section, key, $event.target.value)">
+                                                    <code class="anti-token-name" x-show="showTokenNames" x-text="itemCssName(section, key)"></code>
+                                                    <span class="anti-token-badge" :class="isSpecStep(section, key) ? 'is-spec' : 'is-custom'" x-text="isSpecStep(section, key) ? 'spec' : 'custom'"></span>
+                                                </span>
+                                                <label class="anti-default-radio" x-show="!aliasOf(section, key)">
                                                     <input type="radio" :name="section.id + '-default'"
                                                         :checked="familyOf(section).default === key"
                                                         @change="setDefault(section, key)">
                                                     <span>Default</span>
                                                 </label>
+                                                <span class="anti-token-actions">
+                                                    <select class="anti-token-alias" @change="setAlias(section, key, $event.target.value)" :title="'Alias ' + itemCssName(section, key)">
+                                                        <option value="" :selected="!aliasOf(section, key)">value</option>
+                                                        <template x-for="t in aliasTargets(section, key)" :key="t">
+                                                            <option :value="t" :selected="aliasOf(section, key) === t" x-text="'= ' + t"></option>
+                                                        </template>
+                                                    </select>
+                                                    <button class="anti-token-del" type="button" x-show="!isSpecStep(section, key)" @click="deleteStep(section, key)" title="Delete custom token">✕</button>
+                                                </span>
                                             </div>
-                                            <div class="anti-size-controls">
+                                            <div class="anti-size-controls" x-show="!aliasOf(section, key)">
                                                 <div class="anti-control-group">
                                                     <template x-for="cf in section.composite.fields" :key="cf.id">
                                                         <div style="margin-top: 4px;">
@@ -1479,6 +1710,16 @@ const getPanelHTML = () => `
                                             </div>
                                         </div>
                                     </template>
+
+                                    <!-- Add a custom token (open-set; spec tokens are non-deletable, ADR 0023) -->
+                                    <div class="anti-add-token">
+                                        <button class="anti-btn anti-btn--sm" type="button" x-show="addingStepFor !== section.settingsKey" @click="startAddStep(section)">+ Add custom token</button>
+                                        <div class="anti-add-token__form" x-show="addingStepFor === section.settingsKey">
+                                            <input type="text" class="anti-add-token__key" placeholder="key, e.g. xxl" x-model="newStepKey" @keydown.enter="addCustomStep(section)" @keydown.escape="cancelAddStep()">
+                                            <button class="anti-btn anti-btn--sm" type="button" @click="addCustomStep(section)">Add</button>
+                                            <button class="anti-btn anti-btn--sm anti-btn--ghost" type="button" @click="cancelAddStep()">Cancel</button>
+                                        </div>
+                                    </div>
                                 </div>
                             </template>
 
