@@ -72,9 +72,9 @@
     },
     "palettes": {
       "default": {
-        "surface": "var(--neutral-ultra-light)",
-        "ultra-soft-contrast": "var(--neutral-semi-light)",
-        "soft-contrast": "var(--neutral-semi-dark)",
+        "surface": "var(--neutral-white)",
+        "ultra-soft-contrast": "var(--neutral-ultra-light)",
+        "soft-contrast": "var(--neutral-light)",
         "hard-contrast": "var(--neutral-dark)",
         "ultra-hard-contrast": "var(--neutral-ultra-dark)",
         "accent": "var(--primary)",
