@@ -74,7 +74,11 @@
     "radius-m",
     "palette-surface",
     "palette-hard-contrast",
-    "palette-hard-contrast",
-    "palette-soft-contrast"
+    "palette-ultra-soft-contrast",
+    "palette-soft-contrast",
+    "neutral-dark",
+    "neutral-ultra-light",
+    "neutral-semi-dark",
+    "neutral-semi-light"
   ]
 }
