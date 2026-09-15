@@ -1,0 +1,166 @@
+{
+    "name": "dashboard",
+    "version": 1,
+    "extends": "base@1",
+    "tokens": {
+        "space-xxs": {
+            "label": "2X small"
+        },
+        "space-xs": {
+            "label": "Extra small"
+        },
+        "space-s": {
+            "label": "Small"
+        },
+        "space-m": {
+            "label": "Medium"
+        },
+        "space-l": {
+            "label": "Large"
+        },
+        "space-xl": {
+            "label": "Extra large"
+        },
+        "space-xxl": {
+            "label": "2X large"
+        },
+        "space": {
+            "label": "Space"
+        },
+        "text-xs": {
+            "label": "Extra small"
+        },
+        "text-s": {
+            "label": "Small"
+        },
+        "text-m": {
+            "label": "Medium"
+        },
+        "text-l": {
+            "label": "Large"
+        },
+        "text-xl": {
+            "label": "Extra large"
+        },
+        "text": {
+            "label": "Text"
+        },
+        "h1": {
+            "label": "Heading 1"
+        },
+        "h2": {
+            "label": "Heading 2"
+        },
+        "h3": {
+            "label": "Heading 3"
+        },
+        "h4": {
+            "label": "Heading 4"
+        },
+        "h5": {
+            "label": "Heading 5"
+        },
+        "h6": {
+            "label": "Heading 6"
+        },
+        "border": {
+            "label": "Border"
+        },
+        "border-s": {
+            "label": "Small"
+        },
+        "border-m": {
+            "label": "Medium"
+        },
+        "radius": {
+            "label": "Radius"
+        },
+        "radius-s": {
+            "label": "Small"
+        },
+        "radius-m": {
+            "label": "Medium"
+        },
+        "radius-l": {
+            "label": "Large"
+        },
+        "radius-xl": {
+            "label": "Extra large"
+        },
+        "radius-full": {
+            "label": "Full"
+        },
+        "shadow": {
+            "label": "Shadow"
+        },
+        "palette-surface": {
+            "label": "Surface"
+        },
+        "palette-ultra-soft-contrast": {
+            "label": "Ultra soft contrast"
+        },
+        "palette-soft-contrast": {
+            "label": "Soft contrast"
+        },
+        "palette-hard-contrast": {
+            "label": "Hard contrast"
+        },
+        "palette-ultra-hard-contrast": {
+            "label": "Ultra hard contrast"
+        },
+        "palette-accent": {
+            "label": "Accent"
+        },
+        "palette-accent-on": {
+            "label": "On accent"
+        },
+        "palette-info": {
+            "label": "Info"
+        },
+        "palette-info-on": {
+            "label": "On info"
+        },
+        "palette-info-soft": {
+            "label": "Soft info"
+        },
+        "palette-info-soft-on": {
+            "label": "On soft info"
+        },
+        "palette-success": {
+            "label": "Success"
+        },
+        "palette-success-on": {
+            "label": "On success"
+        },
+        "palette-success-soft": {
+            "label": "Soft success"
+        },
+        "palette-success-soft-on": {
+            "label": "On soft success"
+        },
+        "palette-warning": {
+            "label": "Warning"
+        },
+        "palette-warning-on": {
+            "label": "On warning"
+        },
+        "palette-warning-soft": {
+            "label": "Soft warning"
+        },
+        "palette-warning-soft-on": {
+            "label": "On soft warning"
+        },
+        "palette-danger": {
+            "label": "Danger"
+        },
+        "palette-danger-on": {
+            "label": "On danger"
+        },
+        "palette-danger-soft": {
+            "label": "Soft danger"
+        },
+        "palette-danger-soft-on": {
+            "label": "On soft danger"
+        }
+    }
+}
