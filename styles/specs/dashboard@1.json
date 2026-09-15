@@ -3,6 +3,9 @@
     "version": 1,
     "extends": "base@1",
     "tokens": {
+        "space-xxs": {
+            "label": "2X small"
+        },
         "space-xs": {
             "label": "Extra small"
         },
@@ -17,6 +20,9 @@
         },
         "space-xl": {
             "label": "Extra large"
+        },
+        "space-xxl": {
+            "label": "2X large"
         },
         "space": {
             "label": "Space"
