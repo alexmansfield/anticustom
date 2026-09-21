@@ -203,7 +203,7 @@ A palette is a **surface-anchored contrast scale** plus hued **intents** (ADR 00
 - **`-on` foregrounds are authored** (ADR 0020), not derived; legibility is a `verify` advisory warning backed by the WCAG contrast matrix.
 - **Interaction states are generator-authored `color-mix()`** (ADR 0026): `--palette-{slot}-hover: color-mix(in srgb, var(--palette-{slot}), {pole} 12%)` and `active` at 20%. The pole is picked by the slot's resolved OKLCH lightness (L > 0.5 → `white`, else `black`).
 - **Sparse emission** (ADR 0015): the default palette lands at `:root`; a named palette at `[data-palette="name"]` emits only the slots it overrides — the rest inherit through the cascade. This makes the component `var()` fallback a **mandatory contract** (the `verify` guard rejects any bare palette ref).
-- **Intents bind generically**: each intent (a slot with an `-on` sibling) emits a `[data-intent="name"] { --intent; --intent-on; --intent-hover; --intent-active }` rule, so an element like a badge stays inside whatever palette surrounds it.
+- **Intents bind generically**: each intent (a slot with an `-on` sibling) emits a `[data-intent="name"] { --intent; --intent-on; --intent-hover; --intent-active }` rule, so an element like a badge stays inside whatever palette surrounds it. A palette that also authors `name-soft` / `name-soft-on` (a pale badge fill) gets `--intent-soft` / `--intent-soft-on` in the same rule — the soft pair is a variant of its intent, not an intent of its own, so it emits no `[data-intent="name-soft"]` rule.
 
 ```css
 [data-palette="primary"] {          /* sparse — only its own slots */

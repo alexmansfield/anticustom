@@ -375,6 +375,32 @@ check('intent binding rule emitted for success',
     preg_match('/\[data-intent="success"\]\s*\{[^}]*--intent:\s*var\(--palette-success\)[^}]*--intent-on:\s*var\(--palette-success-on\)/s', $css) === 1,
     'a [data-intent] binding rule should map --intent/--intent-on to the palette slot');
 
+// #67 — an authored `{intent}-soft` / `-soft-on` pair rides along in the
+// intent's binding rule as --intent-soft / --intent-soft-on, and does not get a
+// [data-intent="X-soft"] rule of its own. Exercised at the function boundary
+// because defaults.json does not author a soft pair.
+$softBinding = implode("\n", emit_intent_bindings([
+    'surface'         => '#ffffff',
+    'success'         => '#1a7f37',
+    'success-on'      => '#ffffff',
+    'success-soft'    => '#dafbe1',
+    'success-soft-on' => '#0f5323',
+    'danger'          => '#b42318',
+    'danger-on'       => '#ffffff',
+]));
+check('intent binding carries --intent-soft/--intent-soft-on when authored (#67)',
+    preg_match('/\[data-intent="success"\]\s*\{[^}]*--intent-soft:\s*var\(--palette-success-soft\);[^}]*--intent-soft-on:\s*var\(--palette-success-soft-on\);/s', $softBinding) === 1,
+    'expected --intent-soft and --intent-soft-on inside the success binding rule');
+check('intent binding omits --intent-soft when the pair is not authored (#67)',
+    preg_match('/\[data-intent="danger"\]\s*\{[^}]*--intent-soft/s', $softBinding) === 0,
+    'danger has no soft pair; the binding must not reference a missing slot');
+check('no [data-intent="X-soft"] binding rule for a soft variant (#67)',
+    strpos($softBinding, '[data-intent="success-soft"]') === false,
+    'a soft pair is a variant of its intent, not an intent of its own');
+check('defaults.json emits no --intent-soft (no soft pair authored)',
+    strpos($css, '--intent-soft') === false,
+    'defaults.json authors no soft pair, so nothing should bind one');
+
 // A non-default palette emits a [data-palette] region block, sparse (ADR 0015):
 // only its own slots emit; omitted slots inherit from :root via the cascade.
 preg_match('/\[data-palette="primary"\]\s*\{(.*?)\}/s', $css, $primaryBlock);
@@ -401,7 +427,7 @@ check('no component references retired --colorway-*',
 // every component palette/intent ref must carry a fallback. A ref *with* a
 // fallback has a comma; the regex matches only the bare (comma-less) form.
 $paletteBareRefs = function (string $css): array {
-    preg_match_all('/var\(\s*--(palette-[a-z0-9-]+|intent(?:-[a-z]+)?)\s*\)/i', $css, $m);
+    preg_match_all('/var\(\s*--(palette-[a-z0-9-]+|intent(?:-[a-z]+)*)\s*\)/i', $css, $m);
     return array_values(array_unique($m[0]));
 };
 // The named-style registry (fields/styles.json) emits into the same stylesheet,
@@ -416,6 +442,9 @@ check('no component/named-style palette ref is bare (fallback contract, ADR 0015
 check('guard teeth: a bare palette ref is caught',
     count($paletteBareRefs('.x { color: var(--palette-soft-contrast); background: var(--intent); }')) === 2,
     'the bare-ref guard failed to flag a planted violation');
+check('guard teeth: a bare multi-segment --intent-soft-on ref is caught (#67)',
+    count($paletteBareRefs('.x { color: var(--intent-soft-on); background: var(--intent-soft); }')) === 2,
+    'the bare-ref guard must match every --intent-* segment depth');
 
 // ═════════════════════════════════════════════════
 // M3 — OKLCH ramp math (isolated port #29; docs/research/oklch-generation.md)

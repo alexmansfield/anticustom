@@ -1041,13 +1041,22 @@ function registerStylePanel() {
                 css += `${selector} {\n${lines.join('\n')}\n}\n`;
             }
 
+            // Mirrors emit_intent_bindings() in styles/generate.php: a
+            // `{slot}-soft` / `-soft-on` pair rides along as --intent-soft /
+            // --intent-soft-on and gets no binding rule of its own (#67).
             for (const slot of this.paletteSlots(defaultPalette)) {
                 if (defaultPalette[`${slot}-on`] === undefined) continue;
+                const softOf = slot.match(/^(.*)-soft$/)?.[1];
+                if (softOf && defaultPalette[softOf] !== undefined && defaultPalette[`${softOf}-on`] !== undefined) continue;
                 css += `[data-intent="${slot}"] {\n`;
                 css += `    --intent: var(--palette-${slot});\n`;
                 css += `    --intent-on: var(--palette-${slot}-on);\n`;
                 css += `    --intent-hover: var(--palette-${slot}-hover);\n`;
                 css += `    --intent-active: var(--palette-${slot}-active);\n`;
+                if (defaultPalette[`${slot}-soft`] !== undefined && defaultPalette[`${slot}-soft-on`] !== undefined) {
+                    css += `    --intent-soft: var(--palette-${slot}-soft);\n`;
+                    css += `    --intent-soft-on: var(--palette-${slot}-soft-on);\n`;
+                }
                 css += `}\n`;
             }
 

@@ -637,16 +637,26 @@ function emit_palette_block(array $palette, array $rampMap): array {
  * The rule maps the generic `--intent*` names an element like a badge references
  * to the surrounding palette's role tokens, so an intent stays inside whatever
  * palette contains it (ADR 0016).
+ *
+ * An intent may also author a `{intent}-soft` / `{intent}-soft-on` pair (a pale
+ * fill for badges). Structurally that pair is its own fill slot, but it is a
+ * *variant* of the intent, not an intent: it rides along in the parent's rule as
+ * `--intent-soft` / `--intent-soft-on` and gets no binding rule of its own (#67).
  */
 function emit_intent_bindings(array $default): array {
     $lines = [];
     foreach (palette_slots($default) as $slot) {
         if (!isset($default["{$slot}-on"])) continue;
+        if (preg_match('/^(.*)-soft$/', $slot, $m) && isset($default[$m[1]], $default["{$m[1]}-on"])) continue;
         $lines[] = "[data-intent=\"{$slot}\"] {";
         $lines[] = "    --intent: var(--palette-{$slot});";
         $lines[] = "    --intent-on: var(--palette-{$slot}-on);";
         $lines[] = "    --intent-hover: var(--palette-{$slot}-hover);";
         $lines[] = "    --intent-active: var(--palette-{$slot}-active);";
+        if (isset($default["{$slot}-soft"], $default["{$slot}-soft-on"])) {
+            $lines[] = "    --intent-soft: var(--palette-{$slot}-soft);";
+            $lines[] = "    --intent-soft-on: var(--palette-{$slot}-soft-on);";
+        }
         $lines[] = '}';
         $lines[] = '';
     }
