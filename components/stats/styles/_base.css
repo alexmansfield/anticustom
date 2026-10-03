@@ -68,7 +68,7 @@
     margin: 0 auto;
 }
 
-@media (min-width: 900px) {
+@container (min-width: 900px) {
     .anti-stats-grid {
         grid-template-columns: repeat(4, 1fr);
     }
@@ -78,7 +78,7 @@
    Responsive
    ========================================================================== */
 
-@media (max-width: 768px) {
+@container (max-width: 768px) {
     .anti-stats {
         padding: var(--space-m, var(--space));
     }

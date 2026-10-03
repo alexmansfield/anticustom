@@ -234,6 +234,8 @@ Handles layout, positioning, and responsive behavior. Uses CSS custom properties
 }
 ```
 
+**Breakpoints are container queries, never media queries** (ADR 0029). Write `@container (max-width: 768px)`, not `@media (max-width: 768px)`, so a component lays out by the width it is given rather than the window's. The host page must provide a query container: put `container-type: inline-size` on `body` or on whatever wraps the rendered components (the explorer's preview pane is one). Without a container ancestor, `@container` rules never match and components stay in their wide layout.
+
 The bare block class must render complete — a component with no modifiers applied is the default state, not a broken one. Modifier classes (`--s`, `--l`) express deviations only, and templates emit them only when a non-default value is chosen. Per-instance `size` props exist only where instances genuinely vary within a page (button, hero, intro); everywhere else, sizing is a project-level decision made through tokens (`--anti-input-padding`, `--anti-input-font`).
 
 ### `{style}.css` — Aesthetics (named styles)

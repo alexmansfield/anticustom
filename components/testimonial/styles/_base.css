@@ -99,7 +99,7 @@
    Responsive
    ========================================================================== */
 
-@media (max-width: 768px) {
+@container (max-width: 768px) {
     .anti-testimonial {
         padding: var(--space-m, var(--space));
     }
