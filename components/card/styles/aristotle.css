@@ -78,7 +78,7 @@
    Responsive Aesthetics
    ========================================================================== */
 
-@media (max-width: 768px) {
+@container (max-width: 768px) {
     .anti-card {
         --anti-card-padding: var(--space-m, var(--space));
     }

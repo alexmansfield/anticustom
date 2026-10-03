@@ -67,7 +67,7 @@
    Responsive
    ========================================================================== */
 
-@media (max-width: 1024px) {
+@container (max-width: 1024px) {
     .anti-container[data-columns="3"],
     .anti-container[data-columns="4"],
     .anti-container[data-columns="5"],
@@ -76,7 +76,7 @@
     }
 }
 
-@media (max-width: 639px) {
+@container (max-width: 639px) {
     .anti-container[data-columns="2"],
     .anti-container[data-columns="3"],
     .anti-container[data-columns="4"],

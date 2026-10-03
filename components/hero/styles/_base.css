@@ -103,7 +103,7 @@
    Responsive
    ========================================================================== */
 
-@media (max-width: 768px) {
+@container (max-width: 768px) {
     /* Cap default (large) heroes; sm/md set their own vars and are unaffected */
     .anti-hero {
         min-height: min(var(--anti-hero-min-height, 600px), 450px);

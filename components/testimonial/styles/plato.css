@@ -64,7 +64,7 @@
    Responsive
    ========================================================================== */
 
-@media (max-width: 768px) {
+@container (max-width: 768px) {
     .anti-testimonial__quote p {
         font-size: var(--text-m, var(--text));
     }

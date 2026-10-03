@@ -152,7 +152,7 @@
    Responsive
    ========================================================================== */
 
-@media (max-width: 768px) {
+@container (max-width: 768px) {
     .anti-card--img-left,
     .anti-card--img-right {
         flex-direction: column;

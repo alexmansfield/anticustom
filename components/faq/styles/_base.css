@@ -68,7 +68,7 @@
    Responsive
    ========================================================================== */
 
-@media (max-width: 768px) {
+@container (max-width: 768px) {
     .anti-faq__question {
         padding: var(--anti-faq-padding-mobile, 0.5rem 0);
     }

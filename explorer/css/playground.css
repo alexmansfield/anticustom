@@ -523,6 +523,9 @@
    ========================================================================== */
 
 .anti-playground__preview {
+    /* Component breakpoints are container queries (ADR 0029): the preview
+       pane is their container, so previews respond to the pane's width. */
+    container-type: inline-size;
     display: flex;
     flex-direction: column;
     min-height: calc(100vh - 48px);
