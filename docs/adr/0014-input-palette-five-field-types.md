@@ -29,5 +29,10 @@ Component (and future form) fields draw from a five-type input palette: `text`, 
 
 Map #18's four-type headline becomes five. ADR 0013's per-decision machinery (style registry, sanitize-on-output, dual-view sidebar, selection bubble, segment engine) survives under new names; its central single-graduated-type framing is amended. Accepted costs: "mostly lean + occasional list" fields must adopt the heavier richtext type; the sanitizer allowlist now resolves from two inputs (field ⊕ project defaults), audited by verify.php assertions. Wayfinder reconciliation: map #6 closes as destination-reached-under-a-new-name; #14 closes as obviated (blocks → the richtext type via #22; "links as a leantext capability" becomes fog on map #18); #15 migrates to map #18 in palette vocabulary.
 
+
+## Amendment (2026-10-23): html ships ahead of richtext
+
+[ADR 0029](0029-html-field-fixed-allowlist.md) lifts the deferral for `html` only. It ships with a fixed, widen-only allowlist (`p`, `h2`–`h6`, lists, `strong`/`em`, `br`, `a[href rel target]`), no options, and the plain source textarea as its control. The richtext allowlist and editor stay deferred to #22. Everything else here stands.
+
 ---
 *Deliberation: [grill thread →](https://decisionrecords.localhost:8453/s/01kym2mtedpkwqjhrw4wtqz0hj)*

@@ -2,7 +2,7 @@
 /**
  * Anticustom Fields — server-side sanitizer & style registry
  *
- * Formatted field types (leantext today; richtext/html reserved) store
+ * Formatted field types (leantext and html today; richtext reserved) store
  * constrained HTML fragments. The security boundary is sanitize-on-output:
  * anti_field_html() (components/render.php) passes every value through
  * anti_field_sanitize() with an allowlist derived from the field's type and
@@ -72,8 +72,8 @@ if (!function_exists('anti_field_features')) {
      * single-line. An explicit key replaces the default wholesale (arrays
      * never union), so `"styles": []` narrows below a project default.
      *
-     * blocks/links belong to the reserved richtext type and resolve to none
-     * here; the sanitizer machinery below already supports them.
+     * html resolves to a fixed set with no options (ADR 0029). leantext never
+     * resolves blocks/links — those stay with html and the reserved richtext.
      *
      * @param array|null $fieldDef Schema field definition (or null)
      * @return array { marks: string[], styles: string[], multiline: bool, blocks: string[], links: bool }
@@ -83,6 +83,19 @@ if (!function_exists('anti_field_features')) {
         $none = ['marks' => [], 'styles' => [], 'multiline' => false, 'blocks' => [], 'links' => false];
 
         $type = $fieldDef['type'] ?? '';
+
+        // html: fixed allowlist, no options (ADR 0029). It may only ever widen,
+        // so every value stored against it keeps rendering the same.
+        if ($type === 'html') {
+            return [
+                'marks'     => ['bold', 'italic'],
+                'styles'    => [],
+                'multiline' => true,
+                'blocks'    => ['p', 'ul', 'ol', 'h2', 'h3', 'h4', 'h5', 'h6'],
+                'links'     => true,
+            ];
+        }
+
         if ($type !== 'leantext') {
             return $none;
         }
@@ -118,7 +131,8 @@ if (!function_exists('anti_field_sanitize')) {
      *
      * Allowed nodes derive from features: bold→strong (b normalized),
      * italic→em (i normalized), styles→span[class=anti-style-*], multiline→br,
-     * links→a[href], blocks→ul/ol/li. Dangerous elements are dropped with
+     * links→a[href rel target] (href scheme-checked, rel/target as authored),
+     * blocks→each listed tag plus li. Dangerous elements are dropped with
      * their content; everything else is unwrapped so its text survives.
      *
      * @param string $html Stored fragment (may be hostile)
@@ -146,7 +160,7 @@ if (!function_exists('anti_field_sanitize')) {
             $allowed['br'] = [];
         }
         if (!empty($features['links'])) {
-            $allowed['a'] = ['href'];
+            $allowed['a'] = ['href', 'rel', 'target'];
         }
         if (!empty($features['blocks'])) {
             foreach ($features['blocks'] as $block) {
@@ -154,6 +168,11 @@ if (!function_exists('anti_field_sanitize')) {
             }
             $allowed['li'] = [];
         }
+
+        // HTML5 reads "<" as text unless a letter, "/", "!" or "?" follows;
+        // libxml's older parser instead swallows the rest ("a < b" → "a ").
+        // Escape those up front so prose comparisons survive as browsers show them.
+        $html = preg_replace('/<(?![A-Za-z\/!?])/', '&lt;', $html);
 
         $doc = new DOMDocument();
         $prev = libxml_use_internal_errors(true);
@@ -271,7 +290,6 @@ if (!function_exists('anti_field_sanitize_node')) {
                     anti_field_unwrap($child);
                     continue;
                 }
-                $child->setAttribute('rel', 'noopener');
             }
         }
     }

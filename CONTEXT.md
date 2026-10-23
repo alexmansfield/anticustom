@@ -17,7 +17,7 @@ The two severity tiers of a failure state that must never blur. An **advisory** 
 _Avoid_: soft/hard error, warning/blocker (as the canonical names)
 
 **Input palette**:
-The five field types component/form creators offer end users: `text`, `textarea` (strictly plain, always escaped), `leantext` (inline WYSIWYG: marks + named styles + `<br>`), `richtext` (block-capable WYSIWYG, editor TBD), `html` (raw source, sanitized on output). Richness rides on the type; graduation lives inside each type (see ADR 0014).
+The five field types component/form creators offer end users: `text`, `textarea` (strictly plain, always escaped), `leantext` (inline WYSIWYG: marks + named styles + `<br>`), `richtext` (block-capable WYSIWYG, editor TBD), `html` (raw source, sanitized on output against a fixed, widen-only allowlist: paragraphs, `h2`–`h6`, lists, marks, `br`, links; ADR 0029). Richness rides on the type; graduation lives inside each type (see ADR 0014).
 _Avoid_: four-type palette, input types (as the canonical name)
 
 **Leantext**:
