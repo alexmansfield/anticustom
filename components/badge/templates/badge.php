@@ -31,4 +31,4 @@ $intent_attr = $variant !== 'default'
     : '';
 ?>
 
-<span class="<?php echo attr_escape($classes); ?>"<?php echo $intent_attr; ?>><?php echo html_escape($text); ?></span>
+<span class="<?php echo attr_escape($classes); ?>"<?php echo $intent_attr; ?><?php echo !empty($editable) ? ' ' . $editable : ''; ?>><?php echo html_escape($text); ?></span>
