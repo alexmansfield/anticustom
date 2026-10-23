@@ -5,7 +5,7 @@
  * Asserts the sanitizer's allowlist behavior for the input palette (ADR 0014):
  * plain types stay fully escaped, leantext resolves per-key against
  * fields/defaults.json then the floor, html resolves to its fixed allowlist
- * (ADR 0029), and the shared machinery's links/blocks support still holds.
+ * (ADR 0030), and the shared machinery's links/blocks support still holds.
  * Run: php fields/verify.php
  */
 
@@ -108,7 +108,7 @@ verify_field('leantext cannot opt into links', '<a href="https://example.com">x<
 verify_field('leantext cannot opt into blocks', '<ul><li>a</li></ul>', ['type' => 'leantext', 'leantext' => ['blocks' => ['ul']]], 'a');
 
 // ─────────────────────────────────────────────────
-// html: fixed allowlist, no options (ADR 0029)
+// html: fixed allowlist, no options (ADR 0030)
 // ─────────────────────────────────────────────────
 verify_field('html keeps paragraphs', '<p>One</p><p>Two</p>', $html, '<p>One</p><p>Two</p>');
 verify_field('html keeps lists', '<ul><li>a</li></ul><ol><li>b</li></ol>', $html, '<ul><li>a</li></ul><ol><li>b</li></ol>');
