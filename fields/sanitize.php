@@ -72,7 +72,7 @@ if (!function_exists('anti_field_features')) {
      * single-line. An explicit key replaces the default wholesale (arrays
      * never union), so `"styles": []` narrows below a project default.
      *
-     * html resolves to a fixed set with no options (ADR 0029). leantext never
+     * html resolves to a fixed set with no options (ADR 0030). leantext never
      * resolves blocks/links — those stay with html and the reserved richtext.
      *
      * @param array|null $fieldDef Schema field definition (or null)
@@ -84,7 +84,7 @@ if (!function_exists('anti_field_features')) {
 
         $type = $fieldDef['type'] ?? '';
 
-        // html: fixed allowlist, no options (ADR 0029). It may only ever widen,
+        // html: fixed allowlist, no options (ADR 0030). It may only ever widen,
         // so every value stored against it keeps rendering the same.
         if ($type === 'html') {
             return [

@@ -32,7 +32,7 @@ Map #18's four-type headline becomes five. ADR 0013's per-decision machinery (st
 
 ## Amendment (2026-10-23): html ships ahead of richtext
 
-[ADR 0029](0029-html-field-fixed-allowlist.md) lifts the deferral for `html` only. It ships with a fixed, widen-only allowlist (`p`, `h2`–`h6`, lists, `strong`/`em`, `br`, `a[href rel target]`), no options, and the plain source textarea as its control. The richtext allowlist and editor stay deferred to #22. Everything else here stands.
+[ADR 0030](0030-html-field-fixed-allowlist.md) lifts the deferral for `html` only. It ships with a fixed, widen-only allowlist (`p`, `h2`–`h6`, lists, `strong`/`em`, `br`, `a[href rel target]`), no options, and the plain source textarea as its control. The richtext allowlist and editor stay deferred to #22. Everything else here stands.
 
 ---
 *Deliberation: [grill thread →](https://decisionrecords.localhost:8453/s/01kym2mtedpkwqjhrw4wtqz0hj)*
