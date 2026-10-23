@@ -512,8 +512,8 @@ const getComponentPanelHTML = () => `
                                 </div>
                             </template>
 
-                            <!-- Textarea -->
-                            <template x-if="field.type === 'textarea'">
+                            <!-- Textarea; html is the same raw-source control (sanitized on render) -->
+                            <template x-if="field.type === 'textarea' || field.type === 'html'">
                                 <div>
                                     <label class="anti-comp-field__label" x-text="field.label"></label>
                                     <textarea class="anti-comp-field__textarea"

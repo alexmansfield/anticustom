@@ -4,8 +4,8 @@
  *
  * Asserts the sanitizer's allowlist behavior for the input palette (ADR 0014):
  * plain types stay fully escaped, leantext resolves per-key against
- * fields/defaults.json then the floor, and the shared machinery's tier-4
- * support (links/blocks — reserved for the richtext type) still holds.
+ * fields/defaults.json then the floor, html resolves to its fixed allowlist
+ * (ADR 0029), and the shared machinery's links/blocks support still holds.
  * Run: php fields/verify.php
  */
 
@@ -25,7 +25,7 @@ function verify_field(string $label, string $input, ?array $fieldDef, string $ex
 
 /**
  * Assert sanitizer output against a hand-built feature set (machinery tests
- * for features no type resolves yet, e.g. links/blocks for future richtext).
+ * independent of any type's resolution).
  */
 function verify_features(string $label, string $input, array $features, string $expected): void
 {
@@ -50,6 +50,7 @@ $bare      = ['type' => 'leantext']; // resolves via defaults.json → floor: bo
 $boldOnly  = ['type' => 'leantext', 'leantext' => ['marks' => ['bold']]];
 $noMarks   = ['type' => 'leantext', 'leantext' => ['marks' => []]];
 $styled    = ['type' => 'leantext', 'leantext' => ['styles' => ['highlight', 'accent'], 'multiline' => true]];
+$html      = ['type' => 'html'];
 $machinery = ['marks' => ['bold'], 'styles' => [], 'multiline' => false, 'blocks' => ['ul'], 'links' => true];
 
 // ─────────────────────────────────────────────────
@@ -101,22 +102,44 @@ verify_field('style not opted in unwrapped', '<span class="anti-style-accent">x<
 verify_field('marks still implied alongside styles', '<strong>x</strong>', $styled, '<strong>x</strong>');
 
 // ─────────────────────────────────────────────────
-// blocks/links do not resolve for leantext (reserved for richtext)
+// blocks/links do not resolve for leantext (html/richtext only)
 // ─────────────────────────────────────────────────
 verify_field('leantext cannot opt into links', '<a href="https://example.com">x</a>', ['type' => 'leantext', 'leantext' => ['links' => true]], 'x');
 verify_field('leantext cannot opt into blocks', '<ul><li>a</li></ul>', ['type' => 'leantext', 'leantext' => ['blocks' => ['ul']]], 'a');
 
 // ─────────────────────────────────────────────────
-// Tier-4 machinery (hand-built features; serves the future richtext type)
+// html: fixed allowlist, no options (ADR 0029)
 // ─────────────────────────────────────────────────
-verify_features('link kept with safe href', '<a href="https://example.com">x</a>', $machinery, '<a href="https://example.com" rel="noopener">x</a>');
+verify_field('html keeps paragraphs', '<p>One</p><p>Two</p>', $html, '<p>One</p><p>Two</p>');
+verify_field('html keeps lists', '<ul><li>a</li></ul><ol><li>b</li></ol>', $html, '<ul><li>a</li></ul><ol><li>b</li></ol>');
+verify_field('html keeps nested lists', '<ul><li>a<ul><li>b</li></ul></li></ul>', $html, '<ul><li>a<ul><li>b</li></ul></li></ul>');
+verify_field('html keeps h2-h6', '<h2>a</h2><h3>b</h3><h4>c</h4><h5>d</h5><h6>e</h6>', $html, '<h2>a</h2><h3>b</h3><h4>c</h4><h5>d</h5><h6>e</h6>');
+verify_field('html unwraps h1', '<h1>Title</h1><p>x</p>', $html, 'Title<p>x</p>');
+verify_field('html keeps marks + br', '<p><strong>a</strong><br><em>b</em></p>', $html, '<p><strong>a</strong><br><em>b</em></p>');
+verify_field('html normalizes b/i', '<b>a</b><i>b</i>', $html, '<strong>a</strong><em>b</em>');
+verify_field('html keeps link rel/target as authored', '<a href="https://example.com" rel="nofollow sponsored" target="_blank">x</a>', $html, '<a href="https://example.com" rel="nofollow sponsored" target="_blank">x</a>');
+verify_field('html strips other link attrs', '<a href="/x" style="color:red" onclick="alert(1)" class="c">x</a>', $html, '<a href="/x">x</a>');
+verify_field('html rejects javascript href', '<a href="javascript:alert(1)">x</a>', $html, 'x');
+verify_field('html rejects tab-injected href', '<a href="java&#9;script:alert(1)">x</a>', $html, 'x');
+verify_field('html strips attrs from blocks', '<p onclick="alert(1)" class="lead" style="x">a</p>', $html, '<p>a</p>');
+verify_field('html drops script with content', '<p>a</p><script>alert(1)</script>', $html, '<p>a</p>');
+verify_field('html unwraps div/span', '<div><span class="anti-style-highlight">a</span></div>', $html, 'a');
+verify_field('html leaves stray li alone', '<li>a</li>', $html, '<li>a</li>');
+verify_field('html plain text stays one block', "One\n\nTwo", $html, "One\n\nTwo");
+verify_field('html keeps bare less-than as text', 'a < b', $html, 'a &lt; b');
+verify_field('html keeps less-than inside a block', '<p>3<5 and x <= y</p>', $html, '<p>3&lt;5 and x &lt;= y</p>');
+
+// ─────────────────────────────────────────────────
+// Links/blocks machinery (hand-built features)
+// ─────────────────────────────────────────────────
+verify_features('link kept with safe href', '<a href="https://example.com">x</a>', $machinery, '<a href="https://example.com">x</a>');
 verify_features('javascript href rejected', '<a href="javascript:alert(1)">x</a>', $machinery, 'x');
 verify_features('data href rejected', '<a href="data:text/html,x">x</a>', $machinery, 'x');
 verify_features('tab-injected scheme rejected', '<a href="java&#9;script:alert(1)">x</a>', $machinery, 'x');
 verify_features('newline-injected scheme rejected', '<a href="java&#10;script:alert(1)">x</a>', $machinery, 'x');
 verify_features('leading-control scheme rejected', '<a href="&#1;javascript:alert(1)">x</a>', $machinery, 'x');
-verify_features('mailto href kept', '<a href="mailto:a@b.co">x</a>', $machinery, '<a href="mailto:a@b.co" rel="noopener">x</a>');
-verify_features('relative href kept', '<a href="/about">x</a>', $machinery, '<a href="/about" rel="noopener">x</a>');
+verify_features('mailto href kept', '<a href="mailto:a@b.co">x</a>', $machinery, '<a href="mailto:a@b.co">x</a>');
+verify_features('relative href kept', '<a href="/about">x</a>', $machinery, '<a href="/about">x</a>');
 verify_features('list kept when blocks allow', '<ul><li>a</li></ul>', $machinery, '<ul><li>a</li></ul>');
 verify_field('links stripped for bare leantext', '<a href="https://example.com">x</a>', $bare, 'x');
 
@@ -124,6 +147,7 @@ verify_field('links stripped for bare leantext', '<a href="https://example.com">
 // Encoding round-trips
 // ─────────────────────────────────────────────────
 verify_field('emoji round-trip', 'Café ☕ <strong>🚀</strong>', $bare, 'Café ☕ <strong>🚀</strong>');
+verify_field('leantext keeps bare less-than as text', 'a < <strong>b</strong>', $bare, 'a &lt; <strong>b</strong>');
 verify_field('interpolation placeholder untouched', 'Hi <strong>{user.name}</strong>', $bare, 'Hi <strong>{user.name}</strong>');
 
 // ─────────────────────────────────────────────────

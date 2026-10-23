@@ -411,7 +411,7 @@ if (!function_exists('anti_field_def')) {
 if (!function_exists('anti_field_html')) {
     /**
      * Output a field value for templates, dispatching on the field's type.
-     * Formatted types (leantext; richtext/html when they land) are sanitized
+     * Formatted types (leantext, html; richtext when it lands) are sanitized
      * against their resolved allowlist (sanitize-on-output is the security
      * boundary); plain types always fall back to html_escape().
      *
@@ -427,7 +427,7 @@ if (!function_exists('anti_field_html')) {
         }
 
         $def = anti_field_def($props, $field);
-        if (!in_array($def['type'] ?? '', ['leantext'], true)) {
+        if (!in_array($def['type'] ?? '', ['leantext', 'html'], true)) {
             return html_escape($value);
         }
 
