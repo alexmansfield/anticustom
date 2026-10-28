@@ -9,7 +9,7 @@
       "mode": "scale",
       "default": "h6",
       "scale": {
-        "mobile": { "value": 15, "ratio": 1.5 },
+        "mobile": { "value": 15, "ratio": 1.2 },
         "desktop": { "value": 16, "ratio": 1.618 }
       },
       "sizes": {

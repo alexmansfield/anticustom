@@ -102,16 +102,16 @@ Text carries no derived line-height/letter-spacing — that model is heading-onl
 
 ### Headings (`--h{n}` + derived typography)
 
-Symmetric open set: keys `h1`–`h6` emit `--h1`–`--h6` (ADR 0027 amends 0024 — `position` orders the scale math, the key names the token). Anchor is `h6` (position 0); h1 is largest. No bare alias — h1–h6 are guaranteed present. Factory anchors: mobile 15/1.5, desktop 16/1.618.
+Symmetric open set: keys `h1`–`h6` emit `--h1`–`--h6` (ADR 0027 amends 0024 — `position` orders the scale math, the key names the token). Anchor is `h6` (position 0); h1 is largest. No bare alias — h1–h6 are guaranteed present. Factory anchors: mobile 15/1.2, desktop 16/1.618.
 
 | Variable | Position | Mobile → Desktop |
 |----------|----------|------------------|
 | `--h6` | 0 (anchor) | 15 → 16px |
-| `--h5` | 1 | 23 → 26px |
-| `--h4` | 2 | 34 → 42px |
-| `--h3` | 3 | 51 → 68px |
-| `--h2` | 4 | 76 → 110px |
-| `--h1` | 5 | 114 → 177px |
+| `--h5` | 1 | 18 → 26px |
+| `--h4` | 2 | 22 → 42px |
+| `--h3` | 3 | 26 → 68px |
+| `--h2` | 4 | 31 → 110px |
+| `--h1` | 5 | 37 → 177px |
 
 Each level also emits **derived typography** (ADR 0022), driven by the `style` knobs `{ leading, letterSpacingSlope, letterSpacingConstant, weight }`:
 
