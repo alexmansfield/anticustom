@@ -278,7 +278,7 @@ check('every heading level emits derived typography',
 
 // Heading sizes resolve exactly server-side at both device anchors.
 check('h1 size resolves at both anchors',
-    strpos($css, '--h1: clamp(37px, calc(-15px + 13.3333vw), 177px);') !== false,
+    strpos($css, '--h1: clamp(37px, calc(25.8571px + 2.8571vw), 67px);') !== false,
     'h1 clamp should match the scale computation at the mobile/desktop anchors');
 check('h6 (anchor step) size resolves',
     strpos($css, '--h6: clamp(15px, calc(14.6286px + 0.0952vw), 16px);') !== false);
